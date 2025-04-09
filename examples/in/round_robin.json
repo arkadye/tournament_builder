@@ -1,0 +1,31 @@
+{
+  "competition": {
+    "descriptor_type": "round_robin",
+    "name": "six_nations",
+    "comment": "An example based on the Six Nations rugby union competition",
+    "entry_list": [
+      {
+        "name": "england",
+        "tags": [ "HOME_NATION" ]
+      },
+      { "name": "france" },
+      {
+        "name": "ireland",
+        "tags": [ "HOME_NATION" ]
+      },
+      { "name": "italy" },
+      {
+        "name": "scotland",
+        "tags": [ "HOME_NATION" ]
+      },
+      {
+        "name": "wales",
+        "tags": [ "HOME_NATION" ]
+      }
+    ],
+    "num_times_to_play_each_opponent": 1,
+    "alternate_left_and_right": true,
+    "generate_byes": false,
+    "shuffle_entries": true
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "competition": {
+    "phases": [
+      {
+        "phases": [
+          {
+            "entry_list": [
+              { "name": "netherlands" },
+              { "name": "spain" }
+            ],
+            "name": "game_0"
+          },
+          {
+            "entry_list": [
+              { "name": "croatia" },
+              { "name": "france" }
+            ],
+            "name": "game_1"
+          },
+          {
+            "entry_list": [
+              { "name": "denmark" },
+              { "name": "portugal" }
+            ],
+            "name": "game_2"
+          },
+          {
+            "entry_list": [
+              { "name": "italy" },
+              { "name": "germany" }
+            ],
+            "name": "game_3"
+          }
+        ],
+        "name": "round_0"
+      },
+      {
+        "phases": [
+          {
+            "entry_list": [ "@OUTER.@OUTER.round_0.game_0.$POS:1", "@OUTER.@OUTER.round_0.game_1.$POS:1" ],
+            "name": "game_0"
+          },
+          {
+            "entry_list": [ "@OUTER.@OUTER.round_0.game_2.$POS:1", "@OUTER.@OUTER.round_0.game_3.$POS:1" ],
+            "name": "game_1"
+          }
+        ],
+        "name": "round_1"
+      },
+      {
+        "phases": [
+          {
+            "entry_list": [ "@OUTER.@OUTER.round_1.game_0.$POS:1", "@OUTER.@OUTER.round_1.game_1.$POS:1" ],
+            "name": "game_0"
+          }
+        ],
+        "name": "round_2"
+      }
+    ],
+    "name": "nations_league_finals_2025"
+  },
+  "events": [
+    {
+      "event_type": "set_finishing_positions",
+      "target": "nations_league_finals_2025.round_0.game_0",
+      "finish_order": [ "spain", "netherlands" ]
+    },
+    {
+      "event_type": "set_finishing_positions",
+      "target": "nations_league_finals_2025.round_0.game_1",
+      "finish_order": [ "france", "croatia" ]
+    },
+    {
+      "event_type": "set_finishing_positions",
+      "target": "nations_league_finals_2025.round_0.game_2",
+      "finish_order": [ "portugal", "denmark" ]
+    },
+    {
+      "event_type": "set_finishing_positions",
+      "target": "nations_league_finals_2025.round_0.game_3",
+      "finish_order": [ "germany", "italy" ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "competition": {
+    "descriptor_type": "knockout_bracket",
+    "name": "nations_league_finals_2025",
+    "comment":  "An example mimicking the UEFA Nation's League Finals 2025'",
+    "entry_list": [
+      { "name": "netherlands" },
+      { "name": "spain" },
+      { "name": "croatia" },
+      { "name": "france" },
+      { "name": "denmark" },
+      { "name": "portugal" },
+      { "name": "italy" },
+      { "name": "germany" }
+    ]
+  }
+}

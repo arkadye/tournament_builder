@@ -1,0 +1,21 @@
+[submodule "cpp/thirdparty/nlohmann/json"]
+	path = cpp/thirdparty/nlohmann/json
+	url = https://github.com/nlohmann/json
+[submodule "cpp/thirdparty/cxxopts"]
+	path = cpp/thirdparty/cxxopts
+	url = https://github.com/jarro2783/cxxopts
+[submodule "source_code/thirdparty/json"]
+	path = source_code/thirdparty/json
+	url = https://github.com/nlohmann/json
+[submodule "source_code/thirdparty/nlohmann/--depth=1"]
+	path = source_code/thirdparty/nlohmann/--depth=1
+	url = https://github.com/nlohmann/json
+[submodule "source_code/thirdparty/--depth=1"]
+	path = source_code/thirdparty/--depth=1
+	url = https://github.com/nlohmann/json
+[submodule "source_code/thirdparty/nlohmann/json"]
+	path = source_code/thirdparty/nlohmann/json
+	url = https://github.com/nlohmann/json
+[submodule "source_code/thirdparty/cxxopts/cxxopts"]
+	path = source_code/thirdparty/cxxopts/cxxopts
+	url = https://github.com/jarro2783/cxxopts

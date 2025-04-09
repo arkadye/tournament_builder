@@ -1,0 +1,48 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+*.pdb
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Visual Studio internals
+.vs/*
+*/.vs
+*.vcxproj
+*.vcxproj.*
+*.sln
+cpp/tournament_maker_cmd.dir
+cpp/x64
+
+# CMake internals
+**/CMakeFiles
+**/cmake_install.cmake
+**/CMakeCache.txt
+**/CTestTestfile.cmake
+**/Debug/*
+**/Release/*
+**/MinSizeRel/*
+**/RelWithDebInfo/*

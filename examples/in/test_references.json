@@ -1,0 +1,59 @@
+{
+  "comment": "A testcase / demonstration of the various things references can do. In the output all references should be resolved.",
+  "competition": {
+    "name": "base",
+    "phases": [
+      {
+        "name": "level_1_tests",
+        "entry_list": [
+          {
+            "name": "level_1_target"
+          },
+          "@ROOT.base.root_test_target",
+          "@OUTER.root_test_target",
+          "@OUTER.COPY_THIS_TAG",
+          "@OUTER.DONT_COPY_THIS_TAG",
+          "@OUTER.[MULTI.PART.TAG]",
+          "@OUTER.ADDITIONAL_TAG"
+        ],
+        "phases": [
+          {
+            "name": "level_2_tests",
+            "entry_list": [
+              "@ROOT.base.root_test_target",
+              "@ROOT.base.level_1_tests.level_1_target",
+              "@OUTER.@OUTER.root_test_target",
+              "@OUTER:2.root_test_target"
+            ]
+          }
+        ]
+      }
+    ],
+    "entry_list": [
+      {
+        "name": "root_test_target",
+        "tags": [
+          "COPY_THIS_TAG",
+          {
+            "tag": "DONT_COPY_THIS_TAG",
+            "copy_on_ref": false
+          },
+          "MULTI.PART.TAG"
+        ]
+      }
+    ]
+  },
+  "events": [
+    {
+      "event_type": "add_tags",
+      "tags": [
+        "ADDITIONAL_TAG",
+        {
+          "tag": "COPYABLE_ADDITIONAL_TAG",
+          "copy_on_ref": true
+        }
+      ],
+      "target": "base.[MULTI.PART.TAG]"
+    }
+  ]
+}

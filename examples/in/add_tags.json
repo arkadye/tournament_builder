@@ -1,0 +1,56 @@
+{
+  "competition": {
+    "phases": [
+      {
+        "entry_list": [
+          { "name": "apples" },
+          { "name": "oranges" }
+        ],
+        "name": "game_0"
+      },
+      {
+        "entry_list": [
+          { "name": "cabbages" },
+          null
+        ],
+        "name": "game_1"
+      },
+      {
+        "entry_list": [
+          { "name": "lemons" },
+          { "name": "pears" }
+        ],
+        "name": "game_2"
+      },
+      {
+        "entry_list": [
+          { "name": "tomatoes" },
+          null
+        ],
+        "name": "game_3"
+      }
+    ],
+    "name": "example_round_of_matches"
+  },
+  "events": [
+    {
+      "event_type": "add_tags",
+      "target": [
+        "@ANY:2.apples",
+        "@ANY:2.oranges",
+        "@ANY:2.lemons",
+        "@ANY:2.pears",
+        "@ANY:2.tomatoes"
+      ],
+      "tags": "TYPE.FRUIT"
+    },
+    {
+      "event_type": "add_tags",
+      "target": [
+        "@ANY:2.cabbages",
+        "@ANY:2.tomatoes"
+      ],
+      "tags": "TYPE.VEGETABLES"
+    }
+  ]
+}

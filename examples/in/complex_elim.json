@@ -1,0 +1,25 @@
+{
+  "competition": {
+    "descriptor_type": "knockout_bracket",
+    "name": "bracket_with_byes",
+    "comment": "An animal show-down. Naturally lions and tigers get a bye to round 2, and penguins to round 3.",
+    "entry_list": [
+      { "name": "penguin" },
+      null,
+      null,
+      null,
+      { "name": "goldfish" },
+      { "name": "sparrow" },
+      { "name": "cow" },
+      { "name": "snake" },
+      { "name": "lion" },
+      null,
+      { "name": "pigeon" },
+      { "name": "dog" },
+      { "name": "tiger" },
+      null,
+      { "name": "rat" },
+      { "name": "cat" }
+    ]
+  }
+}

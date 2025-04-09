@@ -1,0 +1,1 @@
+{"competition":{"name":"example_round_of_matches","phases":[{"entry_list":[{"name":"apples"},{"name":"oranges"}],"name":"game_1"},{"entry_list":[{"name":"cabbages"},null],"name":"game_2"},{"entry_list":[{"name":"lemons"},{"name":"pears"}],"name":"game_3"},{"entry_list":[{"name":"tomatoes"},null],"name":"game_4"}]}}
