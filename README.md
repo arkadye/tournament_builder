@@ -530,20 +530,20 @@ A Competition with one match per team in the `contents` field, and an empty `ent
 Example input:
 
     {
-  "descriptor_type": "round_of_matches",
-  "name": "example_round_of_matches",
-  "entry_list": [
-    { "name": "apples" },
-    { "name": "oranges" },
-    null,
-    { "name": "cabbages" },
-    { "name": "lemons" },
-    { "name": "pears" },
-    { "name": "tomatoes" }
-  ],
-  "swap_left_and_right": false,
-  "generate_explicit_byes": true
-}
+        "descriptor_type": "round_of_matches",
+        "name": "example_round_of_matches",
+        "entry_list": [
+            { "name": "apples" },
+            { "name": "oranges" },
+            null,
+            { "name": "cabbages" },
+            { "name": "lemons" },
+            { "name": "pears" },
+            { "name": "tomatoes" }
+        ],
+        "swap_left_and_right": false,
+        "generate_explicit_byes": true
+    }
 	
 would output:
 	{
