@@ -30,77 +30,15 @@ There is also a `tournament_builder_cli_dbg` project which automatically finds t
 
 The command line tool will be made available in the Releases section. It can be invoked with the command `tourmanet_builder_cli --input [input file] --output [output file]`. Leave `--input` blank to read JSON from stdin (i.e. you can pipe it in) and leave `--output` blank to write the results to stdout (or pipe it out). More in-depth documentation to come.
 
-## Roadmap
+### Input
 
-### Current state: Alpha
+A World JSON object is the input. See the JSON documentation below.
 
-This is the current state. Not everything planned is in, but minimal possibly useful functionality exists. At this point, share within small(-ish) programming communities only, but it is not ready for non-programmer focussed indie-devs yet.
+### Output
 
-Planned for alpha:
+A different World JSON object is the output. This means the outputs can be modified as used again as inputs.
 
-- ~~Minimal viable functionality~~
-- ~~C++ interface~~
-- References can pick and choose which tags to carry over
-- Storage added for generic references
-- Negative indexing on `$POS` and `$ENTRY` tags.
-- `$ANY` and `$GLOB` tags - this will need some code re-organisation to make the current code in reference.cpp be somewhere generic
-- Variable length entry lists on descriptors where it makes sense
-- Organise the documentation into files instead of one massive page like this
-- Reference-like parse loading from another file
-- Make sure a single-file unity build works correctly.
-- Async interface
-- Event for testing references, somehow
-- Test cases for all the exceptions
-- Documentation for the CLI.
-
-### Beta
-
-This is the point to start sharing in indie-dev circles, since it is now useable enough to integrate with Unity and possibly GameMaker.
-
-Planned for Beta:
-
-- C interface
-- C# interface and easy Unity integration
-- User data field added to competitors and passed through
-- Deferred descriptor resolution
-
-And more descriptors:
-
-- Seeded bracket
-- Multi-elimination brackets
-- Pseudorandom draws, avoiding certain match-ups based on tags
-- Nested competitions, with additional games automatically created (like cross-division or cross-conference games in NFL)
-- And more ... (by which I mean I can't think of any at this point, so feel free to leave your suggestions)
-
-### Release
-
-Planned for release:
-
-- Stats system, where competitors can have stats set, and then resolvers use stats to resolve competitions instead of just an event imposing a finishing order
-- Python bindings so this can be used with PygGame
-- Customise the output by setting naming schemes
-- Fix the compelte mess that is reference.hpp & reference.cpp
-- Have Token use some form of hashed string for faster comparisons.
-- Some documentation of the C, C++, and C# interfaces.
-
-Advanced descriptors:
-
-- Secondary groups (e.g. the best 3rd-place finishers table some international football/soccer competitions.
-- Swiss style events
-- And more ... (suggestions and requests welcome)
-
-### Post-release
-
-These are things I don't plan to work on, but will accept pull requests for.
-
-- GUI version, maybe
-- More descriptors, depending on what's asked for
-- Add support for features I didn't think of that people requested
-- Unreal Engine plugin
-- GameMaker extension
-- Native C# types
-- Native C types
-- Remove all global state
+If an error (or errors) occur, this will instead output a JSON object with just a single field: `"errors"`, with an array of error messages.
 
 ## Compatibility
  
@@ -137,15 +75,41 @@ the offline version of this tool to help.
 - An integrated tool, where this is embedded into your game allowing the players to build
 structures within the game.
 
+## Roadmap
+
+### Current state: Alpha
+
+This is the current state. Not everything planned is in, but minimal possibly useful functionality exists. At this point, share within small(-ish) programming communities only, but it is not ready for non-programmer focussed indie-devs yet.
+
+[See everything planned for Alpha here.](https://github.com/arkadye/tournament_builder/milestone/1)
+
+### Beta
+
+This is the point to start sharing in indie-dev circles, since it is now useable enough to integrate with Unity and possibly GameMaker, even if it is not feature complete.
+
+[See everything planned for Beta here.](https://github.com/arkadye/tournament_builder/milestone/2)
+
+
+### Release
+
+[See everything planned for Release here.](https://github.com/arkadye/tournament_builder/milestone/3)
+
+### Post-release
+
+These are things I don't plan to work on, but will accept pull requests for.
+
+[See everything which would currently be 'Post-release' here.](https://github.com/arkadye/tournament_builder/milestone/4)
+
+
 ## Contributing
 
-The easiest way to contribute is to click on the "Issues" tab, and either comment on an issue you see that is similar or start your own.
+The easiest way to contribute is to click on the ["Issues" tab](https://github.com/arkadye/tournament_builder/issues), and either comment on an issue you see that is similar or start your own.
 
 Use these for bug reports, feature requests, no matter how major or minor they seem.
 
-If you want to contribute by writing code make a fork, and do your thing and make a pull request. If you would like to contribute but are not sure what to do there is a list of ideas above and there may be some things in "Issues" which you think you could solve.
+If you want to contribute by writing code [make a fork](https://github.com/arkadye/tournament_builder/fork), and do your thing and make a pull request. If you would like to contribute but are not sure what to do there is a list of ideas above and there may be some things in "Issues" which you think you could solve.
 
-## Attrubution
+## Attribution
 
 Under the terms of the license there is no need to attribute or acknowledge this work. However, if you use it I would much appreciate it if you could let me know so I can maintain a list of projects that have used this tool.
 
@@ -159,7 +123,7 @@ Most objects are identified by a `name` field.
 
 - This must be a string. (e.g. `"name": 42` is an error).
 - This must not be empty (i.e. `"name": ""` is an error).
-- This may only contain alphanumeric characters (i.e. `a`-`z`, `A` to `Z`, and `0` to -`9`)
+- This may only contain alphanumeric characters (i.e. `a`-`z`, `A` to `Z`, and `0` to `9`)
 and the underscore (`_`) 	character (e.g. `"name": "joe-bloggs"` is an error, but `"name": joe_bloggs_42` is accepted).
 (This restriction is that references can use special characters to do special functions. Check the section on references for examples.)
 - Must be unique within their context. You cannot have two competitors with the same name in the same competition, nor two competition phases with the same name. In general, it is assumed any two objects with the same name represent the same thing.
@@ -179,44 +143,52 @@ Fields:
 
 For example:
 
-    {
-	    "ref": "anytown_utd.joe_bloggs"
-	}
+```json
+{
+	"ref": "anytown_utd.joe_bloggs"
+}
+```
 
 In a situation where something may accept a reference (e.g. a competition entry list accepts Competitors, or references to Competitors) a string will be interpreted as a reference. That means there is no difference between:
 
-    {
-	    "name": "example",
-		"entry_list": [ "@ROOT.anytown_utd.joe_bloggs" ]
-	}
+```json
+{
+	"name": "example",
+	"entry_list": [ "@ROOT.anytown_utd.joe_bloggs" ]
+}
+```
 
 and:
 
-    {
-	    "name": "example",
-		"entry_list": [
-			{
-				"ref": "@ROOT.anytown_utd.joe_bloggs"
-			}
-		]
-	}
+```json
+{
+    "name": "example",
+	"entry_list": [
+		{
+			"ref": "@ROOT.anytown_utd.joe_bloggs"
+		}
+	]
+}
+```
 	
 By default a reference will start in its current location, so consider this structure:
 
+```json
+{
+  "name": "grandparent",
+  "phases": [
 	{
-	  "name": "grandparent",
-	  "contents": [
+	  "name": "parent",
+	  "phases": [
 		{
-		  "name": "parent",
-		  "contents": [
-			{
-			  "name": "child"
-			}
-		  ]
-		},
-		{ "ref": "parent.child" }
+		  "name": "child"
+		}
 	  ]
-	}
+	},
+	{ "ref": "parent.child" }
+  ]
+}
+```
 	
 In `grandparent` the reference to `{ "ref": "parent.child" }` it would resolve to `{ "name": "child" }`.
 
@@ -240,23 +212,25 @@ The `@ROOT` token may only appear at the very front of a reference. Instead of t
 
 For example:
 
+```json
+{
+  "name": "grandparent",
+  "phases": [
 	{
-	  "name": "grandparent",
-	  "contents": [
+	  "name": "parent",
+	  "phases": [
 		{
-		  "name": "parent",
-		  "contents": [
-			{
-			  "name": "child"
-			},
-			{ "ref": "@ROOT.grandparent.aunt" }
-		  ]
+		  "name": "child"
 		},
-		{
-			"name": "aunt"
-		}
+		{ "ref": "@ROOT.grandparent.aunt" }
 	  ]
+	},
+	{
+		"name": "aunt"
 	}
+  ]
+}
+```
 	
 In this `child` can reference its aunt using `{ "ref:" "@ROOT.grandparent" }`. 
 
@@ -266,19 +240,21 @@ A `@ROOT` token appearing mid-way through a reference will restart at the root a
 
 The `@OUTER` token moves one level outwards. For example:
 
+```json
+{
+  "name": "grandparent",
+  "phases": [
 	{
-	  "name": "grandparent",
-	  "contents": [
+	  "name": "parent",
+	  "phases": [
 		{
-		  "name": "parent",
-		  "contents": [
-			{
-			  "name": "child"
-			}
-		  ]
+		  "name": "child"
 		}
 	  ]
 	}
+  ]
+}
+```
 	
 In this, `child` could reference `parent` with `@OUTER`. Trying to use `@OUTER` from the top level (e.g. if `grandparent` tries to reference `@OUTER` in the example above) is an error.
 
@@ -292,53 +268,55 @@ The `@ANY` token matches with any (or all) items. This may allow a reference to 
 
 Consider:
 
+```json
+{
+  "name": "grandparent",
+  "phases": [
 	{
-	  "name": "grandparent",
-	  "contents": [
+	  "name": "parent_A",
+	  "phases": [
 		{
-		  "name": "parent_A",
-		  "contents": [
-			{
-			  "name": "child_X"
-			},
-			{
-			  "name": "child_Y"
-			},
-			{
-			  "name": "child_Z"
-			},
-		  ]
+		  "name": "child_X"
 		},
 		{
-		  "name": "parent_B",
-		  "contents": [
-			{
-			  "name": "child_X"
-			},
-			{
-			  "name": "child_Y"
-			},
-			{
-			  "name": "child_Z"
-			},
-		  ]
+		  "name": "child_Y"
 		},
 		{
-		  "name": "parent_C",
-		  "contents": [
-			{
-			  "name": "child_X"
-			},
-			{
-			  "name": "child_Y"
-			},
-			{
-			  "name": "child_Z"
-			},
-		  ]
-		}
+		  "name": "child_Z"
+		},
+	  ]
+	},
+	{
+	  "name": "parent_B",
+	  "phases": [
+		{
+		  "name": "child_X"
+		},
+		{
+		  "name": "child_Y"
+		},
+		{
+		  "name": "child_Z"
+		},
+	  ]
+	},
+	{
+	  "name": "parent_C",
+	  "phases": [
+		{
+		  "name": "child_X"
+		},
+		{
+		  "name": "child_Y"
+		},
+		{
+		  "name": "child_Z"
+		},
 	  ]
 	}
+  ]
+}
+```
 	
 The reference `grandparent.@ANY.childX` will resolve to `[grandparent.parent_A.childX , grandparent.parent_B.childX , grandparent.parent_C.childX ]`.
 
@@ -359,22 +337,26 @@ A tag is an object with the fields:
 
 Alternatively (and similar to references) a string can be used in place of a tag. This means there is no difference between:
 
-    {
-	    "name": "example",
-		"tags": [
-			{
-				"tag": "example_tag_1",
-				"copy_on_ref": true
-			} 
-		]
-	}
+```json
+{
+	"name": "example",
+	"tags": [
+		{
+			"tag": "example_tag_1",
+			"copy_on_ref": true
+		} 
+	]
+}
+```
 	
 and
 
-    {
-	    "name": "example",
-		"tags": [ "example_tag_1" ]
-	}
+```json
+{
+	"name": "example",
+	"tags": [ "example_tag_1" ]
+}
+```
 
 In the latter case `copy_on_ref` is assumed to be `true`.
 
@@ -382,59 +364,63 @@ In the latter case `copy_on_ref` is assumed to be `true`.
 
 Where a reference refers to something with tags it will also match with a name. For example:
 
-    {
-	    "name": "example",
-		"contents": [
-			{
-				"name": "round_0"
-				"entry_list":
-				[
-					{
-						"name": "tea",
-						"tags": [ "beverages" ]
-					},
-					{
-						"name": "lemon",
-						"tags": [ "fruit" ]
-					}
-				]
-			},
-			{
-					"name": "round_1",
-					"entry_list": [ { "ref": "$OUTER.round_0.beverages" } ]
-			},
-		]
-	}
+```json
+{
+	"name": "example",
+	"phases": [
+		{
+			"name": "round_0"
+			"entry_list":
+			[
+				{
+					"name": "tea",
+					"tags": [ "beverages" ]
+				},
+				{
+					"name": "lemon",
+					"tags": [ "fruit" ]
+				}
+			]
+		},
+		{
+				"name": "round_1",
+				"entry_list": [ { "ref": "$OUTER.round_0.beverages" } ]
+		},
+	]
+}
+```
 	
 In the above the tag will pick up the "tea" entity, because the tag "beverages" matches. So when references are resolved it will become this:
 
-    {
-	    "name": "example",
-		"contents": [
-			{
-				"name": "round_0"
+```json
+{
+	"name": "example",
+	"phases": [
+		{
+			"name": "round_0"
+			"entry_list": [
+				{
+					"name": "tea",
+					"tags": [ "beverages" ]
+				},
+				{
+					"name": "lemon",
+					"tags": [ "fruit" ]
+				}
+			]
+		},
+		{
+				"name": "round_1",
 				"entry_list": [
 					{
 						"name": "tea",
 						"tags": [ "beverages" ]
-					},
-					{
-						"name": "lemon",
-						"tags": [ "fruit" ]
 					}
 				]
-			},
-			{
-					"name": "round_1",
-					"entry_list": [
-						{
-							"name": "tea",
-							"tags": [ "beverages" ]
-						}
-					]
-			},
-		]
-	}
+		},
+	]
+}
+```
 
 On each object tags are unique. Any attempt to add a duplicate tag will do nothing, but it is not an error.
 
@@ -448,13 +434,13 @@ To set these tags use the `"set_finishing_order"` event.
 
 Unlike other special tags, these tags will appear on the output.
 
-This tag is unique. It cannot appear as part of a chain. So `example-$POS:1-oops` is an error, as is `$POS:1-example`.
+This tag is unique. It cannot appear as part of a chain. So `example.$POS:1.oops` is an error, as is `$POS:1.example`.
 
 ### Special Tag `$ENTRY`
 
 This corresponds to a competitor in a competition. Whichever competitor is listed first in the entry list implicity has the tag `$ENTRY:1`, and the numbering works exactly like the `$POS` numbering.
 
-This tag is unique. It cannot appear as part of a chain. So `example-$ENTRY:1-oops` is an error, as is `$ENTRY:1-example`.
+This tag is unique. It cannot appear as part of a chain. So `example.$ENTRY:1.oops` is an error, as is `$ENTRY:1.example`.
 
 This tag is omitted from the output.
 
@@ -529,56 +515,61 @@ A Competition with one match per team in the `contents` field, and an empty `ent
 
 Example input:
 
-    {
-        "descriptor_type": "round_of_matches",
-        "name": "example_round_of_matches",
-        "entry_list": [
-            { "name": "apples" },
-            { "name": "oranges" },
-            null,
-            { "name": "cabbages" },
-            { "name": "lemons" },
-            { "name": "pears" },
-            { "name": "tomatoes" }
-        ],
-        "swap_left_and_right": false,
-        "generate_explicit_byes": true
-    }
+```json
+{
+	"descriptor_type": "round_of_matches",
+	"name": "example_round_of_matches",
+	"entry_list": [
+		{ "name": "apples" },
+		{ "name": "oranges" },
+		null,
+		{ "name": "cabbages" },
+		{ "name": "lemons" },
+		{ "name": "pears" },
+		{ "name": "tomatoes" }
+	],
+	"swap_left_and_right": false,
+	"generate_explicit_byes": true
+}
+```
 	
 would output:
+
+```json
+{
+  "phases": [
 	{
-	  "contents": [
-		{
-		  "entry_list": [
-			{ "name": "oranges" },
-			{ "name": "apples" }
-		  ],
-		  "name": "game_1"
-		},
-		{
-		  "entry_list": [
-			{ "name": "cabbages" },
-			null
-		  ],
-		  "name": "game_2"
-		},
-		{
-		  "entry_list": [
-			{ "name": "pears" },
-			{ "name": "lemons" }
-		  ],
-		  "name": "game_3"
-		},
-		{
-		  "entry_list": [
-			{ "name": "tomatoes" },
-			null
-		  ],
-		  "name": "game_4"
-		}
+	  "entry_list": [
+		{ "name": "oranges" },
+		{ "name": "apples" }
 	  ],
-	  "name": "example_round_of_matches"
+	  "name": "game_1"
+	},
+	{
+	  "entry_list": [
+		{ "name": "cabbages" },
+		null
+	  ],
+	  "name": "game_2"
+	},
+	{
+	  "entry_list": [
+		{ "name": "pears" },
+		{ "name": "lemons" }
+	  ],
+	  "name": "game_3"
+	},
+	{
+	  "entry_list": [
+		{ "name": "tomatoes" },
+		null
+	  ],
+	  "name": "game_4"
 	}
+  ],
+  "name": "example_round_of_matches"
+}
+```
 
 ### Round Robin
 
@@ -594,226 +585,230 @@ This generates a round-robin competition where each entry plays every other entr
 
 Example input:
 
-	{
-	  "descriptor_type": "round_robin",
-	  "name": "example_round_robin",
-	  "entry_list": [
-		{ "name": "apples" },
-		{ "name": "oranges" },
-		{ "name": "lemons" },
-		{ "name": "pears" },
-		{ "name": "melons" }
-	  ],
-	  "num_times_to_play_each_opponent": 2,
-	  "alternate_left_and_right": true,
-	  "generate_byes": false,
-	  "shuffle_entries": false
-	}
+```json
+{
+  "descriptor_type": "round_robin",
+  "name": "example_round_robin",
+  "entry_list": [
+	{ "name": "apples" },
+	{ "name": "oranges" },
+	{ "name": "lemons" },
+	{ "name": "pears" },
+	{ "name": "melons" }
+  ],
+  "num_times_to_play_each_opponent": 2,
+  "alternate_left_and_right": true,
+  "generate_byes": false,
+  "shuffle_entries": false
+}
+```
 	
 Produces output:
 
+```json
+{
+  "phases": [
 	{
-	  "contents": [
+	  "phases": [
 		{
-		  "contents": [
-			{
-			  "entry_list": [
-				{ "name": "lemons" },
-				{ "name": "pears" }
-			  ],
-			  "name": "game_1"
-			},
-			{
-			  "entry_list": [
-				{ "name": "apples" },
-				{ "name": "melons" }
-			  ],
-			  "name": "game_2"
-			}
+		  "entry_list": [
+			{ "name": "lemons" },
+			{ "name": "pears" }
 		  ],
-		  "name": "round_1"
+		  "name": "game_1"
 		},
 		{
-		  "contents": [
-			{
-			  "entry_list": [
-				{ "name": "apples" },
-				{ "name": "lemons" }
-			  ],
-			  "name": "game_1"
-			},
-			{
-			  "entry_list": [
-				{ "name": "pears" },
-				{ "name": "oranges" }
-			  ],
-			  "name": "game_2"
-			}
+		  "entry_list": [
+			{ "name": "apples" },
+			{ "name": "melons" }
 		  ],
-		  "name": "round_2"
-		},
-		{
-		  "contents": [
-			{
-			  "entry_list": [
-				{ "name": "lemons" },
-				{ "name": "melons" }
-			  ],
-			  "name": "game_1"
-			},
-			{
-			  "entry_list": [
-				{ "name": "pears" },
-				{ "name": "apples" }
-			  ],
-			  "name": "game_2"
-			}
-		  ],
-		  "name": "round_3"
-		},
-		{
-		  "contents": [
-			{
-			  "entry_list": [
-				{ "name": "pears" },
-				{ "name": "oranges" }
-			  ],
-			  "name": "game_1"
-			},
-			{
-			  "entry_list": [
-				{ "name": "melons" },
-				{ "name": "apples" }
-			  ],
-			  "name": "game_2"
-			}
-		  ],
-		  "name": "round_4"
-		},
-		{
-		  "contents": [
-			{
-			  "entry_list": [
-				{ "name": "lemons" },
-				{ "name": "oranges" }
-			  ],
-			  "name": "game_1"
-			},
-			{
-			  "entry_list": [
-				{ "name": "pears" },
-				{ "name": "apples" }
-			  ],
-			  "name": "game_2"
-			}
-		  ],
-		  "name": "round_5"
-		},
-		{
-		  "contents": [
-			{
-			  "entry_list": [
-				{ "name": "pears" },
-				{ "name": "lemons" }
-			  ],
-			  "name": "game_1"
-			},
-			{
-			  "entry_list": [
-				{ "name": "melons" },
-				{ "name": "apples" }
-			  ],
-			  "name": "game_2"
-			}
-		  ],
-		  "name": "round_6"
-		},
-		{
-		  "contents": [
-			{
-			  "entry_list": [
-				{ "name": "lemons" },
-				{ "name": "apples" }
-			  ],
-			  "name": "game_1"
-			},
-			{
-			  "entry_list": [
-				{ "name": "oranges" },
-				{ "name": "pears" }
-			  ],
-			  "name": "game_2"
-			}
-		  ],
-		  "name": "round_7"
-		},
-		{
-		  "contents": [
-			{
-			  "entry_list": [
-				{ "name": "melons" },
-				{ "name": "lemons" }
-			  ],
-			  "name": "game_1"
-			},
-			{
-			  "entry_list": [
-				{ "name": "apples" },
-				{ "name": "pears" }
-			  ],
-			  "name": "game_2"
-			}
-		  ],
-		  "name": "round_8"
-		},
-		{
-		  "contents": [
-			{
-			  "entry_list": [
-				{ "name": "oranges" },
-				{ "name": "pears" }
-			  ],
-			  "name": "game_1"
-			},
-			{
-			  "entry_list": [
-				{ "name": "apples" },
-				{ "name": "melons" }
-			  ],
-			  "name": "game_2"
-			}
-		  ],
-		  "name": "round_9"
-		},
-		{
-		  "contents": [
-			{
-			  "entry_list": [
-				{ "name": "oranges" },
-				{ "name": "lemons" }
-			  ],
-			  "name": "game_1"
-			},
-			{
-			  "entry_list": [
-				{ "name": "apples" },
-				{ "name": "pears" }
-			  ],
-			  "name": "game_2"
-			}
-		  ],
-		  "name": "round_10"
+		  "name": "game_2"
 		}
 	  ],
-	  "entry_list": [
-		{ "name": "apples" },
-		{ "name": "oranges" },
-		{ "name": "lemons" },
-		{ "name": "pears" },
-		{ "name": "melons" }
+	  "name": "round_1"
+	},
+	{
+	  "phases": [
+		{
+		  "entry_list": [
+			{ "name": "apples" },
+			{ "name": "lemons" }
+		  ],
+		  "name": "game_1"
+		},
+		{
+		  "entry_list": [
+			{ "name": "pears" },
+			{ "name": "oranges" }
+		  ],
+		  "name": "game_2"
+		}
 	  ],
-	  "name": "example_round_robin"
+	  "name": "round_2"
+	},
+	{
+	  "phases": [
+		{
+		  "entry_list": [
+			{ "name": "lemons" },
+			{ "name": "melons" }
+		  ],
+		  "name": "game_1"
+		},
+		{
+		  "entry_list": [
+			{ "name": "pears" },
+			{ "name": "apples" }
+		  ],
+		  "name": "game_2"
+		}
+	  ],
+	  "name": "round_3"
+	},
+	{
+	  "phases": [
+		{
+		  "entry_list": [
+			{ "name": "pears" },
+			{ "name": "oranges" }
+		  ],
+		  "name": "game_1"
+		},
+		{
+		  "entry_list": [
+			{ "name": "melons" },
+			{ "name": "apples" }
+		  ],
+		  "name": "game_2"
+		}
+	  ],
+	  "name": "round_4"
+	},
+	{
+	  "phases": [
+		{
+		  "entry_list": [
+			{ "name": "lemons" },
+			{ "name": "oranges" }
+		  ],
+		  "name": "game_1"
+		},
+		{
+		  "entry_list": [
+			{ "name": "pears" },
+			{ "name": "apples" }
+		  ],
+		  "name": "game_2"
+		}
+	  ],
+	  "name": "round_5"
+	},
+	{
+	  "phases": [
+		{
+		  "entry_list": [
+			{ "name": "pears" },
+			{ "name": "lemons" }
+		  ],
+		  "name": "game_1"
+		},
+		{
+		  "entry_list": [
+			{ "name": "melons" },
+			{ "name": "apples" }
+		  ],
+		  "name": "game_2"
+		}
+	  ],
+	  "name": "round_6"
+	},
+	{
+	  "phases": [
+		{
+		  "entry_list": [
+			{ "name": "lemons" },
+			{ "name": "apples" }
+		  ],
+		  "name": "game_1"
+		},
+		{
+		  "entry_list": [
+			{ "name": "oranges" },
+			{ "name": "pears" }
+		  ],
+		  "name": "game_2"
+		}
+	  ],
+	  "name": "round_7"
+	},
+	{
+	  "phases": [
+		{
+		  "entry_list": [
+			{ "name": "melons" },
+			{ "name": "lemons" }
+		  ],
+		  "name": "game_1"
+		},
+		{
+		  "entry_list": [
+			{ "name": "apples" },
+			{ "name": "pears" }
+		  ],
+		  "name": "game_2"
+		}
+	  ],
+	  "name": "round_8"
+	},
+	{
+	  "phases": [
+		{
+		  "entry_list": [
+			{ "name": "oranges" },
+			{ "name": "pears" }
+		  ],
+		  "name": "game_1"
+		},
+		{
+		  "entry_list": [
+			{ "name": "apples" },
+			{ "name": "melons" }
+		  ],
+		  "name": "game_2"
+		}
+	  ],
+	  "name": "round_9"
+	},
+	{
+	  "phases": [
+		{
+		  "entry_list": [
+			{ "name": "oranges" },
+			{ "name": "lemons" }
+		  ],
+		  "name": "game_1"
+		},
+		{
+		  "entry_list": [
+			{ "name": "apples" },
+			{ "name": "pears" }
+		  ],
+		  "name": "game_2"
+		}
+	  ],
+	  "name": "round_10"
 	}
+  ],
+  "entry_list": [
+	{ "name": "apples" },
+	{ "name": "oranges" },
+	{ "name": "lemons" },
+	{ "name": "pears" },
+	{ "name": "melons" }
+  ],
+  "name": "example_round_robin"
+}
+```
 
 ### Knockout-bracket
 
@@ -825,122 +820,126 @@ In the first round Entry 1 will play Entry 2, entry 3 will play entry 4, and so 
 
 Here's an example with byes:
 
-	{
-	  "competition": {
-		"descriptor_type": "knockout_bracket",
-		"name": "bracket_with_byes",
-		"comment": "An animal show-down. Naturally lions and tigers get a bye to round 2, and penguins to round 3.",
-		"entry_list": [
-		  { "name": "penguin" },
-		  null,
-		  null,
-		  null,
-		  { "name": "goldfish" },
-		  { "name": "sparrow" },
-		  { "name": "cow" },
-		  { "name": "snake" },
-		  { "name": "lion" },
-		  null,
-		  { "name": "pigeon" },
-		  { "name": "dog" },
-		  { "name": "tiger" },
-		  null,
-		  { "name": "rat" },
-		  { "name": "cat" }
-		]
-	  }
-	}
+```json
+{
+  "competition": {
+	"descriptor_type": "knockout_bracket",
+	"name": "bracket_with_byes",
+	"comment": "An animal show-down. Naturally lions and tigers get a bye to round 2, and penguins to round 3.",
+	"entry_list": [
+	  { "name": "penguin" },
+	  null,
+	  null,
+	  null,
+	  { "name": "goldfish" },
+	  { "name": "sparrow" },
+	  { "name": "cow" },
+	  { "name": "snake" },
+	  { "name": "lion" },
+	  null,
+	  { "name": "pigeon" },
+	  { "name": "dog" },
+	  { "name": "tiger" },
+	  null,
+	  { "name": "rat" },
+	  { "name": "cat" }
+	]
+  }
+}
+```
 
 In this animal show-down lions and tigers get a bye to round 2, and penguins to round 3. The output looks like this:
 
-	{
-	  "competition": {
-		"name": "bracket_with_byes",
+```json
+{
+  "competition": {
+	"name": "bracket_with_byes",
+	"phases": [
+	  {
+		"name": "round_1",
 		"phases": [
 		  {
-			"name": "round_1",
-			"phases": [
-			  {
-				"entry_list": [
-				  { "name": "goldfish" },
-				  { "name": "sparrow" }
-				],
-				"name": "game_1"
-			  },
-			  {
-				"entry_list": [
-				  { "name": "cow" },
-				  { "name": "snake" }
-				],
-				"name": "game_2"
-			  },
-			  {
-				"entry_list": [
-				  { "name": "pigeon" },
-				  { "name": "dog" }
-				],
-				"name": "game_3"
-			  },
-			  {
-				"entry_list": [
-				  { "name": "rat" },
-				  { "name": "cat" }
-				],
-				"name": "game_4"
-			  }
-			]
+			"entry_list": [
+			  { "name": "goldfish" },
+			  { "name": "sparrow" }
+			],
+			"name": "game_1"
 		  },
 		  {
-			"name": "round_2",
-			"phases": [
-			  {
-				"entry_list": [ "@OUTER.@OUTER.round_1.game_1.$POS:1", "@OUTER.@OUTER.round_1.game_2.$POS:1" ],
-				"name": "game_1"
-			  },
-			  {
-				"entry_list": [
-				  { "name": "lion" },
-				  "@OUTER.@OUTER.round_1.game_3.$POS:1"
-				],
-				"name": "game_2"
-			  },
-			  {
-				"entry_list": [
-				  { "name": "tiger" },
-				  "@OUTER.@OUTER.round_1.game_4.$POS:1"
-				],
-				"name": "game_3"
-			  }
-			]
+			"entry_list": [
+			  { "name": "cow" },
+			  { "name": "snake" }
+			],
+			"name": "game_2"
 		  },
 		  {
-			"name": "round_3",
-			"phases": [
-			  {
-				"entry_list": [
-				  { "name": "penguin" },
-				  "@OUTER.@OUTER.round_2.game_1.$POS:1"
-				],
-				"name": "game_1"
-			  },
-			  {
-				"entry_list": [ "@OUTER.@OUTER.round_2.game_2.$POS:1", "@OUTER.@OUTER.round_2.game_3.$POS:1" ],
-				"name": "game_2"
-			  }
-			]
+			"entry_list": [
+			  { "name": "pigeon" },
+			  { "name": "dog" }
+			],
+			"name": "game_3"
 		  },
 		  {
-			"name": "round_4",
-			"phases": [
-			  {
-				"entry_list": [ "@OUTER.@OUTER.round_3.game_1.$POS:1", "@OUTER.@OUTER.round_3.game_2.$POS:1" ],
-				"name": "game_1"
-			  }
-			]
+			"entry_list": [
+			  { "name": "rat" },
+			  { "name": "cat" }
+			],
+			"name": "game_4"
+		  }
+		]
+	  },
+	  {
+		"name": "round_2",
+		"phases": [
+		  {
+			"entry_list": [ "@OUTER.@OUTER.round_1.game_1.$POS:1", "@OUTER.@OUTER.round_1.game_2.$POS:1" ],
+			"name": "game_1"
+		  },
+		  {
+			"entry_list": [
+			  { "name": "lion" },
+			  "@OUTER.@OUTER.round_1.game_3.$POS:1"
+			],
+			"name": "game_2"
+		  },
+		  {
+			"entry_list": [
+			  { "name": "tiger" },
+			  "@OUTER.@OUTER.round_1.game_4.$POS:1"
+			],
+			"name": "game_3"
+		  }
+		]
+	  },
+	  {
+		"name": "round_3",
+		"phases": [
+		  {
+			"entry_list": [
+			  { "name": "penguin" },
+			  "@OUTER.@OUTER.round_2.game_1.$POS:1"
+			],
+			"name": "game_1"
+		  },
+		  {
+			"entry_list": [ "@OUTER.@OUTER.round_2.game_2.$POS:1", "@OUTER.@OUTER.round_2.game_3.$POS:1" ],
+			"name": "game_2"
+		  }
+		]
+	  },
+	  {
+		"name": "round_4",
+		"phases": [
+		  {
+			"entry_list": [ "@OUTER.@OUTER.round_3.game_1.$POS:1", "@OUTER.@OUTER.round_3.game_2.$POS:1" ],
+			"name": "game_1"
 		  }
 		]
 	  }
-	}
+	]
+  }
+}
+```
 
 ## Events
 
