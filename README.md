@@ -103,11 +103,11 @@ These are things I don't plan to work on, but will accept pull requests for.
 
 ## Contributing
 
-The easiest way to contribute is to click on the "Issues" tab, and either comment on an issue you see that is similar or start your own.
+The easiest way to contribute is to click on the ["Issues" tab](https://github.com/arkadye/tournament_builder/issues), and either comment on an issue you see that is similar or start your own.
 
 Use these for bug reports, feature requests, no matter how major or minor they seem.
 
-If you want to contribute by writing code make a fork, and do your thing and make a pull request. If you would like to contribute but are not sure what to do there is a list of ideas above and there may be some things in "Issues" which you think you could solve.
+If you want to contribute by writing code [make a fork](https://github.com/arkadye/tournament_builder/fork), and do your thing and make a pull request. If you would like to contribute but are not sure what to do there is a list of ideas above and there may be some things in "Issues" which you think you could solve.
 
 ## Attribution
 
