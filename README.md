@@ -434,7 +434,7 @@ To set these tags use the `"set_finishing_order"` event.
 
 Unlike other special tags, these tags will appear on the output.
 
-This tag is unique. It cannot appear as part of a chain. So `example.$POS:1-.ops` is an error, as is `$POS:1.example`.
+This tag is unique. It cannot appear as part of a chain. So `example.$POS:1.oops` is an error, as is `$POS:1.example`.
 
 ### Special Tag `$ENTRY`
 
