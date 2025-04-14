@@ -1,13 +1,15 @@
-# GLOBAL CMAKE
-
 cmake_minimum_required(VERSION 3.31)
 
-set(PROJECTNAME tournament_builder)
-project(${PROJECTNAME})
+project(tournament_builder)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_subdirectory(static_library)
+set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+add_subdirectory(cpplib)
+add_subdirectory(clib)
 add_subdirectory(cli)
 add_subdirectory(cli_dbg)
+add_subdirectory(mono)

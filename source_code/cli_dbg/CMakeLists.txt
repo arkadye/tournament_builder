@@ -1,29 +1,41 @@
-# This invokes the CLI versions, but is entirely controled from code.
-# This makes running in a debugger much easier, becuase there's no need to faff
-# around with settings. Just put them all in there.
-
 cmake_minimum_required(VERSION 3.31)
 
-set(PROJECTNAME tournament_builder_dbg)
-project(${PROJECTNAME})
+set(DBG_NAME tournament_builder_dbg)
+project(${DBG_NAME})
 
-include_directories("../include" "../thirdparty/cxxopts/cxxopts/include"  "../thirdparty/nlohmann/json/single_include")
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(MAINFILE "../src/cli_dbg/dbg_main.cpp")
-set(INVOKE_HEADER "../include/cli/invoke_cli.h")
-set(INVOKE_SOURCE "../src/cli/invoke_cli.cpp")
+set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_executable(${PROJECTNAME} ${MAINFILE} $<TARGET_OBJECTS:tournament_builder_static_lib>)
+include_directories("include" "../cli/include" "thirdparty/nlohmann/json/single_include")
 
-source_group("src" ${MAINFILE})
-source_group("src/external" ${INVOKE_HEADER} ${INVOKE_SOURCE})
+set(DBG_MAINFILE "src/dbg_main.cpp")
 
-file(GLOB EXAMPLE_INPUT_FILES "../../examples/in/*.json")
-file(GLOB EXAMPLE_OUTPUT_FILES "../../examples/out/*.json")
+add_executable(${DBG_NAME} ${DBG_MAINFILE} $<TARGET_OBJECTS:${CPPLIB}> $<TARGET_OBJECTS:${CLILIB}>)
+
+source_group("src" ${DBG_MAINFILE})
+
+function(add_example_file filename)
+	set(BASE_PATH "../../examples")
+	set(INPUT_PATH "${BASE_PATH}/in/${filename}")
+	set(OUTPUT_PATH "${BASE_PATH}/out/${filename}")
+	set(EXAMPLE_INPUT_FILES ${EXAMPLE_INPUT_FILES} ${INPUT_PATH} PARENT_SCOPE)
+	set(EXAMPLE_OUTPUT_FILES ${EXAMPLE_OUTPUT_FILES} ${OUTPUT_PATH} PARENT_SCOPE)
+endfunction()
+
+add_example_file("add_tags.json")
+add_example_file("complex_elim.json")
+add_example_file("round_of_matches.json")
+add_example_file("round_robin.json")
+add_example_file("set_finishing_positions.json")
+add_example_file("simple_elim.json")
+add_example_file("test_references.json")
 
 set(EXAMPLE_FILES ${EXAMPLE_INPUT_FILES} ${EXAMPLE_OUTPUT_FILES})
 
 source_group("examples/inputs" FILES ${EXAMPLE_INPUT_FILES})
 source_group("examples/outputs" FILES ${EXAMPLE_OUTPUT_FILES})
 
-target_sources(${PROJECTNAME} PRIVATE ${MAINFILE} ${INVOKE_HEADER} ${INVOKE_SOURCE} ${EXAMPLE_FILES})
+target_sources(${DBG_NAME} PRIVATE ${MAINFILE} ${INVOKE_SOURCE} ${EXAMPLE_FILES})
