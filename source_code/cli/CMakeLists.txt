@@ -1,23 +1,28 @@
-# CLI CMAKE
 cmake_minimum_required(VERSION 3.31)
 
-set(PROJECTNAME tournament_builder_cli)
-set(LIBNAME tournament_builder_cli_lib)
-project(${PROJECTNAME})
+set(CLIEXE tournament_builder_cli)
+project(${CLIEXE})
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-include_directories("../include" "../thirdparty/cxxopts/cxxopts/include" "../thirdparty/nlohmann/json/single_include")
+set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(MAIN_FILE "../src/cli/cli_main.cpp")
-set(INVOKE_HEADER "../include/cli/invoke_cli.h")
-set(INVOKE_SOURCE "../src/cli/invoke_cli.cpp")
+#TODO: Remove dependency on nlohmann/json
+include_directories("include" "../cpplib/include" "../thirdparty/nlohmann/json/single_include" "../thirdparty/cxxopts/cxxopts/include")
 
-#$<TARGET_OBJECTS:${LIBNAME}>
-add_executable(${PROJECTNAME} ${MAIN_FILE} $<TARGET_OBJECTS:tournament_builder_static_lib> ${INVOKE_SOURCE})
+set(CLI_MAINFILE "src/cli_main.cpp")
+set(INVOKE_HEADER "include/invoke_cli.h")
+set(INVOKE_SOURCE "src/invoke_cli.cpp")
 
-source_group("src" FILES ${MAIN_FILE} ${INVOKE_HEADER} ${INVOKE_SOURCE})
+set(CLILIB tournament_builder_cli_lib)
+add_library(${CLILIB} STATIC ${INVOKE_SOURCE})
+add_executable(${CLIEXE} ${CLI_MAINFILE} $<TARGET_OBJECTS:${CPPLIB}> $<TARGET_OBJECTS:${CLILIB}>)
 
-target_sources(${PROJECTNAME} PUBLIC ${INVOKE_HEADER} ${INVOKE_SOURCE})
-target_sources(${PROJECTNAME} PRIVATE ${MAIN_FILE})
+source_group("src" FILES ${CLI_MAINFILE} ${INVOKE_HEADER} ${INVOKE_SOURCE})
+
+target_sources(${CLIEXE} PUBLIC ${INVOKE_HEADER})
+target_sources(${CLIEXE} PRIVATE ${CLI_MAINFILE})
+
+set(CLILIB tournament_builder_cli_lib PARENT_SCOPE)
