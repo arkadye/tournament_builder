@@ -1,4 +1,4 @@
-#include "cli/invoke_cli.h"
+#include "invoke_cli.h"
 
 int main(int argc, char** argv)
 {

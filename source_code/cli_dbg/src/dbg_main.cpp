@@ -1,4 +1,4 @@
-#include "cli/invoke_cli.h"
+#include "invoke_cli.h"
 
 #include <filesystem>
 #include <vector>
@@ -15,10 +15,22 @@ int main(int argc, char** argv)
 {
 	using tournament_builder::tournament_builder_internal::invoke_cli;
 
-	std::filesystem::path target{ "../../examples" };
+	std::filesystem::path target{ "../examples" };
 	if (argc > 1)
 	{
 		target = argv[1];
+	}
+
+	if (!std::filesystem::exists(target))
+	{
+		std::cerr << std::format("Cannot run dbg. Path {} does not exist.\n", std::filesystem::absolute(target).generic_string());
+		return 1;
+	}
+
+	if (!std::filesystem::is_directory(target))
+	{
+		std::cerr << std::format("Cannot run dbg. {} is not a path.\n", std::filesystem::absolute(target).generic_string());
+		return 1;
 	}
 
 	constexpr int num_args = 5;
@@ -40,9 +52,25 @@ int main(int argc, char** argv)
 	args[1] = input_arg.data();
 	args[3] = output_arg.data();
 
-	std::filesystem::create_directories(target / "out");
+	const std::filesystem::path input_directory = target / "in";
 
-	for (std::filesystem::path input_file : std::filesystem::directory_iterator{ target / "in" })
+	if (!std::filesystem::exists(input_directory))
+	{
+		std::cerr << std::format("Cannot run dbg. Path {} does not exist.\n", std::filesystem::absolute(input_directory).generic_string());
+		return 1;
+	}
+
+	if (!std::filesystem::is_directory(input_directory))
+	{
+		std::cerr << std::format("Cannot run dbg. {} is not a path.\n", std::filesystem::absolute(input_directory).generic_string());
+		return 1;
+	}
+
+	const std::filesystem::path output_directory = target / "out";
+	std::filesystem::create_directories(output_directory);
+
+
+	for (std::filesystem::path input_file : std::filesystem::directory_iterator{ input_directory })
 	{
 		std::filesystem::path filename = input_file.filename();
 		{
