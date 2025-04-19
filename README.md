@@ -26,6 +26,16 @@ The C++ interface is currently not documented here, although the headers are hop
 
 There is also a `tournament_builder_cli_dbg` project which automatically finds the files in the example folder and runs targetting them. This is convenient for things like Visual Studio. If you wish to work from Visual Studio and its like, I suggest making this your default startup project.
 
+### Unity Engine integration
+
+There are two DLLs required: `tournament_maker_clib.dll` and `tournament_maker_mono.dll`.
+
+In the "Assets" panel in Unity, right-click and select "Import New Asset..." Select both those DLLs and import them.
+
+The C# interface is now available in Unity under the `TournamentBuilder.TournamentBuilder` namespace.
+
+More detailed documentation to come.
+
 ### As a command line tool.
 
 The command line tool will be made available in the Releases section. It can be invoked with the command `tourmanet_builder_cli --input [input file] --output [output file]`. Leave `--input` blank to read JSON from stdin (i.e. you can pipe it in) and leave `--output` blank to write the results to stdout (or pipe it out). More in-depth documentation to come.
