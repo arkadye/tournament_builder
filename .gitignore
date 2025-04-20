@@ -50,3 +50,4 @@ cpp/x64
 **/Release/*
 **/MinSizeRel/*
 **/RelWithDebInfo/*
+*/install_manifest.txt
