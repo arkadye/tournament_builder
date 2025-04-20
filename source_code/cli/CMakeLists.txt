@@ -26,3 +26,10 @@ target_sources(${CLIEXE} PUBLIC ${INVOKE_HEADER})
 target_sources(${CLIEXE} PRIVATE ${CLI_MAINFILE})
 
 set(CLILIB tournament_builder_cli_lib PARENT_SCOPE)
+
+# Install instructions below.
+
+set(INSTALL_TARGET CLI)
+install(TARGETS ${CLIEXE} DESTINATION ${INSTALL_TARGET})
+file(GLOB PACKAGE_EXTRAS package_extras/*)
+install(FILES ${PACKAGE_EXTRAS} DESTINATION ${INSTALL_TARGET})
