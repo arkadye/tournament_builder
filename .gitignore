@@ -32,6 +32,7 @@
 .vs/*
 */.vs
 */.vs/*
+*.dtbcache.json
 *.vcxproj
 *.vcxproj.*
 *.config
