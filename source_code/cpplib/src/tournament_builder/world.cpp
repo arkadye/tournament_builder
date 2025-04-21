@@ -62,4 +62,28 @@ namespace tournament_builder
             events.clear();
         }
     }
+
+    Name World::get_reference_key() const
+    {
+        // This should never be called.
+        assert(false && "We should never be asking the world for its reference key");
+        return Name{"@ROOT"};
+    }
+
+    std::shared_ptr<IReferencable> World::copy_ref(const ReferenceCopyOptions&) const
+    {
+        assert(false && "We should enver be asking the world to copy itself via a reference.");
+        return std::shared_ptr<IReferencable>{};
+    }
+
+    std::vector<IReferencable*> World::get_next_locations()
+    {
+        return { &competition };
+    }
+
+    bool World::matches_token(const Token&) const
+    {
+        assert(false && "We should never be asking the world if it matches with a token.");
+        return false;
+    }
 }

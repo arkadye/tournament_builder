@@ -36,11 +36,11 @@ namespace tournament_builder::event
 
         for (ReferenceResult<Competitor>& competitor_ref : targets)
         {
-            if (competitor_ref.result != nullptr)
+            if (competitor_ref.get() != nullptr)
             {
                 for (const Tag& tag : tags)
                 {
-                    competitor_ref.result->add_tag(tag);
+                    competitor_ref.get()->add_tag(tag);
                 }
             }
         }

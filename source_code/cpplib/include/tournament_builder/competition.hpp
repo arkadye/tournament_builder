@@ -3,6 +3,7 @@
 #include "tournament_builder/name.hpp"
 #include "tournament_builder/reference.hpp"
 #include "tournament_builder/competitor.hpp"
+#include "tournament_builder/ireferencable.hpp"
 
 #include "nlohmann/json_fwd.hpp"
 
@@ -14,9 +15,10 @@ namespace tournament_builder
 	class World;
 
 	// This can be a single match/race or a tournament_builder phase.
-	class Competition : public NamedElement
+	class Competition : public NamedElement , public IReferencable
 	{
 	public:
+		using NamedElement::NamedElement;
 		std::vector<Reference<Competitor>> entry_list;
 		std::vector<Competition> phases;
 
@@ -28,7 +30,18 @@ namespace tournament_builder
 
 		static Competition parse(const nlohmann::json& input);
 
-		Competition copy_ref() const { return *this; }
+		// IReferencable
+		// This should return the reference key for this element. Normally the same as get_name().
+		Name get_reference_key() const override { return name; }
+
+		// Copy this as through a reference.
+		std::shared_ptr<IReferencable> copy_ref(const ReferenceCopyOptions&) const override;
+
+		// Get a list of all the possible inner targets for use when parsing a reference.
+		std::vector<IReferencable*> get_next_locations() override;
+
+		// Returns 'true' if this item matches with a particular token (e.g. same name, or a tag match).
+		bool matches_token(const Token&) const override;
 
 	private:
 		// Returns true if it makes any changes

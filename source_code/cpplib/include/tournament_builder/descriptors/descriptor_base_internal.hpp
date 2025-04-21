@@ -36,14 +36,17 @@ namespace tournament_builder::descriptor::internal_descriptor
 		void verify_input(const nlohmann::json& input) const;
 
 		// This is a good place for common functions for manipluating these things.
-		template <Referencable T>
+		template <typename T>
 		static void add_outer_to_references(std::vector<Reference<T>>& list)
 		{
 			for (Reference<T>& ref : list)
 			{
 				if (const SoftReference* sf = std::get_if<SoftReference>(&ref.data()))
 				{
-					ref = Reference<T>{ std::format("@OUTER.{}", sf->to_string()) };
+					std::string new_ref_str = std::format("@OUTER.{}", sf->to_string());
+					SoftReference new_sf{ new_ref_str };
+					Reference<T> new_reference{ std::move(new_sf)};
+					ref = std::move(new_reference);
 				}
 			}
 		}

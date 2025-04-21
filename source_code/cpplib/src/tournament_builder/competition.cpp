@@ -17,6 +17,11 @@ namespace tournament_builder
 		return contents_result && std::ranges::all_of(entry_list, &Reference<Competitor>::is_resolved);
 	}
 
+	bool Competition::matches_token(const Token& token) const
+	{
+		return name == token;
+	}
+
 	bool Competition::resolve_all_references_impl(World& context, std::vector<Name>& location)
 	{
 		// In general, working outside-in will work better.
@@ -81,6 +86,28 @@ namespace tournament_builder
 		{
 			result.entry_list = Competitor::parse_entry_list(input["entry_list"]);
 		}
+		return result;
+	}
+
+	std::shared_ptr<IReferencable> Competition::copy_ref(const ReferenceCopyOptions&) const
+	{
+		Competition* copy = new Competition{ *this };
+		IReferencable* icopy = copy;
+		return std::shared_ptr<IReferencable>(icopy);
+	}
+
+	std::vector<IReferencable*> Competition::get_next_locations()
+	{
+		std::vector<IReferencable*> result;
+		result.reserve(entry_list.size() + phases.size());
+
+		std::ranges::transform(entry_list | std::views::filter(&Reference<Competitor>::is_resolved),
+			std::back_inserter(result),
+			[](Reference<Competitor>& ref_comp) -> IReferencable*
+			{
+				return &ref_comp.get();
+			});
+		std::ranges::transform(phases, std::back_inserter(result), [](Competition& comp) {return &comp; });
 		return result;
 	}
 }

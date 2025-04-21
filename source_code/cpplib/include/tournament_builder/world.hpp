@@ -14,7 +14,7 @@
 
 namespace tournament_builder
 {
-	class World
+	class World : public IReferencable
 	{
 	public:
 		World(Competition comp) : competition{ std::move(comp) } {}
@@ -27,11 +27,17 @@ namespace tournament_builder
 		void resolve_all_references();
 		void execute_all_events();
 
-		template <Referencable T>
+		template <typename T>
 		std::vector<ReferenceResult<T>> dereference(const SoftReference& soft_reference);
+
+		// IReferencable
+		Name get_reference_key() const final;
+		std::shared_ptr<IReferencable> copy_ref(const ReferenceCopyOptions&) const final;
+		std::vector<IReferencable*> get_next_locations() final;
+		bool matches_token(const Token&) const final;
 	};
 
-	template <Referencable T>
+	template <typename T>
 	std::vector<ReferenceResult<T>> World::dereference(const SoftReference& soft_reference)
 	{
 		Reference<T> ref{ soft_reference };

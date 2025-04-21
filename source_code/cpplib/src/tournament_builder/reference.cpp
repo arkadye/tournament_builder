@@ -33,52 +33,15 @@ namespace tournament_builder
 		using TokenVector = std::vector<Token>;
 		using TokenIterator = TokenVector::const_iterator;
 
-		using GenericLocation = std::variant<World*, Competition*, Competitor*>;
-
-		std::vector<GenericLocation> get_next_locations(const GenericLocation& gl, Token token)
+		std::vector<IReferencable*> get_next_locations(IReferencable* target, const Token& token)
 		{
-			struct NextGetter
-			{
-				Token token;
-				std::vector<GenericLocation> operator()(World* world) const
+			std::vector<IReferencable*> next_locations = target->get_next_locations();
+			auto remove_result = std::ranges::remove_if(next_locations, [&token](const IReferencable* referencable)
 				{
-					assert(world);
-					if (world->competition.name == token)
-					{
-						return { &world->competition };
-					}
-					return {};
-				}
-				std::vector<GenericLocation> operator()(Competition* comp) const
-				{
-					assert(comp);
-					std::vector<GenericLocation> result;
-					for(Competition& competition : comp->phases)
-					{
-						if (competition.name == token)
-						{
-							result.emplace_back(&competition);
-						}
-					}
-					for (const Reference<Competitor>& competitor_ref : comp->entry_list)
-					{
-						if (competitor_ref.is_resolved())
-						{
-							Competitor& competitor = competitor_ref.get();
-							if (competitor.matches_token(token))
-							{
-								result.emplace_back(&competitor);
-							}
-						}
-					}
-					return result;
-				}
-				std::vector<GenericLocation> operator()(Competitor* comp) const
-				{
-					return {};
-				}
-			};
-			return std::visit(NextGetter{ token }, gl);
+					return !referencable->matches_token(token);
+				});
+			next_locations.erase(begin(remove_result),end(remove_result));
+			return next_locations;
 		}
 
 		enum class SpecialRefType : std::int8_t
@@ -124,29 +87,26 @@ namespace tournament_builder
 			return { 0, SpecialRefType::here };
 		}
 
-		template <Referencable T>
-		std::vector<ReferenceResult<T>> dereference_to(const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<GenericLocation>& current_working_location);
+		std::vector<ReferenceResultBase> dereference_to(const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<IReferencable*>& current_working_location);
 
 		namespace tag_processing
 		{
-			template <Referencable T>
-			std::vector<ReferenceResult<T>> dereference_normal_tag(Token target_token, const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<GenericLocation>& current_working_location)
+			std::vector<ReferenceResultBase> dereference_normal_tag(Token target_token, const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<IReferencable*>& current_working_location)
 			{
-				const GenericLocation location = current_working_location.back();
-				const std::vector<GenericLocation> next_locations = get_next_locations(location, target_token);
-				std::vector<ReferenceResult<T>> result;
-				for (const GenericLocation& nl : next_locations)
+				IReferencable* location = current_working_location.back();
+				const std::vector<IReferencable*> next_locations = get_next_locations(location, target_token);
+				std::vector<ReferenceResultBase> result;
+				for (IReferencable* nl : next_locations)
 				{
 					current_working_location.emplace_back(nl);
-					std::vector<ReferenceResult<T>> fragment = dereference_to<T>(context, start, current + 1, last, current_working_location);
+					std::vector<ReferenceResultBase> fragment = dereference_to(context, start, current + 1, last, current_working_location);
 					current_working_location.pop_back();
 					std::ranges::copy(fragment, std::back_inserter(result));
 				}
 				return result;
 			}
 
-			template <Referencable T>
-			std::vector<ReferenceResult<T>> dereference_outer_tag(Token current_token, const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<GenericLocation>& current_working_location)
+			std::vector<ReferenceResultBase> dereference_outer_tag(Token current_token, const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<IReferencable*>& current_working_location)
 			{
 				auto throw_error = [current_token, start, current, &context](std::string_view explanation)
 					{
@@ -184,11 +144,10 @@ namespace tournament_builder
 					}
 					current_working_location.pop_back();
 				}
-				return dereference_to<T>(context, start, current + 1, last, current_working_location);
+				return dereference_to(context, start, current + 1, last, current_working_location);
 			}
 
-			template <Referencable T> 
-			std::vector<ReferenceResult<T>> dereference_any_tag(int64_t min_levels, int64_t max_levels, const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<GenericLocation>& current_working_location)
+			std::vector<ReferenceResultBase> dereference_any_tag(int64_t min_levels, int64_t max_levels, const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<IReferencable*>& current_working_location)
 			{
 				assert(min_levels <= max_levels);
 				assert(max_levels >= 0);
@@ -196,78 +155,35 @@ namespace tournament_builder
 				// If we ran out of any tags, resume normal processing
 				if (max_levels == 0)
 				{
-					return dereference_to<T>(context, start, current + 1, last, current_working_location);
+					return dereference_to(context, start, current + 1, last, current_working_location);
 				}
 
-				std::vector<ReferenceResult<T>> result;
+				std::vector<ReferenceResultBase> result;
 
+				// If we've reached the min levels, try a regular dereference.
 				if (min_levels <= 0)
 				{
-					result = dereference_to<T>(context, start, current + 1, last, current_working_location);
+					result = dereference_to(context, start, current + 1, last, current_working_location);
 				}
 
-				const GenericLocation location = current_working_location.back();
-				
-				struct Impl
 				{
-					int64_t min_levels;
-					int64_t max_levels;
-					const SoftReference& context;
-					TokenIterator start;
-					TokenIterator current;
-					TokenIterator last;
-					std::vector<GenericLocation>& cwl;
+					IReferencable* location = current_working_location.back();
+					std::vector<ReferenceResultBase> sub_result;
+					for (IReferencable* next_location : location->get_next_locations())
+					{
+						current_working_location.push_back(next_location);
+						sub_result = dereference_any_tag(min_levels - 1, max_levels - 1, context, start, current, last, current_working_location);
+						current_working_location.pop_back();
 
-					std::vector<ReferenceResult<T>> recurse() const
-					{
-						return dereference_any_tag<T>(std::max<int64_t>(min_levels - 1, 0), max_levels - 1, context, start, current, last, cwl);
+						std::ranges::copy(sub_result, std::back_inserter(result));
+						sub_result.clear();
 					}
-					std::vector<ReferenceResult<T>> operator()(World* world) const
-					{
-						assert(world);
-						cwl.push_back(&world->competition);
-						auto result = recurse();
-						cwl.pop_back();
-						return result;
-					}
-					std::vector<ReferenceResult<T>> operator()(Competition* competition) const
-					{
-						assert(competition);
-						std::vector<ReferenceResult<T>> result;
-						for (Competition& phase : competition->phases)
-						{
-							cwl.push_back(&phase);
-							auto sub_result = recurse();
-							std::move(begin(sub_result), end(sub_result), std::back_inserter(result));
-							cwl.pop_back();
-						}
+				}
 
-						for (Reference<Competitor>& entry_ref : competition->entry_list)
-						{
-							if (!entry_ref.is_resolved()) continue;
-							Competitor& entry = entry_ref.get();
-							cwl.push_back(&entry);
-							auto sub_result = recurse();
-							std::move(begin(sub_result), end(sub_result), std::back_inserter(result));
-							cwl.pop_back();
-						}
-
-						return result;
-					}
-					std::vector<ReferenceResult<T>> operator()(Competitor* competitor) const
-					{
-						assert(competitor);
-						// There's nothing inside a competitor, so stop here.
-						return {};
-					}
-				};
-				auto extras = std::visit(Impl{ min_levels, max_levels, context, start, current, last , current_working_location }, location);
-				std::move(begin(extras), end(extras), std::back_inserter(result));
 				return result;
 			}
 
-			template <Referencable T>
-			std::vector<ReferenceResult<T>> dereference_any_tag(SpecialRefType any_or_glob, Token current_token, const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<GenericLocation>& current_working_location)
+			std::vector<ReferenceResultBase> dereference_any_tag(SpecialRefType any_or_glob, Token current_token, const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<IReferencable*>& current_working_location)
 			{
 				auto throw_error = [current_token, start, current, &context](std::string_view explanation)
 					{
@@ -333,12 +249,11 @@ namespace tournament_builder
 					}
 				}
 
-				return dereference_any_tag<T>(min_levels, max_levels, context, start, current, last, current_working_location);
+				return dereference_any_tag(min_levels, max_levels, context, start, current, last, current_working_location);
 			}
 		}
 
-		template <Referencable T>
-		std::vector<ReferenceResult<T>> dereference_to(const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<GenericLocation>& current_working_location)
+		std::vector<ReferenceResultBase> dereference_to(const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<IReferencable*>& current_working_location)
 		{
 			if (current == last)
 			{
@@ -348,45 +263,15 @@ namespace tournament_builder
 					return {};
 				}
 
-				// Check back of current_working_location is the correct type
-				GenericLocation& result_loc = current_working_location.back();
-				T** result_ptr2 = std::get_if<T*>(&result_loc);
-				if (result_ptr2 == nullptr)
-				{
-					return {};
-				}
-
-				T* result_ptr = *result_ptr2;
-				assert(result_ptr);
-
-				ReferenceResult<T> result;
-				result.result = result_ptr;
-				result.location.reserve(current_working_location.size());
-
-				struct LocMaker
-				{
-					std::vector<Name>& out;
-					void operator()(World* w) const noexcept { assert(w); }
-					void operator()(Competition* c) const { assert(c); out.push_back(c->name); }
-					void operator()(Competitor* c) const
+				const ReferenceResultBase result = [&current_working_location]()
 					{
-						assert(c);
-						const auto& internal = c->data();
-						if (const RealCompetitor* rc = std::get_if<RealCompetitor>(&internal))
-						{
-							out.push_back(rc->name);
-						}
-					}
-				};
-
-				LocMaker lm{ result.location };
-
-				for (const GenericLocation& loc_elem : current_working_location)
-				{
-					std::visit(lm, loc_elem);
-				}
-
-				result.location.pop_back(); // Last result is me, which we don't want.
+						IReferencable* r = current_working_location.back();
+						Location l;
+						const std::size_t location_size = current_working_location.size() - 2; // Drop the current locatio and the world at the beginning.
+						l.reserve(location_size);
+						std::ranges::transform(current_working_location | std::views::drop(1) | std::views::take(location_size), std::back_inserter(l), [](IReferencable* ref) {return ref->get_reference_key(); });
+						return ReferenceResultBase{ r, std::move(l) };
+					}();
 
 				return { result };
 			}
@@ -397,12 +282,12 @@ namespace tournament_builder
 			switch (tag_type)
 			{
 			case SpecialRefType::normal:
-				return tag_processing::dereference_normal_tag<T>(current_token, context, start, current, last, current_working_location);
+				return tag_processing::dereference_normal_tag(current_token, context, start, current, last, current_working_location);
 			case SpecialRefType::outer_prefix:
-				return tag_processing::dereference_outer_tag<T>(current_token, context, start, current, last, current_working_location);
+				return tag_processing::dereference_outer_tag(current_token, context, start, current, last, current_working_location);
 			case SpecialRefType::any_prefix:
 			case SpecialRefType::glob_prefix:
-				return tag_processing::dereference_any_tag<T>(tag_type, current_token, context, start, current, last, current_working_location);
+				return tag_processing::dereference_any_tag(tag_type, current_token, context, start, current, last, current_working_location);
 			case SpecialRefType::here:
 			case SpecialRefType::root:
 			case SpecialRefType::invalid:
@@ -413,12 +298,11 @@ namespace tournament_builder
 			return {};
 		}
 
-		template <Referencable T>
-		VectorOfReferenceResultsVariant dereference_to(const SoftReference& reference, World& context, const Location& location, const TokenVector& elements)
+		std::vector<ReferenceResultBase> dereference_to(const SoftReference& reference, World& context, const Location& location, const TokenVector& elements)
 		{
 			auto start_it = begin(elements);
 
-			std::vector<GenericLocation> working_location;
+			std::vector<IReferencable*> working_location;
 			working_location.reserve(1u + elements.size() + location.size());
 			working_location.emplace_back(&context);
 			if (!location.empty())
@@ -431,7 +315,7 @@ namespace tournament_builder
 					// Use location to initialize working location.
 					for (Name location_fragment : location)
 					{
-						std::vector<GenericLocation> next = get_next_locations(working_location.back(), location_fragment);
+						std::vector<IReferencable*> next = get_next_locations(working_location.back(), location_fragment);
 						assert(next.size() == 1u);
 						working_location.emplace_back(next.front());
 					}
@@ -445,23 +329,30 @@ namespace tournament_builder
 				}
 			}
 
-			return dereference_to<T>(reference, begin(elements), start_it, end(elements), working_location);
+			return dereference_to(reference, begin(elements), start_it, end(elements), working_location);
 		}
 
-		struct DereferenceToVisitor
+		std::string ReferenceResultBase::to_string() const
 		{
-			const SoftReference& ref;
-			World& con;
-			const Location& loc;
-			const TokenVector& elem;
-
-			template <Referencable T>
-			VectorOfReferenceResultsVariant operator()(const T*)
+			std::ostringstream oss;
+			oss << "[";
+			bool first_iteration = true;
+			for (const Name& n : location)
 			{
-				return dereference_to<T>(ref, con, loc, elem);
+				if (first_iteration)
+				{
+					first_iteration = false;
+				}
+				else
+				{
+					oss << ".";
+				}
+				oss << n.to_string();
 			}
-		};
-	}
+			oss << ']' << (result != nullptr ? result->get_reference_key().to_string() : std::string{"!NULL!"});
+			return oss.str();
+		}
+}
 
 	SoftReference::SoftReference(std::string_view init)
 	{
@@ -496,10 +387,9 @@ namespace tournament_builder
 		return result.value();
 	}
 
-	std::variant<std::vector<ReferenceResult<Competition>>, std::vector<ReferenceResult<Competitor>>> SoftReference::dereference_to(World& context, const Location& location, internal_reference::ReferencableTypePtrsVariant impl_chooser) const
+	std::vector<internal_reference::ReferenceResultBase> SoftReference::dereference_to_impl(World& context, const Location& location) const
 	{
-		internal_reference::DereferenceToVisitor impl{ *this, context, location, m_elements };
-		return std::visit(impl, impl_chooser);
+		return internal_reference::dereference_to(*this, context, location, m_elements);
 	}
 
 	std::optional<SoftReference> SoftReference::try_parse(const nlohmann::json& input)
@@ -518,6 +408,12 @@ namespace tournament_builder
 	void SoftReference::throw_invalid_dereference() const
 	{
 		throw exception::InvalidDereference{ *this };
+	}
+
+	void internal_reference::ReferenceBase::throw_invalid_dereference() const
+	{
+		assert(is_reference());
+		std::get<SoftReference>(m_data).throw_invalid_dereference();
 	}
 
 	namespace exception

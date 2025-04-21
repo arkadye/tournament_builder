@@ -1,5 +1,6 @@
 #pragma once
 
+#include "tournament_builder/ireferencable.hpp"
 #include "tournament_builder/token.hpp"
 #include "tournament_builder/name.hpp"
 
@@ -16,78 +17,67 @@
 namespace tournament_builder
 {
 	class World;
-	class Competitor;
-	class Competition;
-
-	// Because this is intended as library code I do not want to have to pull headers in throug this one unless absolutely necessary.
-	// So I do some funky things with variants and meta-programming to pass highly constrained templates into the implementation file
-	// (where I can #include as much as I need) and put the bulk of the code in there.
-
+	using Location = std::vector<Name>;
 	namespace internal_reference
 	{
-		// Credit to https://stackoverflow.com/posts/45892305/revisions for this bit.
-		template<typename T, typename VARIANT_T>
-		struct IsVariantMember;
+		class ReferenceBase;
 
-		template<typename T, typename... ALL_T>
-		struct IsVariantMember<T, std::variant<ALL_T...>>
-			: public std::disjunction<std::is_same<T, ALL_T>...> {
-		};
-
-		template <typename VARIANT_T>
-		struct VariantOfVectors;
-
-		template <typename... ALL_T>
-		struct VariantOfVectors <std::variant<ALL_T...>>
+		class ReferenceResultBase
 		{
-			using Type = std::variant<std::vector<ALL_T>...>;
+			Location location;
+		protected:
+			IReferencable* result = nullptr;
+		public:
+			ReferenceResultBase() = default;
+			ReferenceResultBase(IReferencable* a_result, Location a_location)
+				: location(std::move(a_location)), result{ a_result }
+			{
+			}
+
+			const Location& get_location() const { return location; }
+			Location& get_location() { return location; }
+
+			operator bool() const noexcept { return result != nullptr; }
+
+			auto operator<=>(const ReferenceResultBase& other) const noexcept
+			{
+				return this->result <=> other.result;
+			}
+			bool operator==(const ReferenceResultBase& other) const noexcept
+			{
+				return this->result == other.result;
+			}
+			std::string to_string() const;
 		};
-
-		template <typename VARIANT_T>
-		using VariantOfVectorsType = VariantOfVectors<VARIANT_T>::Type;
-
-		using ReferencableTypePtrsVariant = std::variant<Competitor*, Competition*>;
-
-		template <typename T>
-		struct IsReferencableType
-			: public IsVariantMember<T*, ReferencableTypePtrsVariant> {
-		};
-
-		template <typename T>
-		constexpr bool IsReferencableType_Value = IsReferencableType<T>::value;
 	}
 
 	template <typename T>
-	concept Referencable = requires { internal_reference::IsReferencableType_Value<T>; };
-
-	using Location = std::vector<Name>;
-
-	template <Referencable T>
-	class ReferenceResult
+	class ReferenceResult : public internal_reference::ReferenceResultBase
 	{
+		static_assert(std::is_base_of_v<IReferencable, T>);
 	public:
-		T* result = nullptr;
-		Location location;
-		operator bool() const noexcept { return result != nullptr; }
-		auto operator<=>(const ReferenceResult& other) const noexcept
+		using internal_reference::ReferenceResultBase::ReferenceResultBase;
+		ReferenceResult(const ReferenceResultBase& other) : ReferenceResultBase{ other } {}
+		T* get() const
 		{
-			return this->result <=> other.result;
+			if (result == nullptr) return nullptr;
+			return result->get_as<T>();
 		}
-		bool operator==(const ReferenceResult& other) const noexcept
-		{
-			return this->result == other.result;
-		}
-		std::string to_string() const;
-	};
 
-	namespace internal_reference
-	{
-		using VectorOfReferenceResultsVariant = std::variant<std::vector<ReferenceResult<Competition>>, std::vector<ReferenceResult<Competitor>>>;
-	}
+		bool is_a() const
+		{
+			if (result != nullptr)
+			{
+				return result->is_a<T>();
+			}
+			return false;
+		}
+	};
 
 	class SoftReference
 	{
-		template <Referencable T> friend class Reference;
+		template <typename T> friend class Reference;
+		friend class internal_reference::ReferenceBase;
 		std::vector<Token> m_elements;
 	public:
 		SoftReference() : SoftReference{ std::string_view{""} } {}
@@ -99,57 +89,180 @@ namespace tournament_builder
 		std::string to_string() const;
 		static SoftReference parse(const nlohmann::json& input);
 	private:
-		// This should only be accessed via a Reference<T>
-		template <Referencable T> std::vector<ReferenceResult<T>> dereference_to(World& context, const Location& location) const;
-		internal_reference::VectorOfReferenceResultsVariant dereference_to(World& context, const Location& location, internal_reference::ReferencableTypePtrsVariant impl_chooser) const;
+		// This should only be accessed via a Reference
+		template <typename T>
+		std::vector<ReferenceResult<T>> dereference_to(World& context, const Location& location) const;
+		std::vector<internal_reference::ReferenceResultBase> dereference_to_impl(World& context, const Location& location) const;
 		static std::optional<SoftReference> try_parse(const nlohmann::json& input);
 		[[noreturn]] void throw_invalid_dereference() const;
 	};
 
-	template <Referencable T>
-	class Reference
+	namespace internal_reference
 	{
-		mutable std::variant<SoftReference, T> m_data;
+		class ReferenceBase
+		{
+		protected:
+			mutable std::variant<SoftReference, std::shared_ptr<IReferencable>> m_data;
+		public:
+			explicit ReferenceBase(SoftReference input) : m_data{ std::move(input) } {}
+			explicit ReferenceBase(std::shared_ptr<IReferencable> input) : m_data{ std::move(input) } {}
+			explicit ReferenceBase(std::string_view input) : ReferenceBase{ SoftReference{input} } {}
+
+			ReferenceBase(const ReferenceBase&) = default;
+			ReferenceBase(ReferenceBase&&) noexcept = default;
+			ReferenceBase& operator=(const ReferenceBase&) = default;
+			ReferenceBase& operator=(ReferenceBase&&) noexcept = default;
+
+			bool is_reference() const noexcept { return std::holds_alternative<SoftReference>(m_data); }
+			bool is_resolved() const noexcept { return std::holds_alternative<std::shared_ptr<IReferencable>>(m_data); }
+
+			std::string to_string() const;
+
+			const std::variant<SoftReference, std::shared_ptr<IReferencable>>& data() const noexcept { return m_data; }
+		protected:
+			static std::optional<SoftReference> try_parse_soft_reference(const nlohmann::json& input) { return SoftReference::try_parse(input); }
+			[[noreturn]] void throw_invalid_dereference() const;
+		};
+	}
+
+	template <typename T>
+	class Reference : public internal_reference::ReferenceBase
+	{
+		static_assert(std::is_base_of_v<IReferencable, T>);
 	public:
-		explicit Reference(SoftReference input) : m_data{std::move(input)} {}
-		explicit Reference(T input) : m_data{ std::move(input) } {}
-		explicit Reference(std::string_view input) : Reference{ SoftReference{input} } {}
-
-		Reference(const Reference&) = default;
-		Reference(Reference&&) noexcept = default;
-		Reference& operator=(const Reference&) = default;
-		Reference& operator=(Reference&&) noexcept = default;
-
+		using internal_reference::ReferenceBase::ReferenceBase;
+		Reference(T input);
 		std::vector<ReferenceResult<T>> dereference_multi(World& context, const Location& location) const;
 		ReferenceResult<T> dereference_single(World& context, const Location& location) const;
 		T& get() const;
-		bool is_reference() const noexcept { return std::holds_alternative<SoftReference>(m_data); }
-		bool is_resolved() const noexcept { return std::holds_alternative<T>(m_data); }
 
 		// Replace a soft reference, if there is one, with the actual T it points to.
 		// Returns true if a change was made. (So false if this was already resolved, or if it could not be resolved to a single item).
 		bool resolve(World& context, const Location& location);
-
-		std::string to_string() const;
-
 		static Reference parse(const nlohmann::json& input);
-		const std::variant<SoftReference, T>& data() const noexcept { return m_data; }
-	private:
-		[[noreturn]] void throw_invalid_dereference() const { assert(is_reference()); std::get<SoftReference>(m_data).throw_invalid_dereference(); }
+
 	};
-	template<Referencable T>
-	inline std::string ReferenceResult<T>::to_string() const
+	
+}
+
+namespace tournament_builder
+{
+	// Implementations
+	template <typename T>
+	inline std::vector<ReferenceResult<T>> Reference<T>::dereference_multi(World& context, const Location& location) const
 	{
-		std::ostringstream oss;
-		for (Name t : location)
+		struct Impl
 		{
-			oss << t << '.';
+			World& con;
+			const Location& loc;
+			std::vector<ReferenceResult<T>> operator()(const SoftReference& sf)
+			{
+				return sf.dereference_to<T>(con, loc);
+			}
+			std::vector<ReferenceResult<T>> operator()(const std::shared_ptr<IReferencable>& data)
+			{
+				return { { data.get(), loc } };
+			}
+		};
+		return std::visit(Impl{ context, location }, m_data);
+	}
+
+	template <typename T>
+	inline bool Reference<T>::resolve(World& context, const Location& location)
+	{
+		if (is_reference())
+		{
+			ReferenceResult candidate = dereference_single(context, location);
+			IReferencable* result = candidate.get();
+			if(result != nullptr)
+			{
+				ReferenceCopyOptions opts;
+				m_data = result->copy_ref(opts);
+				return true;
+			}
 		}
-		oss << (result != nullptr ? result->to_string() : "[nullptr]");
-		return oss.str();
+		return false;
+	}
+
+	template <typename T>
+	inline ReferenceResult<T> Reference<T>::dereference_single(World& context, const Location& location) const
+	{
+		struct Impl
+		{
+			const Reference& outer;
+			World& con;
+			const Location& loc;
+			ReferenceResult<T> operator()(const SoftReference& sf)
+			{
+				const std::vector<ReferenceResult<T>> result = outer.dereference_multi(con, loc);
+				return result.size() == 1u ? std::move(result.front()) : ReferenceResult<T>{};
+			}
+			ReferenceResult<T> operator()(const std::shared_ptr<IReferencable>& data)
+			{
+				return { data.get() , loc};
+			}
+		};
+		return std::visit(Impl{ *this, context, location }, m_data);
+	}
+
+	template <typename T>
+	inline T& Reference<T>::get() const
+	{
+		if (is_reference())
+		{
+			throw_invalid_dereference();
+		}
+		assert(std::holds_alternative<std::shared_ptr<IReferencable>>(m_data));
+		const auto& up_result = std::get<std::shared_ptr<IReferencable>>(m_data);
+		auto* ptr_result = up_result.get();
+		T* result = dynamic_cast<T*>(ptr_result);
+		if (result == nullptr)
+		{
+			throw_invalid_dereference();
+		}
+		return *result;
+	}
+
+	inline std::string internal_reference::ReferenceBase::to_string() const
+	{
+		struct Impl
+		{
+			std::string operator()(const std::shared_ptr<IReferencable>& ir) const
+			{
+				return std::format("name='{}'", ir->get_reference_key());
+
+			}
+			std::string operator()(const SoftReference& sr) const { return std::format("{}", sr.to_string()); }
+		};
+		return std::visit(Impl{}, m_data);
+	}
+
+	template<typename T>
+	inline Reference<T> Reference<T>::parse(const nlohmann::json& input)
+	{
+		if (std::optional<SoftReference> sf = try_parse_soft_reference(input))
+		{
+			return Reference{ std::move(sf.value()) };
+		}
+		return Reference{T::parse(input)};
+	}
+
+	template <typename T>
+	inline Reference<T>::Reference(T input) : internal_reference::ReferenceBase{ std::shared_ptr<IReferencable>{new T{std::move(input)}} }
+	{}
+
+	template<typename T>
+	inline std::vector<ReferenceResult<T>> SoftReference::dereference_to(World& context, const Location& location) const
+	{
+		const std::vector<internal_reference::ReferenceResultBase> base_result = dereference_to_impl(context, location);
+		std::vector<ReferenceResult<T>> result;
+		result.reserve(base_result.size());
+		std::ranges::copy(base_result, std::back_inserter(result));
+		return result;
 	}
 }
 
+// FORMATTERS
 template <>
 struct std::formatter<tournament_builder::SoftReference>
 {
@@ -165,7 +278,7 @@ struct std::formatter<tournament_builder::SoftReference>
 	}
 };
 
-template <tournament_builder::Referencable T>
+template <typename T>
 struct std::formatter<tournament_builder::Reference<T>>
 {
 	template <class PrsContext>
@@ -180,7 +293,7 @@ struct std::formatter<tournament_builder::Reference<T>>
 	}
 };
 
-template <tournament_builder::Referencable T>
+template <typename T>
 struct std::formatter<tournament_builder::ReferenceResult<T>>
 {
 	template <class PrsContext>
@@ -189,16 +302,16 @@ struct std::formatter<tournament_builder::ReferenceResult<T>>
 		return prsContext.begin();
 	}
 
-	auto format(tournament_builder::ReferenceResult<T> ref_result, std::format_context& ctx) const
+	auto format(const tournament_builder::ReferenceResult<T>& ref_result, std::format_context& ctx) const
 	{
-		if (ref_result.result == nullptr)
+		if (!ref_result)
 		{
 			return std::format_to(ctx.out(), {}, "[Not found]");
 		}
 		std::ostringstream oss;
 		oss << '[';
 		bool first = true;
-		for (tournament_builder::Name n : ref_result.location)
+		for (const tournament_builder::Name& n : ref_result.get_location())
 		{
 			if (first)
 			{
@@ -210,110 +323,8 @@ struct std::formatter<tournament_builder::ReferenceResult<T>>
 			}
 			oss << n.to_string();
 		}
-		oss << "]." << ref_result.result->name.to_string();
+		const auto* as_named = ref_result.get_as<tournament_builder::NamedElement>();
+		oss << "]." << as_named->name.to_string();
 		return std::format_to(ctx.out(), "{}", oss.str());
 	}
 };
-
-namespace tournament_builder
-{
-	// Implementations
-	template<Referencable T>
-	inline std::vector<ReferenceResult<T>> Reference<T>::dereference_multi(World& context, const Location& location) const
-	{
-		struct Impl
-		{
-			World& con;
-			const Location& loc;
-			std::vector<ReferenceResult<T>> operator()(const SoftReference& sf)
-			{
-				return sf.dereference_to<T>(con, loc);
-			}
-			std::vector<ReferenceResult<T>> operator()(T& data)
-			{
-				return { { &data , loc } };
-			}
-		};
-		return std::visit(Impl{ context, location }, m_data);
-	}
-
-	template<Referencable T>
-	inline bool Reference<T>::resolve(World& context, const Location& location)
-	{
-		if (is_reference())
-		{
-			ReferenceResult<T> candidate = dereference_single(context, location);
-			T* result = candidate.result;
-			if(result != nullptr)
-			{
-				m_data = result->copy_ref();
-				return true;
-			}
-		}
-		return false;
-	}
-
-	template<Referencable T>
-	inline ReferenceResult<T> Reference<T>::dereference_single(World& context, const Location& location) const
-	{
-		struct Impl
-		{
-			const Reference<T>& outer;
-			World& con;
-			const Location& loc;
-			ReferenceResult<T> operator()(const SoftReference& sf)
-			{
-				const std::vector<ReferenceResult<T>> result = outer.dereference_multi(con, loc);
-				return result.size() == 1u ? std::move(result.front()) : ReferenceResult<T>{};
-			}
-			ReferenceResult<T> operator()(T& data)
-			{
-				return { &data , loc };
-			}
-		};
-		return std::visit(Impl{ *this, context, location }, m_data);
-	}
-
-	template<Referencable T>
-	inline T& Reference<T>::get() const
-	{
-		if (is_reference())
-		{
-			throw_invalid_dereference();
-		}
-		assert(std::holds_alternative<T>(m_data));
-		return std::get<T>(m_data);
-	}
-
-	template<Referencable T>
-	inline std::string Reference<T>::to_string() const
-	{
-		struct Impl
-		{
-			std::string operator()(const T& t) const { return std::format("name='{}'", t.to_string());	}
-			std::string operator()(const SoftReference& sr) const { return std::format("{}", sr); }
-		};
-		return std::visit(Impl{}, m_data);
-	}
-
-	template<Referencable T>
-	inline Reference<T> Reference<T>::parse(const nlohmann::json& input)
-	{
-		if (std::optional<SoftReference> sf = SoftReference::try_parse(input))
-		{
-			return Reference<T>{ std::move(sf.value()) };
-		}
-		return Reference<T>{T::parse(input)};
-	}
-
-	template<Referencable T>
-	inline std::vector<ReferenceResult<T>> SoftReference::dereference_to(World& context, const Location& location) const
-	{
-		using namespace internal_reference;
-		using RefPtr = T*;
-		using ResultType = std::vector<ReferenceResult<T>>;
-		auto result = dereference_to(context, location, ReferencableTypePtrsVariant{ RefPtr{nullptr} });
-		assert(std::holds_alternative<ResultType>(result));
-		return std::move(std::get<ResultType>(result));
-	}
-}

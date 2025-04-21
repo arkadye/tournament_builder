@@ -63,6 +63,10 @@ namespace tournament_builder
 		ref_file >> ref_object;
 		const bool result = processed == ref_object;
 		std::cout << std::format("Input file '{}' {} output file '{}'", input.generic_string(), result ? "matches" : "does not match", reference.generic_string());
+		if (!result)
+		{
+			std::cout << "\nExpected\n" << ref_object << "'\nGot:\n" << processed << '\n';
+		}
 		return result;
 	}
 }

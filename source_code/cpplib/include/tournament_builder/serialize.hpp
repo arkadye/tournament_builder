@@ -36,9 +36,12 @@ namespace tournament_builder
 	{
 		struct Impl
 		{
-			nlohmann::json operator()(const T& elem) const
+			nlohmann::json operator()(const std::shared_ptr<IReferencable>& up_referencable) const
 			{
-				return to_json(elem);
+				IReferencable* p_referencable = up_referencable.get();
+				T* p_elem = p_referencable->get_as<T>();
+				assert(p_elem != nullptr);
+				return to_json(*p_elem);
 			}
 			nlohmann::json operator()(const SoftReference& elem)
 			{

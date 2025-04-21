@@ -1,10 +1,13 @@
 #include "tournament_builder/tag.hpp"
 #include "tournament_builder/exceptions.hpp"
+#include "tournament_builder/ireferencable.hpp"
 
 #include "tournament_builder/generic_utils.hpp"
 #include "tournament_builder/json/json_helpers.hpp"
 
 #include "nlohmann/json.hpp"
+
+#include <algorithm>
 
 
 namespace tournament_builder
@@ -222,6 +225,23 @@ namespace tournament_builder
     bool Tag::collides_with(const std::vector<Tag>& others) const
     {
         return std::ranges::any_of(others, [&tag = *this](const Tag& other) {return tag.collides_with(other); });
+    }
+
+    std::vector<Tag> Tag::copy_tags_on_ref(std::vector<Tag> in, const ReferenceCopyOptions& options)
+    {
+        auto should_copy_tag = [&options](const Tag& tag)
+            {
+                return tag.copy_on_reference;
+            };
+
+        auto should_erase_tag = [&should_copy_tag](const Tag& tag)
+            {
+                return !should_copy_tag(tag);
+            };
+
+        auto erase_result = std::ranges::remove_if(in, should_erase_tag);
+        in.erase(begin(erase_result), end(erase_result));
+        return in;
     }
 
     namespace exception

@@ -3,6 +3,7 @@
 #include "name.hpp"
 #include "reference.hpp"
 #include "tag.hpp"
+#include "ireferencable.hpp"
 
 #include "nlohmann/json_fwd.hpp"
 
@@ -18,7 +19,7 @@ namespace tournament_builder
 		using NamedElement::NamedElement;
 		const std::vector<Tag>& get_tags() const { return m_tags; }
 		void add_tag(Tag tag);
-		RealCompetitor copy_ref() const;
+		RealCompetitor copy_ref(const ReferenceCopyOptions&) const;
 		static RealCompetitor parse(const nlohmann::json& input);
 		static std::vector<RealCompetitor> parse_entry_list(const nlohmann::json& input);
 		static std::vector<RealCompetitor> parse_entry_list(const nlohmann::json& input, std::string_view field_name);
@@ -28,7 +29,7 @@ namespace tournament_builder
 
 	class Bye {};
 
-	class Competitor
+	class Competitor : public IReferencable
 	{
 	public:
 		using underlying_t = std::variant<RealCompetitor, Bye>;
@@ -44,15 +45,11 @@ namespace tournament_builder
 		underlying_t& data() noexcept { return m_data; }
 		const underlying_t& data() const noexcept { return m_data; }
 		bool is_bye() const noexcept { return std::holds_alternative<Bye>(m_data); }
-		Competitor copy_ref() const;
 		void add_tag(Tag tag);
 
 		std::string_view to_string() const;
 
 		static bool is_bye(const Reference<Competitor>& ref);
-
-		// This is true if the token provided is the name, or matches any tag when interpreted as one.
-		bool matches_token(Token token) const;
 
 		// Returns true if the name matches this one.
 		bool matches_name(Name name) const;
@@ -60,5 +57,11 @@ namespace tournament_builder
 		static Competitor parse(const nlohmann::json& input);
 		static std::vector<Reference<Competitor>> parse_entry_list(const nlohmann::json& input);
 		static std::vector<Reference<Competitor>> parse_entry_list(const nlohmann::json& input, std::string_view field_name);
+
+		// IReferencable
+		Name get_reference_key() const override;
+		std::shared_ptr<IReferencable> copy_ref(const ReferenceCopyOptions&) const override;
+		std::vector<IReferencable*> get_next_locations() override;
+		bool matches_token(const Token&) const override;
 	};
 }

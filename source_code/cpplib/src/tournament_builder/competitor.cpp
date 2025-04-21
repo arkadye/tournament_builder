@@ -17,27 +17,11 @@ namespace tournament_builder
 		}
 	}
 
-	RealCompetitor RealCompetitor::copy_ref() const
+	RealCompetitor RealCompetitor::copy_ref(const ReferenceCopyOptions& rco) const
 	{
 		RealCompetitor result{ name };
-		for (const Tag& tag : m_tags)
-		{
-			if (tag.copy_on_reference)
-			{
-				result.add_tag(tag);
-			}
-		}
+		result.m_tags = Tag::copy_tags_on_ref(m_tags, rco);
 		return result;
-	}
-
-	Competitor Competitor::copy_ref() const
-	{
-		struct Impl
-		{
-			Competitor operator()(Bye) const { return Bye{}; }
-			Competitor operator()(const RealCompetitor& rc) const { return rc.copy_ref(); }
-		};
-		return std::visit(Impl{}, m_data);
 	}
 
 	void Competitor::add_tag(Tag tag)
@@ -67,7 +51,7 @@ namespace tournament_builder
 		return ref.get().is_bye();
 	}
 
-	bool Competitor::matches_token(Token token) const
+	bool Competitor::matches_token(const Token& token) const
 	{
 		struct Impl
 		{
@@ -118,6 +102,59 @@ namespace tournament_builder
 	{
 		json array_view = json_helper::get_array_object(input, field_name);
 		return parse_entry_list(array_view);
+	}
+
+	Name Competitor::get_reference_key() const
+	{
+		struct Impl
+		{
+			Name operator()(Bye) const
+			{
+				assert(false && "We should never be asking a bye for its name");
+				return Name{ "ERROR_NAME" };
+			}
+			Name operator()(const RealCompetitor& rc) const
+			{
+				return rc.name;
+			}
+		};
+		return std::visit(Impl{}, m_data);
+	}
+
+	std::shared_ptr<IReferencable> Competitor::copy_ref(const ReferenceCopyOptions& copy_options) const
+	{
+		struct Impl
+		{
+			const ReferenceCopyOptions& rco;
+			std::shared_ptr<IReferencable> operator()(Bye) const
+			{
+				Competitor* copy = new Competitor{ Bye{} };
+				return std::shared_ptr<IReferencable>{copy};
+			}
+			std::shared_ptr<IReferencable> operator()(const RealCompetitor& rc) const
+			{
+				Competitor* copy = new Competitor{ rc.copy_ref(rco) };
+				return std::shared_ptr<IReferencable>{copy};
+			}
+		};
+		return std::visit(Impl{ copy_options }, m_data);
+	}
+
+	std::vector<IReferencable*> Competitor::get_next_locations()
+	{
+		struct Impl
+		{
+			std::vector<IReferencable*> operator()(Bye) const
+			{
+				assert(false && "We should never be asking a bye next locations");
+				return {};
+			}
+			std::vector<IReferencable*> operator()(RealCompetitor& rc)
+			{
+				return {};
+			}
+		};
+		return std::visit(Impl{}, m_data);
 	}
 
 	RealCompetitor RealCompetitor::parse(const json& input)

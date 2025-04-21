@@ -29,6 +29,7 @@ set(TYPES
 	"include/tournament_builder/random.hpp"
 	"include/tournament_builder/serialize.hpp"
 	"include/tournament_builder/reference.hpp"
+	"include/tournament_builder/ireferencable.hpp"
 	"include/tournament_builder/stats.hpp"
 	"include/tournament_builder/tag.hpp"
 	"include/tournament_builder/token.hpp"

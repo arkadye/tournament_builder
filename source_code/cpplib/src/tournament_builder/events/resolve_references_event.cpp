@@ -48,7 +48,7 @@ namespace tournament_builder
 
 	void event::ResolveReference::execute(World& world, ReferenceResult<Competition>& target)
 	{
-		assert(target.result != nullptr);
-		target.result->resolve_all_references(world, target.location);
+		assert(target.get() != nullptr);
+		target.get()->resolve_all_references(world, target.get_location());
 	}
 }

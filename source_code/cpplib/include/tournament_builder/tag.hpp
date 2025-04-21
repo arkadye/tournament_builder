@@ -8,6 +8,7 @@
 
 namespace tournament_builder
 {
+	class ReferenceCopyOptions;
 	class Tag
 	{
 		std::vector<Token> m_data;
@@ -32,5 +33,6 @@ namespace tournament_builder
 		static Tag parse_default_no_copy(const nlohmann::json& in) { return parse(in, false); }
 		bool collides_with(const Tag& other) const;
 		bool collides_with(const std::vector<Tag>& others) const;
+		static std::vector<Tag> copy_tags_on_ref(std::vector<Tag> in, const ReferenceCopyOptions& options);
 	};
 }

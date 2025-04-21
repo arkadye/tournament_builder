@@ -52,11 +52,11 @@ namespace tournament_builder::event
 		}
 
 		ReferenceResult<Competition>& target_ref_result = target_ref_result_vector.front();
-		assert(target_ref_result.result != nullptr);
+		assert(target_ref_result.get() != nullptr);
 
-		Competition& target = *target_ref_result.result;;
+		Competition& target = *target_ref_result.get();;
 
-		if (!target.resolve_all_references(world, target_ref_result.location))
+		if (!target.resolve_all_references(world, target_ref_result.get_location()))
 		{
 			throw_execution_exception("Not all references in the target could be resolved.");
 		}
