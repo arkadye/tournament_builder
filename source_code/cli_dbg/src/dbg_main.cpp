@@ -11,11 +11,14 @@
 // Set this to only run on files containing this pattern.
 constexpr std::string_view PATTERN_TO_MATCH{ ".json" };
 
+// If true run as a test comparing against the output examples. Otherwise, write to them.
+constexpr bool testing = true;
+
 int main(int argc, char** argv)
 {
 	using tournament_builder::tournament_builder_internal::invoke_cli;
 
-	std::filesystem::path target{ "../examples" };
+	std::filesystem::path target{ "../../examples" };
 	if (argc > 1)
 	{
 		target = argv[1];
@@ -46,7 +49,7 @@ int main(int argc, char** argv)
 		};
 
 	auto input_arg = make_c_str_vec("--input");
-	auto output_arg = make_c_str_vec("--output");
+	auto output_arg = testing ? make_c_str_vec("--test-reference") : make_c_str_vec("--output");
 
 	args[0] = argv[0];
 	args[1] = input_arg.data();
@@ -89,7 +92,7 @@ int main(int argc, char** argv)
 		auto outfile_data = make_c_str_vec(output_file.generic_string());
 		args[2] = infile_data.data();
 		args[4] = outfile_data.data();
-		std::cout << std::format("Processing {} and writing the result to {}.\n", filename.generic_string(), std::filesystem::absolute(output_file).generic_string());
+		std::cout << std::format("Processing {} and {} {}.\n", filename.generic_string(), testing ? "checking the result against" : "writing the result to", std::filesystem::absolute(output_file).generic_string());
 		invoke_cli(num_args, args.data());
 	}
 	return 0;

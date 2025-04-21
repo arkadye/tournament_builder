@@ -120,4 +120,13 @@ namespace tournament_builder
 			output: An output stream where the result will be written.
 	*/
 	void make_tournament_ostream(const tournament_builder::World& input, std::ostream& output);
+
+	/*
+	*	Params:
+	*		input: A path to file with input JSON to test.
+	*		reference: A path with resulting JSON to compare the result to.
+	*	Returns:
+	*		true if the processed input is equivalent to the input.
+	*/
+	bool test_input_file(const std::filesystem::path& input, const std::filesystem::path& reference);
 }

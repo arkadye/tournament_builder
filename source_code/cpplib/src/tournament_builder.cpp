@@ -48,4 +48,21 @@ namespace tournament_builder
 	void make_tournament_ostream(std::istream& input, std::ostream& output) { return internal_tournament_builder_lightweight::wrap_ostream(input, output); }
 	void make_tournament_ostream(const nlohmann::json& input, std::ostream& output) { return internal_tournament_builder_lightweight::wrap_ostream(input, output); }
 	void make_tournament_ostream(const tournament_builder::World& input, std::ostream& output) { return internal_tournament_builder_lightweight::wrap_ostream(input, output); }
+
+	bool test_input_file(const std::filesystem::path& input, const std::filesystem::path& reference)
+	{
+		nlohmann::json processed = make_tournament_json(input);
+		std::ifstream ref_file{ reference };
+		if (!ref_file.is_open())
+		{
+			std::cerr << std::format("Could not open reference file '{}'\n", std::filesystem::absolute(reference).generic_string());
+			return false;
+		}
+
+		nlohmann::json ref_object;
+		ref_file >> ref_object;
+		const bool result = processed == ref_object;
+		std::cout << std::format("Input file '{}' {} output file '{}'", input.generic_string(), result ? "matches" : "does not match", reference.generic_string());
+		return result;
+	}
 }
