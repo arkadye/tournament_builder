@@ -67,7 +67,7 @@ Between these it can be used with the following engines:
 - GameMaker (as a DLL)
 - PyGame (via Python bindings)
 
-Conversion to an Unreal Plugin, or a GameMaker extension, or a Unity library is on the to-do list at some point. If you do this for your own use and are happy to share do feel free to open an issue and I'll see what I can do.
+Conversion to an Unreal Plugin, or a GameMaker extension, or a Unity library is on the to-do list at some point. If you do this for your own use and are happy to share do feel free to [open a pull request](https://github.com/arkadye/tournament_builder/pulls) and I'll see what I can do.
 
 Data is stored as JSON, which is a reasonably human-readable format.
 
