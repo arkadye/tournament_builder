@@ -84,6 +84,7 @@ int main(int argc, char** argv)
 			if (!found)
 			{
 				std::cout << std::format("Skipping file '{}' - did not match pattern '{}'\n", filename_sv, PATTERN_TO_MATCH);
+				continue;
 			}
 		}
 		std::filesystem::path output_file = { target / "out" / filename };
