@@ -1,9 +1,9 @@
 #pragma once
 
-#include "name.hpp"
-#include "reference.hpp"
-#include "tag.hpp"
-#include "ireferencable.hpp"
+#include "tournament_builder/name.hpp"
+#include "tournament_builder/reference.hpp"
+#include "tournament_builder/itaggable.hpp"
+#include "tournament_builder/ireferencable.hpp"
 
 #include "nlohmann/json_fwd.hpp"
 
@@ -13,23 +13,19 @@
 
 namespace tournament_builder
 {
-	class RealCompetitor : public NamedElement
+	class RealCompetitor : public NamedElement , public TaggableMixin
 	{
 	public:
 		using NamedElement::NamedElement;
-		const std::vector<Tag>& get_tags() const { return m_tags; }
-		void add_tag(Tag tag);
 		RealCompetitor copy_ref(const ReferenceCopyOptions&) const;
 		static RealCompetitor parse(const nlohmann::json& input);
 		static std::vector<RealCompetitor> parse_entry_list(const nlohmann::json& input);
 		static std::vector<RealCompetitor> parse_entry_list(const nlohmann::json& input, std::string_view field_name);
-	private:
-		std::vector<Tag> m_tags;
 	};
 
 	class Bye {};
 
-	class Competitor : public IReferencable
+	class Competitor : public IReferencable , public ITaggable
 	{
 	public:
 		using underlying_t = std::variant<RealCompetitor, Bye>;
@@ -45,7 +41,6 @@ namespace tournament_builder
 		underlying_t& data() noexcept { return m_data; }
 		const underlying_t& data() const noexcept { return m_data; }
 		bool is_bye() const noexcept { return std::holds_alternative<Bye>(m_data); }
-		void add_tag(Tag tag);
 
 		std::string_view to_string() const;
 
@@ -63,5 +58,10 @@ namespace tournament_builder
 		std::shared_ptr<IReferencable> copy_ref(const ReferenceCopyOptions&) const override;
 		std::vector<IReferencable*> get_next_locations() override;
 		bool matches_token(const Token&) const override;
+
+		// ITaggable
+		const std::vector<Tag>& get_tags() const override;
+		void add_tag(Tag tag) override;
+		void take_tags_via_reference(const ITaggable& other, const ReferenceCopyOptions&) override;
 	};
 }

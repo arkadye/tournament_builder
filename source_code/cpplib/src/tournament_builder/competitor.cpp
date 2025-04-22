@@ -9,19 +9,18 @@
 namespace tournament_builder
 {
 	using nlohmann::json;
-	void RealCompetitor::add_tag(Tag tag)
-	{
-		if (!tag.collides_with(m_tags))
-		{
-			m_tags.push_back(std::move(tag));
-		}
-	}
 
 	RealCompetitor RealCompetitor::copy_ref(const ReferenceCopyOptions& rco) const
 	{
 		RealCompetitor result{ name };
-		result.m_tags = Tag::copy_tags_on_ref(m_tags, rco);
+		result.take_tags_via_reference(*this, rco);
 		return result;
+	}
+
+	const std::vector<Tag>& Competitor::get_tags() const
+	{
+		assert(std::holds_alternative<RealCompetitor>(m_data) && "get_tags can only be called on a non-bye competitor");
+		return std::get<RealCompetitor>(m_data).get_tags();
 	}
 
 	void Competitor::add_tag(Tag tag)
@@ -29,6 +28,14 @@ namespace tournament_builder
 		if (RealCompetitor* prc = std::get_if<RealCompetitor>(&m_data))
 		{
 			prc->add_tag(std::move(tag));
+		}
+	}
+
+	void Competitor::take_tags_via_reference(const ITaggable& other, const ReferenceCopyOptions& options)
+	{
+		if (RealCompetitor* prc = std::get_if<RealCompetitor>(&m_data))
+		{
+			prc->take_tags_via_reference(other, options);
 		}
 	}
 
