@@ -43,6 +43,7 @@ set(TYPES
 	"src/tournament_builder/random.cpp"
 	"src/tournament_builder/serialize.cpp"
 	"src/tournament_builder/reference.cpp"
+	"src/tournament_builder/ireferencable.cpp"
 	"src/tournament_builder/tag.cpp"
 	"src/tournament_builder/itaggable.cpp"
 	"src/tournament_builder/token.cpp"
