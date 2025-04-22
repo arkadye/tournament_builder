@@ -26,7 +26,7 @@ namespace tournament_builder
 		virtual std::vector<IReferencable*> get_next_locations() = 0;
 
 		// Returns 'true' if this item matches with a particular token (e.g. same name, or a tag match).
-		virtual bool matches_token(const Token&) const = 0;
+		virtual bool matches_token(const Token&) const;
 
 		// Test whether this holds a particular type.
 		template <typename T>

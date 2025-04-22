@@ -9,19 +9,22 @@
 namespace tournament_builder
 {
 	using nlohmann::json;
-	void RealCompetitor::add_tag(Tag tag)
-	{
-		if (!tag.collides_with(m_tags))
-		{
-			m_tags.push_back(std::move(tag));
-		}
-	}
 
 	RealCompetitor RealCompetitor::copy_ref(const ReferenceCopyOptions& rco) const
 	{
 		RealCompetitor result{ name };
-		result.m_tags = Tag::copy_tags_on_ref(m_tags, rco);
+		result.take_tags_via_reference(*this, rco);
 		return result;
+	}
+
+	const std::vector<Tag>& Competitor::get_tags() const
+	{
+		if (const RealCompetitor* prc = std::get_if<RealCompetitor>(&m_data))
+		{
+			return prc->get_tags();
+		}
+		static const std::vector<Tag> dummy;
+		return dummy;
 	}
 
 	void Competitor::add_tag(Tag tag)
@@ -29,6 +32,14 @@ namespace tournament_builder
 		if (RealCompetitor* prc = std::get_if<RealCompetitor>(&m_data))
 		{
 			prc->add_tag(std::move(tag));
+		}
+	}
+
+	void Competitor::take_tags_via_reference(const ITaggable& other, const ReferenceCopyOptions& options)
+	{
+		if (RealCompetitor* prc = std::get_if<RealCompetitor>(&m_data))
+		{
+			prc->take_tags_via_reference(other, options);
 		}
 	}
 
@@ -162,14 +173,7 @@ namespace tournament_builder
 		json_helper::validate_type(input, { json::value_t::object });
 		const Name name = Name::parse(input);
 		RealCompetitor result{ name };
-		if (input.contains("tags"))
-		{
-			std::vector<Tag> found_tags = json_helper::get_array(input["tags"], &Tag::parse_default_copy);
-			for (Tag& tag : found_tags)
-			{
-				result.add_tag(std::move(tag));
-			}
-		}
+		result.add_tags_from_json(input);
 		return result;
 	}
 

@@ -32,6 +32,7 @@ set(TYPES
 	"include/tournament_builder/ireferencable.hpp"
 	"include/tournament_builder/stats.hpp"
 	"include/tournament_builder/tag.hpp"
+	"include/tournament_builder/itaggable.hpp"
 	"include/tournament_builder/token.hpp"
 	"include/tournament_builder/world.hpp"
 	"include/tournament_builder/generic_utils.hpp"
@@ -42,7 +43,9 @@ set(TYPES
 	"src/tournament_builder/random.cpp"
 	"src/tournament_builder/serialize.cpp"
 	"src/tournament_builder/reference.cpp"
+	"src/tournament_builder/ireferencable.cpp"
 	"src/tournament_builder/tag.cpp"
+	"src/tournament_builder/itaggable.cpp"
 	"src/tournament_builder/token.cpp"
 	"src/tournament_builder/stats.cpp"
 	"src/tournament_builder/world.cpp")

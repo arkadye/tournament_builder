@@ -4,6 +4,7 @@
 #include "tournament_builder/reference.hpp"
 #include "tournament_builder/competitor.hpp"
 #include "tournament_builder/ireferencable.hpp"
+#include "tournament_builder/itaggable.hpp"
 
 #include "nlohmann/json_fwd.hpp"
 
@@ -15,7 +16,7 @@ namespace tournament_builder
 	class World;
 
 	// This can be a single match/race or a tournament_builder phase.
-	class Competition : public NamedElement , public IReferencable
+	class Competition : public NamedElement , public IReferencable , public TaggableMixin
 	{
 	public:
 		using NamedElement::NamedElement;
@@ -39,9 +40,6 @@ namespace tournament_builder
 
 		// Get a list of all the possible inner targets for use when parsing a reference.
 		std::vector<IReferencable*> get_next_locations() override;
-
-		// Returns 'true' if this item matches with a particular token (e.g. same name, or a tag match).
-		bool matches_token(const Token&) const override;
 
 	private:
 		// Returns true if it makes any changes

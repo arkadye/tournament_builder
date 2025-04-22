@@ -17,11 +17,6 @@ namespace tournament_builder
 		return contents_result && std::ranges::all_of(entry_list, &Reference<Competitor>::is_resolved);
 	}
 
-	bool Competition::matches_token(const Token& token) const
-	{
-		return name == token;
-	}
-
 	bool Competition::resolve_all_references_impl(World& context, std::vector<Name>& location)
 	{
 		// In general, working outside-in will work better.
@@ -86,6 +81,7 @@ namespace tournament_builder
 		{
 			result.entry_list = Competitor::parse_entry_list(input["entry_list"]);
 		}
+		result.add_tags_from_json(input);
 		return result;
 	}
 
