@@ -19,8 +19,12 @@ namespace tournament_builder
 
 	const std::vector<Tag>& Competitor::get_tags() const
 	{
-		assert(std::holds_alternative<RealCompetitor>(m_data) && "get_tags can only be called on a non-bye competitor");
-		return std::get<RealCompetitor>(m_data).get_tags();
+		if (const RealCompetitor* prc = std::get_if<RealCompetitor>(&m_data))
+		{
+			return prc->get_tags();
+		}
+		static const std::vector<Tag> dummy;
+		return dummy;
 	}
 
 	void Competitor::add_tag(Tag tag)
@@ -169,14 +173,7 @@ namespace tournament_builder
 		json_helper::validate_type(input, { json::value_t::object });
 		const Name name = Name::parse(input);
 		RealCompetitor result{ name };
-		if (input.contains("tags"))
-		{
-			std::vector<Tag> found_tags = json_helper::get_array(input["tags"], &Tag::parse_default_copy);
-			for (Tag& tag : found_tags)
-			{
-				result.add_tag(std::move(tag));
-			}
-		}
+		result.add_tags_from_json(input);
 		return result;
 	}
 
