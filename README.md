@@ -477,6 +477,7 @@ Fields:
 - **Required:** `name`: the name of the Competition.
 - *Optional*: `entry_list`: this is an ordered list of Competitors.
 - *Optional*: `contents`: this is an ordered list of Competitions.
+- *Optional*: `tags`: an array of tags.
 
 A Competition **must** have one, or the other, or both of `entry_list` and `contents`. (It doesn't make much sense, otherwise.)
 
