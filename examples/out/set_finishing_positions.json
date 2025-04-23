@@ -1,1 +1,132 @@
-{"competition":{"name":"nations_league_finals_2025","phases":[{"name":"round_0","phases":[{"entry_list":[{"name":"netherlands","tags":[{"copy_on_ref":false,"tag":"$POS:2"}]},{"name":"spain","tags":[{"copy_on_ref":false,"tag":"$POS:1"}]}],"name":"game_0"},{"entry_list":[{"name":"croatia","tags":[{"copy_on_ref":false,"tag":"$POS:2"}]},{"name":"france","tags":[{"copy_on_ref":false,"tag":"$POS:1"}]}],"name":"game_1"},{"entry_list":[{"name":"denmark","tags":[{"copy_on_ref":false,"tag":"$POS:2"}]},{"name":"portugal","tags":[{"copy_on_ref":false,"tag":"$POS:1"}]}],"name":"game_2"},{"entry_list":[{"name":"italy","tags":[{"copy_on_ref":false,"tag":"$POS:2"}]},{"name":"germany","tags":[{"copy_on_ref":false,"tag":"$POS:1"}]}],"name":"game_3"}]},{"name":"round_1","phases":[{"entry_list":[{"name":"spain"},{"name":"france"}],"name":"game_0"},{"entry_list":[{"name":"portugal"},{"name":"germany"}],"name":"game_1"}]},{"name":"round_2","phases":[{"entry_list":["@OUTER.@OUTER.round_1.game_0.$POS:1","@OUTER.@OUTER.round_1.game_1.$POS:1"],"name":"game_0"}]}]}}
+{
+  "competition": {
+    "name": "nations_league_finals_2025",
+    "phases": [
+      {
+        "name": "round_0",
+        "phases": [
+          {
+            "entry_list": [
+              {
+                "name": "netherlands",
+                "tags": [
+                  {
+                    "copy_on_ref": false,
+                    "tag": "$POS:2"
+                  }
+                ]
+              },
+              {
+                "name": "spain",
+                "tags": [
+                  {
+                    "copy_on_ref": false,
+                    "tag": "$POS:1"
+                  }
+                ]
+              }
+            ],
+            "name": "game_0"
+          },
+          {
+            "entry_list": [
+              {
+                "name": "croatia",
+                "tags": [
+                  {
+                    "copy_on_ref": false,
+                    "tag": "$POS:2"
+                  }
+                ]
+              },
+              {
+                "name": "france",
+                "tags": [
+                  {
+                    "copy_on_ref": false,
+                    "tag": "$POS:1"
+                  }
+                ]
+              }
+            ],
+            "name": "game_1"
+          },
+          {
+            "entry_list": [
+              {
+                "name": "denmark",
+                "tags": [
+                  {
+                    "copy_on_ref": false,
+                    "tag": "$POS:2"
+                  }
+                ]
+              },
+              {
+                "name": "portugal",
+                "tags": [
+                  {
+                    "copy_on_ref": false,
+                    "tag": "$POS:1"
+                  }
+                ]
+              }
+            ],
+            "name": "game_2"
+          },
+          {
+            "entry_list": [
+              {
+                "name": "italy",
+                "tags": [
+                  {
+                    "copy_on_ref": false,
+                    "tag": "$POS:2"
+                  }
+                ]
+              },
+              {
+                "name": "germany",
+                "tags": [
+                  {
+                    "copy_on_ref": false,
+                    "tag": "$POS:1"
+                  }
+                ]
+              }
+            ],
+            "name": "game_3"
+          }
+        ]
+      },
+      {
+        "name": "round_1",
+        "phases": [
+          {
+            "entry_list": [
+              { "name": "spain" },
+              { "name": "france" }
+            ],
+            "name": "game_0"
+          },
+          {
+            "entry_list": [
+              { "name": "portugal" },
+              { "name": "germany" }
+            ],
+            "name": "game_1"
+          }
+        ]
+      },
+      {
+        "name": "round_2",
+        "phases": [
+          {
+            "entry_list": [ "@OUTER.@OUTER.round_1.game_0.$POS:1", "@OUTER.@OUTER.round_1.game_1.$POS:1" ],
+            "name": "game_0"
+          }
+        ]
+      }
+    ]
+  }
+}
