@@ -72,6 +72,9 @@ int main(int argc, char** argv)
 	const std::filesystem::path output_directory = target / "out";
 	std::filesystem::create_directories(output_directory);
 
+	int successes = 0;
+	int failures = 0;
+
 
 	for (std::filesystem::path input_file : std::filesystem::directory_iterator{ input_directory })
 	{
@@ -94,7 +97,9 @@ int main(int argc, char** argv)
 		args[2] = infile_data.data();
 		args[4] = outfile_data.data();
 		std::cout << std::format("Processing {} and {} {}.\n", filename.generic_string(), testing ? "checking the result against" : "writing the result to", std::filesystem::absolute(output_file).generic_string());
-		invoke_cli(num_args, args.data());
+		const bool success = (EXIT_SUCCESS == invoke_cli(num_args, args.data()));
+		success ? ++successes : ++failures;
 	}
+	std::cout << std::format("Finished with {} successes and {} failures.\n", successes, failures);
 	return 0;
 }
