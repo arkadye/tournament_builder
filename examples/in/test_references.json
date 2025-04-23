@@ -39,7 +39,17 @@
             "copy_on_ref": false
           },
           "MULTI.PART.TAG"
-        ]
+        ],
+        "user_data": {
+          "contents": [
+            "This is some",
+            "arbitrary",
+            true,
+            false,
+            null,
+            { "user": "data" }
+          ]
+        }
       }
     ]
   },

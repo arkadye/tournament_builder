@@ -1,1 +1,175 @@
-{"competition":{"entry_list":[{"name":"root_test_target","tags":["COPY_THIS_TAG",{"copy_on_ref":false,"tag":"DONT_COPY_THIS_TAG"},"MULTI.PART.TAG",{"copy_on_ref":false,"tag":"ADDITIONAL_TAG"},"COPYABLE_ADDITIONAL_TAG"]}],"name":"base","phases":[{"entry_list":[{"name":"level_1_target"},{"name":"root_test_target","tags":["COPY_THIS_TAG","MULTI.PART.TAG"]},{"name":"root_test_target","tags":["COPY_THIS_TAG","MULTI.PART.TAG"]},{"name":"root_test_target","tags":["COPY_THIS_TAG","MULTI.PART.TAG"]},{"name":"root_test_target","tags":["COPY_THIS_TAG","MULTI.PART.TAG"]},{"name":"root_test_target","tags":["COPY_THIS_TAG","MULTI.PART.TAG"]},{"name":"root_test_target","tags":["COPY_THIS_TAG","MULTI.PART.TAG","COPYABLE_ADDITIONAL_TAG"]}],"name":"level_1_tests","phases":[{"entry_list":[{"name":"root_test_target","tags":["COPY_THIS_TAG","MULTI.PART.TAG"]},{"name":"level_1_target"},{"name":"root_test_target","tags":["COPY_THIS_TAG","MULTI.PART.TAG"]},{"name":"root_test_target","tags":["COPY_THIS_TAG","MULTI.PART.TAG"]}],"name":"level_2_tests"}]}]}}
+{
+  "competition": {
+    "entry_list": [
+      {
+        "name": "root_test_target",
+        "tags": [
+          "COPY_THIS_TAG",
+          {
+            "copy_on_ref": false,
+            "tag": "DONT_COPY_THIS_TAG"
+          },
+          "MULTI.PART.TAG",
+          {
+            "copy_on_ref": false,
+            "tag": "ADDITIONAL_TAG"
+          },
+          "COPYABLE_ADDITIONAL_TAG"
+        ],
+        "user_data": {
+          "contents": [
+            "This is some",
+            "arbitrary",
+            true,
+            false,
+            null,
+            { "user": "data" }
+          ]
+        }
+      }
+    ],
+    "name": "base",
+    "phases": [
+      {
+        "entry_list": [
+          { "name": "level_1_target" },
+          {
+            "name": "root_test_target",
+            "tags": [ "COPY_THIS_TAG", "MULTI.PART.TAG" ],
+            "user_data": {
+              "contents": [
+                "This is some",
+                "arbitrary",
+                true,
+                false,
+                null,
+                { "user": "data" }
+              ]
+            }
+          },
+          {
+            "name": "root_test_target",
+            "tags": [ "COPY_THIS_TAG", "MULTI.PART.TAG" ],
+            "user_data": {
+              "contents": [
+                "This is some",
+                "arbitrary",
+                true,
+                false,
+                null,
+                { "user": "data" }
+              ]
+            }
+          },
+          {
+            "name": "root_test_target",
+            "tags": [ "COPY_THIS_TAG", "MULTI.PART.TAG" ],
+            "user_data": {
+              "contents": [
+                "This is some",
+                "arbitrary",
+                true,
+                false,
+                null,
+                { "user": "data" }
+              ]
+            }
+          },
+          {
+            "name": "root_test_target",
+            "tags": [ "COPY_THIS_TAG", "MULTI.PART.TAG" ],
+            "user_data": {
+              "contents": [
+                "This is some",
+                "arbitrary",
+                true,
+                false,
+                null,
+                { "user": "data" }
+              ]
+            }
+          },
+          {
+            "name": "root_test_target",
+            "tags": [ "COPY_THIS_TAG", "MULTI.PART.TAG" ],
+            "user_data": {
+              "contents": [
+                "This is some",
+                "arbitrary",
+                true,
+                false,
+                null,
+                { "user": "data" }
+              ]
+            }
+          },
+          {
+            "name": "root_test_target",
+            "tags": [ "COPY_THIS_TAG", "MULTI.PART.TAG", "COPYABLE_ADDITIONAL_TAG" ],
+            "user_data": {
+              "contents": [
+                "This is some",
+                "arbitrary",
+                true,
+                false,
+                null,
+                { "user": "data" }
+              ]
+            }
+          }
+        ],
+        "name": "level_1_tests",
+        "phases": [
+          {
+            "entry_list": [
+              {
+                "name": "root_test_target",
+                "tags": [ "COPY_THIS_TAG", "MULTI.PART.TAG" ],
+                "user_data": {
+                  "contents": [
+                    "This is some",
+                    "arbitrary",
+                    true,
+                    false,
+                    null,
+                    { "user": "data" }
+                  ]
+                }
+              },
+              { "name": "level_1_target" },
+              {
+                "name": "root_test_target",
+                "tags": [ "COPY_THIS_TAG", "MULTI.PART.TAG" ],
+                "user_data": {
+                  "contents": [
+                    "This is some",
+                    "arbitrary",
+                    true,
+                    false,
+                    null,
+                    { "user": "data" }
+                  ]
+                }
+              },
+              {
+                "name": "root_test_target",
+                "tags": [ "COPY_THIS_TAG", "MULTI.PART.TAG" ],
+                "user_data": {
+                  "contents": [
+                    "This is some",
+                    "arbitrary",
+                    true,
+                    false,
+                    null,
+                    { "user": "data" }
+                  ]
+                }
+              }
+            ],
+            "name": "level_2_tests"
+          }
+        ]
+      }
+    ]
+  }
+}

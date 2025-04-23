@@ -499,6 +499,7 @@ Fields:
 
 - **Required:** `name`: the name of the competitor.
 - *Optional:* `tags`: an array of tag objects.
+- *Optional:* `user_data`: arbitrary JSON which will be carried on this element as it gets copied.
 
 ## Descriptors
 
