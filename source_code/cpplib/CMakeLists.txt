@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.31)
-
+cmake_minimum_required(VERSION 3.22.0)
 set(CPPLIB tournament_builder_cpplib)
 project(${CPPLIB})
 
@@ -8,8 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-include_directories("include" "../thirdparty/nlohmann/json/single_include")
 
 set(SOURCE_FILES
 	"src/tournament_builder.cpp"
@@ -101,5 +98,6 @@ add_library(${CPPLIB} STATIC ${LIB_FILES})
 target_sources(${CPPLIB} PRIVATE ${LIB_FILES})
 target_sources(${CPPLIB} PUBLIC ${HEADER_FILES})
 target_sources(${CPPLIB} PRIVATE ${NATVIS_FILES})
+target_include_directories(${CPPLIB} PRIVATE "include" "../thirdparty/nlohmann/json/single_include")
 
 set(CPPLIB tournament_builder_cpplib PARENT_SCOPE)

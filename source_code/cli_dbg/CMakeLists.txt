@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.31)
-
 set(DBG_NAME tournament_builder_dbg)
 project(${DBG_NAME})
 
@@ -9,11 +7,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-include_directories("include" "../cli/include" "thirdparty/nlohmann/json/single_include")
-
 set(DBG_MAINFILE "src/dbg_main.cpp")
 
 add_executable(${DBG_NAME} ${DBG_MAINFILE} $<TARGET_OBJECTS:${CPPLIB}> $<TARGET_OBJECTS:${CLILIB}>)
+
+target_include_directories(${DBG_NAME} PRIVATE "include" "../cli/include" "thirdparty/nlohmann/json/single_include")
 
 source_group("src" ${DBG_MAINFILE})
 
