@@ -31,7 +31,6 @@ namespace tournament_builder::descriptor
 		// you need to adjust the references to have an extra @OUTER on the front. This will
 		// do that for you.
 		
-		//static void add_outer_to_references(std::vector<Reference<T>>& list);
 		using internal_descriptor::DescriptorBaseImpl::add_outer_to_references;
 
 		// This runs some asserts on the input. It should never fail, regardless of

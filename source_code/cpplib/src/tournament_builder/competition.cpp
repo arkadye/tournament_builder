@@ -67,7 +67,7 @@ namespace tournament_builder
 		// Try to see if we can get a structure out of this.
 		if (DescriptorHandle descriptor = parse_descriptor(input))
 		{
-			return descriptor->generate();
+			return descriptor->generate_wrapper();
 		}
 
 		// It's not a descriptor, so parse it properly.

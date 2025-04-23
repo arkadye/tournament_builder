@@ -20,7 +20,7 @@ namespace tournament_builder::descriptor
 		bool generate_explicit_byes = true;
 
 		Competition generate() const override;
-
+	private:
 		DescriptorHandle parse(const nlohmann::json& input) const override;
 	};
 }

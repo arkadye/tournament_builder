@@ -505,6 +505,12 @@ Fields:
 
 Descriptors are objects that may be used in place of a Competition object. They describe how to create phase of a competition and generate a Competition structure from it.
 
+All descriptors have the following fields in addition to the ones specific to this descriptor:
+
+- **Required:** `descriptor_type`: a string identifying the type of the descriptor. The parser uses this to know which type of descriptor it is building. This *is* case-sensitive. See the documentation on each descriptor type to see what values are valid here.
+- **Required**: `name`: the name given to the resulting competition.
+- *Optional:* `tags`: Tags applied to the competition once it is built.
+
 All descriptors are identified by a field named `descriptor_type` which tells the parser which type of descriptor to create. 
 
 ### Round of Matches
@@ -515,8 +521,7 @@ This is not really intended to by used as a complete competition, but as an inte
 
 Input Fields:
 
-- **Required: ** `descriptor_type`: `"round_of_matches".
-- **Required:** `name`: the name given to the resulting competition.
+- `"descriptor_type": "round_of_matches"`.
 - **Required:** `entry_list`: an array of Competitors. This also accepts JSON `null`s, which create byes.
 - *Optional:* `swap_left_and_right`: a bool (default: `false`) which makes second vs first, fourth vs third, etc... instead of first vs second, third v fourth, etc... Mainly used for Round Robin formats.
 - *Optional:* `generate_explicit_byes`: a bool default: `true`) which creates Competition events where one entry is a bye. Setting this to `false` will omit them. Any matches where both Competitors would be a Bye are omitted regardless of what this is set to. This may be useful if you wish to have your program display a list of matches including listings like "Joe Bloggs United - BYE".
@@ -587,8 +592,7 @@ would output:
 
 This generates a round-robin competition where each entry plays every other entry. Matches are organised into rounds, named `round_0`, `round_1`, and so-on, with each entry having one match per round, generated using the Round Of Matches descriptor. If there are an odd number of teams one team will get a bye in each round.
 
-- **Required** `descriptor_type`: `"round_robin".
-- **Required:** `name`: the name given to the resulting competition.
+- `"descriptor_type": "round_robin"`.
 - **Required:** `entry_list`: an array of Competitors. This does not accept `null` objects.
 - *Optional:* `alternate_left_and_right`: a bool (default: `false`) which will try to get entries to alternate whether they are listed first or second on the outputs. This may be relevant for home-and-away formats (like football) or where this is first-turn advantage (like chess).
 - *Optional:* `generate_byes`: a bool (default `false`) which tells the generator whether or not to produce a spare match vs a `null` opponent (i.e.: a bye) for the spare team each round if there are an odd number of rounds. If there are an even number of entries this does nothing.
@@ -824,8 +828,7 @@ Produces output:
 
 ### Knockout-bracket
 
-- **Required** `descriptor_type`: `"round_robin".
-- **Required:** `name`: the name given to the resulting competition.
+- `descriptor_type`: `"knockout_bracket".
 - **Required:** `entry_list`: an array of Competitors. Use `null` objects to create byes. This must have a power-of-two number of entries, including the byes.
 
 In the first round Entry 1 will play Entry 2, entry 3 will play entry 4, and so on. Then in the second round the winner of 1&2 will play the winner of 3&4, and so on. Rounds are generated until there is a winner.

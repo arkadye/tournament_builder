@@ -14,6 +14,10 @@
 namespace tournament_builder
 {
 	class World;
+	namespace descriptor
+	{
+		template <typename T> class DescriptorBase;
+	}
 }
 
 namespace tournament_builder::descriptor::internal_descriptor
@@ -22,16 +26,18 @@ namespace tournament_builder::descriptor::internal_descriptor
 
 	using DescriptorHandle = std::unique_ptr<DescriptorBaseImpl>;
 
-	class DescriptorBaseImpl : public NamedElement
+	class DescriptorBaseImpl : public NamedElement , public TaggableMixin
 	{
 	public:
 		using NamedElement::NamedElement;
+		Competition generate_wrapper() const;
+		static DescriptorHandle parse_descriptor(const nlohmann::json& input);
+	protected:
+		friend class DescriptorRegister;
+
 		virtual Competition generate() const = 0;
 		virtual Name get_descriptor_uid() const = 0;
-		virtual DescriptorHandle parse(const nlohmann::json& input) const = 0;
-		static DescriptorHandle parse_descriptor(const nlohmann::json& input);
 
-	protected:
 		// Checks the UID matches the input.
 		void verify_input(const nlohmann::json& input) const;
 
@@ -50,6 +56,9 @@ namespace tournament_builder::descriptor::internal_descriptor
 				}
 			}
 		}
+
+		DescriptorHandle parse_wrapper(const nlohmann::json& input) const;
+		virtual DescriptorHandle parse(const nlohmann::json& input) const = 0;
 	};
 
 	template <typename T>

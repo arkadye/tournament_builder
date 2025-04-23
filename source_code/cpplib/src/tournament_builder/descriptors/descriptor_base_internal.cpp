@@ -25,6 +25,13 @@ namespace tournament_builder::descriptor::internal_descriptor
 		assert(std::string_view{ type } == get_descriptor_uid());
 	}
 
+	DescriptorHandle DescriptorBaseImpl::parse_wrapper(const nlohmann::json& input) const
+	{
+		DescriptorHandle result = parse(input);
+		result->add_tags_from_json(input);
+		return result;
+	}
+
 	void DescriptorRegister::register_impl(DescriptorHandle new_element, Name uid)
 	{
 		assert(new_element != nullptr);
@@ -48,7 +55,14 @@ namespace tournament_builder::descriptor::internal_descriptor
 		}
 
 		const auto& exemplar = find_it->second;
-		return exemplar->parse(input);
+		return exemplar->parse_wrapper(input);
+	}
+
+	Competition DescriptorBaseImpl::generate_wrapper() const
+	{
+		Competition result = generate();
+		static_cast<TaggableMixin&>(result) = *this;
+		return result;
 	}
 
 	DescriptorHandle DescriptorBaseImpl::parse_descriptor(const nlohmann::json& input)

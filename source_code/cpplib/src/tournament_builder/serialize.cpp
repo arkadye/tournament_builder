@@ -27,12 +27,12 @@ namespace tournament_builder
 			return json{ {"name" , ne.name.to_string() } };
 		}
 
-		json to_json(const NamedElement& nt)
+		json to_json_internal(const NamedElement& nt)
 		{
 			return internal_serialize::to_json_ne(nt);
 		}
 
-		json to_json(const RealCompetitor& competitor)
+		json to_json_internal(const RealCompetitor& competitor)
 		{
 			using namespace internal_serialize;
 			json result = to_json_ne(competitor);
@@ -43,7 +43,7 @@ namespace tournament_builder
 			return result;
 		}
 
-		json to_json(const Competitor& comp)
+		json to_json_internal(const Competitor& comp)
 		{
 			struct Serializer
 			{
@@ -59,7 +59,7 @@ namespace tournament_builder
 			return std::visit(Serializer{}, comp.data());
 		}
 
-		json to_json(const Competition& comp)
+		json to_json_internal(const Competition& comp)
 		{
 			using namespace internal_serialize;
 			json result = to_json_ne(comp);
@@ -74,12 +74,12 @@ namespace tournament_builder
 			return result;
 		}
 
-		json to_json(const SoftReference& sr)
+		json to_json_internal(const SoftReference& sr)
 		{
 			return sr.to_string();
 		}
 
-		nlohmann::json to_json(const Tag& tag)
+		nlohmann::json to_json_internal(const Tag& tag)
 		{
 			if (tag.copy_on_reference)
 			{
@@ -91,7 +91,7 @@ namespace tournament_builder
 			return result;
 		}
 
-		nlohmann::json to_json(const World& world)
+		nlohmann::json to_json_internal(const World& world)
 		{
 			nlohmann::json result;
 			if (!world.error_messages.empty()) [[unlikely]]

@@ -26,13 +26,13 @@ namespace tournament_builder
 
 	namespace internal_serialize
 	{
-		nlohmann::json to_json(const NamedElement& type);
-		nlohmann::json to_json(const RealCompetitor& competitor);
-		nlohmann::json to_json(const Competitor& competitor);
-		nlohmann::json to_json(const Competition& comp);
-		nlohmann::json to_json(const SoftReference& sr);
-		nlohmann::json to_json(const Tag& tag);
-		nlohmann::json to_json(const World& world);
+		nlohmann::json to_json_internal(const NamedElement& type);
+		nlohmann::json to_json_internal(const RealCompetitor& competitor);
+		nlohmann::json to_json_internal(const Competitor& competitor);
+		nlohmann::json to_json_internal(const Competition& comp);
+		nlohmann::json to_json_internal(const SoftReference& sr);
+		nlohmann::json to_json_internal(const Tag& tag);
+		nlohmann::json to_json_internal(const World& world);
 		nlohmann::json try_add_tags(const ITaggable* maybe_taggable, nlohmann::json input);
 	}
 
@@ -41,7 +41,7 @@ namespace tournament_builder
 	template <typename T>
 	inline nlohmann::json to_json(const T& serializable)
 	{
-		nlohmann::json result = internal_serialize::to_json(serializable);
+		nlohmann::json result = internal_serialize::to_json_internal(serializable);
 		if constexpr (std::is_polymorphic_v<T>)
 		{
 			result = internal_serialize::try_add_tags(dynamic_cast<const ITaggable*>(&serializable), std::move(result));
