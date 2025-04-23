@@ -12,7 +12,7 @@ namespace tournament_builder
 
 	RealCompetitor RealCompetitor::copy_ref(const ReferenceCopyOptions& rco) const
 	{
-		RealCompetitor result{ name };
+		RealCompetitor result = *this;
 		result.take_tags_via_reference(*this, rco);
 		return result;
 	}
@@ -174,6 +174,7 @@ namespace tournament_builder
 		const Name name = Name::parse(input);
 		RealCompetitor result{ name };
 		result.add_tags_from_json(input);
+		result.user_data = json_helper::get_optional_object(input, "user_data");
 		return result;
 	}
 

@@ -5,11 +5,12 @@
 #include "tournament_builder/itaggable.hpp"
 #include "tournament_builder/ireferencable.hpp"
 
-#include "nlohmann/json_fwd.hpp"
+#include "nlohmann/json.hpp"
 
 #include <variant>
 #include <vector>
 #include <string_view>
+#include <optional>
 
 namespace tournament_builder
 {
@@ -21,6 +22,8 @@ namespace tournament_builder
 		static RealCompetitor parse(const nlohmann::json& input);
 		static std::vector<RealCompetitor> parse_entry_list(const nlohmann::json& input);
 		static std::vector<RealCompetitor> parse_entry_list(const nlohmann::json& input, std::string_view field_name);
+
+		std::optional<nlohmann::json> user_data;
 	};
 
 	class Bye {};

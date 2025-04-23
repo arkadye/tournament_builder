@@ -36,6 +36,10 @@ namespace tournament_builder
 		{
 			using namespace internal_serialize;
 			json result = to_json_ne(competitor);
+			if (competitor.user_data.has_value())
+			{
+				result["user_data"] = competitor.user_data.value();
+			}
 			return result;
 		}
 
