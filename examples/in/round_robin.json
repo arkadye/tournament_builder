@@ -3,6 +3,7 @@
     "descriptor_type": "round_robin",
     "name": "six_nations",
     "comment": "An example based on the Six Nations rugby union competition",
+    "tags": ["rugby_union"],
     "entry_list": [
       {
         "name": "england",
