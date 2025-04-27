@@ -9,9 +9,9 @@
 
 namespace tournament_builder::descriptor
 {
-    Competition RoundOfMatches::generate() const
+    std::optional<RealCompetition> RoundOfMatches::generate() const
     {
-        Competition result{ name };
+        RealCompetition result{ name };
        
         std::vector<Reference<Competitor>> competitors;
         competitors.reserve(entry_list.size() + 1);
@@ -58,7 +58,7 @@ namespace tournament_builder::descriptor
             }
             const auto game_idx = result.phases.size();
             const std::string game_name_str = std::format("game_{}", result.phases.size() + 1u);
-            Competition game{ game_name_str };
+            RealCompetition game{ game_name_str };
             game.entry_list.reserve(2);
             game.entry_list.emplace_back(std::move(left));
             game.entry_list.emplace_back(std::move(right));

@@ -58,10 +58,13 @@ namespace tournament_builder::descriptor::internal_descriptor
 		return exemplar->parse_wrapper(input);
 	}
 
-	Competition DescriptorBaseImpl::generate_wrapper() const
+	std::optional<RealCompetition> DescriptorBaseImpl::generate_wrapper() const
 	{
-		Competition result = generate();
-		static_cast<TaggableMixin&>(result) = *this;
+		std::optional<RealCompetition> result = generate();
+		if(result.has_value())
+		{
+			static_cast<TaggableMixin&>(*result) = *this;
+		}
 		return result;
 	}
 

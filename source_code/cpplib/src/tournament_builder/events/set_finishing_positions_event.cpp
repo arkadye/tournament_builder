@@ -54,12 +54,16 @@ namespace tournament_builder::event
 		ReferenceResult<Competition>& target_ref_result = target_ref_result_vector.front();
 		assert(target_ref_result.get() != nullptr);
 
-		Competition& target = *target_ref_result.get();;
+		Competition& competition_target = *target_ref_result.get();;
 
-		if (!target.resolve_all_references(world, target_ref_result.get_location()))
+		if (!competition_target.resolve_all_references(world, target_ref_result.get_location()))
 		{
 			throw_execution_exception("Not all references in the target could be resolved.");
 		}
+
+		RealCompetition* p_target = competition_target.get_real_competition();
+		assert(p_target != nullptr);
+		RealCompetition& target = *p_target;
 
 		struct Placement
 		{

@@ -3,9 +3,11 @@
 
 #include "tournament_builder/exceptions.hpp"
 
+#include <cassert>
+
 namespace tournament_builder::descriptor
 {
-	Competition KnockoutBracket::generate() const
+	std::optional<RealCompetition> KnockoutBracket::generate() const
 	{
 		// Check for a power of 2 number of entries
 		if (std::popcount(entry_list.size()) > 1u)
@@ -15,7 +17,7 @@ namespace tournament_builder::descriptor
 
 		int round_num = 0;
 
-		Competition result{ name };
+		RealCompetition result{ name };
 
 		auto next_round_entries = entry_list;
 
@@ -31,7 +33,7 @@ namespace tournament_builder::descriptor
 			next_round_entries = decltype(next_round_entries){};
 			next_round_entries.reserve(round_desc.entry_list.size() / 2u);
 
-			Competition round = round_desc.generate();
+			RealCompetition round = round_desc.generate().value() ;
 			const std::string_view round_name = round.name.to_string();
 
 			auto round_it = begin(round.phases);
@@ -47,7 +49,7 @@ namespace tournament_builder::descriptor
 				if (!a_bye && !b_bye) // Use an actual match result. It *should* be the match pointed to by round_it.
 				{
 					assert(round_it != end(round.phases));
-					next_round_entries.emplace_back(std::format("@OUTER.{}.{}.$POS:1", round_name, round_it->name));
+					next_round_entries.emplace_back(std::format("@OUTER.{}.{}.$POS:1", round_name, round_it->get_reference_key()));
 					++round_it;
 				}
 				else if (a_bye != b_bye)
@@ -68,7 +70,7 @@ namespace tournament_builder::descriptor
 			// We should have used all the matches.
 			assert(round_it == end(round.phases));
 
-			result.phases.push_back(std::move(round));
+			result.phases.emplace_back(std::move(round));
 		}
 		return result;
 	}

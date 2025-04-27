@@ -59,7 +59,7 @@ namespace tournament_builder
 			return std::visit(Serializer{}, comp.data());
 		}
 
-		json to_json_internal(const Competition& comp)
+		json to_json_internal(const RealCompetition& comp)
 		{
 			using namespace internal_serialize;
 			json result = to_json_ne(comp);

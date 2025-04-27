@@ -13,11 +13,7 @@ namespace tournament_builder::descriptor
 	class DescriptorBase : public internal_descriptor::DescriptorBaseImpl
 	{
 	public:
-		template <typename StringIsh>
-		DescriptorBase(const StringIsh& name);
-
-		// Implement this function to generate the actual competition structure we want.
-		Competition generate() const override = 0;
+		explicit DescriptorBase(std::string_view name);
 
 		// Return a UNIQUE Name used in the parser to identify which type to parse.
 		// This will match up with the "descriptor_type" field in the JSON.
@@ -27,10 +23,12 @@ namespace tournament_builder::descriptor
 		virtual DescriptorHandle parse(const nlohmann::json& input) const = 0;
 
 	protected:
+		// Implement this function to generate the actual competition structure we want.
+		std::optional<RealCompetition> generate() const override = 0;
+
 		// When generating, if you move a something into an internal structure
 		// you need to adjust the references to have an extra @OUTER on the front. This will
 		// do that for you.
-		
 		using internal_descriptor::DescriptorBaseImpl::add_outer_to_references;
 
 		// This runs some asserts on the input. It should never fail, regardless of
@@ -50,8 +48,7 @@ namespace tournament_builder::descriptor
 	}
 
 	template<typename T>
-	template<typename StringIsh>
-	inline DescriptorBase<T>::DescriptorBase(const StringIsh&  name)
+	inline DescriptorBase<T>::DescriptorBase(std::string_view name)
 		: internal_descriptor::DescriptorBaseImpl{ name }
 	{
 		auto make_sure_this_has_an_address = &m_register_object;

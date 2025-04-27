@@ -13,10 +13,15 @@ namespace tournament_builder
 	class NamedElement;
 	class Competitor;
 	class Competition;
+	class RealCompetition;
 	class ITaggable;
 	class RealCompetitor;
 	class Tag;
 	class World;
+	namespace descriptor::internal_descriptor
+	{
+		class DescriptorBaseImpl;
+	}
 }
 
 namespace tournament_builder
@@ -29,7 +34,9 @@ namespace tournament_builder
 		nlohmann::json to_json_internal(const NamedElement& type);
 		nlohmann::json to_json_internal(const RealCompetitor& competitor);
 		nlohmann::json to_json_internal(const Competitor& competitor);
+		nlohmann::json to_json_internal(const RealCompetition& comp);
 		nlohmann::json to_json_internal(const Competition& comp);
+		nlohmann::json to_json_internal(const descriptor::internal_descriptor::DescriptorBaseImpl& desc);
 		nlohmann::json to_json_internal(const SoftReference& sr);
 		nlohmann::json to_json_internal(const Tag& tag);
 		nlohmann::json to_json_internal(const World& world);

@@ -19,7 +19,7 @@ namespace tournament_builder::descriptor
 		bool swap_left_and_right = false;
 		bool generate_explicit_byes = true;
 
-		Competition generate() const override;
+		std::optional<RealCompetition> generate() const override;
 	private:
 		DescriptorHandle parse(const nlohmann::json& input) const override;
 	};
