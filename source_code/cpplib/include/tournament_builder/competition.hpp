@@ -23,6 +23,7 @@ namespace tournament_builder
 	{
 	public:
 		using NamedElement::NamedElement;
+		virtual ~RealCompetition() = default;
 		std::vector<Reference<Competitor>> entry_list;
 		std::vector<Competition> phases;
 
@@ -55,6 +56,7 @@ namespace tournament_builder
 	public:
 		explicit Competition(descriptor::DescriptorHandle desc) : m_data{ std::move(desc) } {}
 		explicit Competition(RealCompetition competition) : m_data{ std::move(competition) } {}
+		virtual ~Competition() = default;
 
 		// Returns true if a RealCompetition and all the entry list are actual Competitor types and not refrences.
 		bool has_finalized_entry_list(bool recursive) const;

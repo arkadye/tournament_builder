@@ -32,6 +32,7 @@ namespace tournament_builder::descriptor::internal_descriptor
 	{
 	public:
 		using NamedElement::NamedElement;
+		virtual ~DescriptorBaseImpl() = default;
 		std::optional<RealCompetition> generate_wrapper() const;
 		static DescriptorHandle parse_descriptor(const nlohmann::json& input);
 	protected:

@@ -31,6 +31,7 @@ namespace tournament_builder::event
 	class EventImpl
 	{
 	public:
+		virtual ~EventImpl() = default;
 		virtual void execute(World& world) const = 0;
 		virtual Name get_event_uid() const = 0;
 		virtual EventHandle parse(const nlohmann::json& input) const = 0;

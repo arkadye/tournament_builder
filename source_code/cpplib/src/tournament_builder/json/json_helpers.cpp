@@ -181,7 +181,7 @@ namespace tournament_builder::json_helper
 		throw_invalid_types_exception(object, allowed_types);
 	}
 
-	void json_helper::throw_invalid_types_exception(const json& object, std::initializer_list<json::value_t> allowed_types)
+	[[noreturn]] void throw_invalid_types_exception(const json& object, std::initializer_list<json::value_t> allowed_types)
 	{
 		std::vector<std::uint8_t> type_arg;
 		type_arg.reserve(allowed_types.size());
