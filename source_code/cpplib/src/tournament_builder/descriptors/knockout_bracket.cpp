@@ -79,8 +79,8 @@ namespace tournament_builder::descriptor
 	{
 		verify_input(input);
 		const Name name = Name::parse(input);
-		KnockoutBracket* result = new KnockoutBracket{ name };
+		auto result = std::make_shared<KnockoutBracket>(name);
 		result->entry_list = Competitor::parse_entry_list(input, "entry_list");
-		return DescriptorHandle{ result };
+		return  result;
 	}
 }
