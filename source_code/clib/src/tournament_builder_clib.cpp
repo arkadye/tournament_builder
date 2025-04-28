@@ -1,11 +1,7 @@
+#include "tournament_builder.h"
 #include "tournament_builder.hpp"
 
 #include <stdlib.h>
-
-extern "C"
-{
-	#include "tournament_builder.h"
-}
 
 void tournament_builder_make_tournament_to_file(const char* input, const char* output_filename)
 {
