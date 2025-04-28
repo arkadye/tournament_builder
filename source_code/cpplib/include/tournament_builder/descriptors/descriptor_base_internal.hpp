@@ -1,12 +1,14 @@
 #pragma once
 
 #include "tournament_builder/name.hpp"
-#include "tournament_builder/competition.hpp"
 #include "tournament_builder/reference.hpp"
+#include "tournament_builder/itaggable.hpp"
+#include "tournament_builder/competition.hpp"
+#include "tournament_builder/descriptors/descriptor_handle.hpp"
+#include "tournament_builder/exceptions.hpp"
 
 #include  "nlohmann/json_fwd.hpp"
 
-#include <memory>
 #include <format>
 #include <string_view>
 #include <vector>
@@ -24,10 +26,6 @@ namespace tournament_builder
 
 namespace tournament_builder::descriptor::internal_descriptor
 {
-	class DescriptorBaseImpl;
-
-	using DescriptorHandle = std::shared_ptr<DescriptorBaseImpl>;
-
 	class DescriptorBaseImpl : public NamedElement , public TaggableMixin
 	{
 	public:
@@ -35,11 +33,13 @@ namespace tournament_builder::descriptor::internal_descriptor
 		virtual ~DescriptorBaseImpl() = default;
 		std::optional<RealCompetition> generate_wrapper() const;
 		static DescriptorHandle parse_descriptor(const nlohmann::json& input);
+
+		virtual Name get_descriptor_uid() const = 0;
+		virtual void write_to_json(nlohmann::json& out) const; // Done this way to avoid having to include the full JSON header.
 	protected:
 		friend class DescriptorRegister;
 
 		virtual std::optional<RealCompetition> generate() const = 0;
-		virtual Name get_descriptor_uid() const = 0;
 
 		// Checks the UID matches the input.
 		void verify_input(const nlohmann::json& input) const;
@@ -94,4 +94,13 @@ namespace tournament_builder::descriptor::internal_descriptor
 	{
 		internal_descriptor::DescriptorRegister::register_descriptor<T>();
 	}
+}
+
+namespace tournament_builder::exception
+{
+	class WriteToJSONNotImplemented : public TournamentBuilderException
+	{
+	public:
+		WriteToJSONNotImplemented(const tournament_builder::descriptor::internal_descriptor::DescriptorBaseImpl& target);
+	};
 }

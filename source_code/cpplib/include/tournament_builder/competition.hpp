@@ -6,7 +6,7 @@
 #include "tournament_builder/competitor.hpp"
 #include "tournament_builder/name.hpp"
 #include "tournament_builder/reference.hpp"
-#include "tournament_builder/descriptors/descriptor_base.hpp"
+#include "tournament_builder/descriptors/descriptor_handle.hpp"
 
 #include "nlohmann/json_fwd.hpp"
 
@@ -28,7 +28,7 @@ namespace tournament_builder
 		std::vector<Competition> phases;
 
 		// Returns true if all the entry list are actual Competitor types and not refrences.
-		bool has_finalized_entry_list(bool recursive) const;
+		bool has_finalized_entry_list() const;
 
 		// Returns true if it successfully resolves all the references.
 		bool resolve_all_references(World& context, std::vector<Name>& location);
@@ -46,20 +46,20 @@ namespace tournament_builder
 		std::vector<IReferencable*> get_next_locations();
 
 	private:
+		friend class Competition;
 		// Returns true if it makes any changes
 		bool resolve_all_references_impl(World& context, std::vector<Name>& location);
 	};
 
 	class Competition : public IReferencable , public ITaggable
 	{
-		std::variant<descriptor::DescriptorHandle, RealCompetition> m_data;
 	public:
 		explicit Competition(descriptor::DescriptorHandle desc) : m_data{ std::move(desc) } {}
 		explicit Competition(RealCompetition competition) : m_data{ std::move(competition) } {}
 		virtual ~Competition() = default;
 
 		// Returns true if a RealCompetition and all the entry list are actual Competitor types and not refrences.
-		bool has_finalized_entry_list(bool recursive) const;
+		bool has_finalized_entry_list() const;
 
 		// If working with a descriptor, tries to resolve the descriptor.
 		// If successful, or already a RealCompetition, resolves as many references as it can on the competition.
@@ -80,5 +80,13 @@ namespace tournament_builder
 
 		RealCompetition* get_real_competition();
 		const RealCompetition* get_real_competition() const;
+
+		const std::variant<descriptor::DescriptorHandle, RealCompetition>& get_data() const { return m_data; }
+	private:
+		friend class RealCompetition;
+		std::variant<descriptor::DescriptorHandle, RealCompetition> m_data;
+
+		// Returns true if it makes any changes
+		bool resolve_all_references_impl(World& context, std::vector<Name>& location);
 	};
 }

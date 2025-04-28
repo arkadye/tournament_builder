@@ -11,9 +11,9 @@
 namespace tournament_builder
 {
 	using nlohmann::json;
-	bool RealCompetition::has_finalized_entry_list(bool resursive) const
+	bool RealCompetition::has_finalized_entry_list() const
 	{
-		const bool contents_result = resursive && std::ranges::all_of(phases, [](const Competition& inner) {return inner.has_finalized_entry_list(true); });
+		const bool contents_result = std::ranges::all_of(phases, [](const Competition& inner) {return inner.has_finalized_entry_list(); });
 		return contents_result && std::ranges::all_of(entry_list, &Reference<Competitor>::is_resolved);
 	}
 
@@ -41,7 +41,7 @@ namespace tournament_builder
 
 		for (Competition& phase : phases)
 		{
-			result = phase.resolve_all_references(context, location) || result;
+			result = phase.resolve_all_references_impl(context, location) || result;
 		}
 
 		location.pop_back();
@@ -56,7 +56,7 @@ namespace tournament_builder
 	{
 		// Keep trying until we fail to make a change
 		while (resolve_all_references_impl(context, location));
-		return has_finalized_entry_list(true);
+		return has_finalized_entry_list();
 	}
 
 	RealCompetition RealCompetition::parse(const json& input)
@@ -100,30 +100,39 @@ namespace tournament_builder
 		std::ranges::transform(phases, std::back_inserter(result), [](Competition& comp) {return &comp; });
 		return result;
 	}
-	bool Competition::has_finalized_entry_list(bool recursive) const
+	bool Competition::has_finalized_entry_list() const
 	{
 		if (const auto* rc = std::get_if<RealCompetition>(&m_data))
 		{
-			return rc->has_finalized_entry_list(recursive);
+			return rc->has_finalized_entry_list();
 		}
 		return false;
 	}
+
 	bool Competition::resolve_all_references(World& context, std::vector<Name>& location)
 	{
+		while (resolve_all_references_impl(context, location));
+		return has_finalized_entry_list();
+	}
+
+	bool Competition::resolve_all_references_impl(World& context, std::vector<Name>& location)
+	{
+		bool result = false;
 		if (auto* p_desc = std::get_if<descriptor::DescriptorHandle>(&m_data))
 		{
 			if (auto real_comp_opt = (*p_desc)->generate_wrapper())
 			{
 				// Warning! This will invalidate p_desc.
 				m_data = std::move(*real_comp_opt);
+				result = true;
 			}
 		}
 
 		if (auto* p_real_comp = std::get_if<RealCompetition>(&m_data))
 		{
-			return p_real_comp->resolve_all_references(context, location);
+			result = p_real_comp->resolve_all_references_impl(context, location) || result;
 		}
-		return false;
+		return result;
 	}
 
 	Competition Competition::parse(const nlohmann::json& input)

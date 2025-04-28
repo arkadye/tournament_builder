@@ -72,4 +72,14 @@ namespace tournament_builder::descriptor::internal_descriptor
 	{
 		return DescriptorRegister::parse_descriptor(input);
 	}
+
+	void DescriptorBaseImpl::write_to_json(nlohmann::json& out) const
+	{
+		throw tournament_builder::exception::WriteToJSONNotImplemented{ *this };
+	}
+}
+
+tournament_builder::exception::WriteToJSONNotImplemented::WriteToJSONNotImplemented(const tournament_builder::descriptor::internal_descriptor::DescriptorBaseImpl& target)
+	: TournamentBuilderException{ std::format("Descriptor '{}' does not implement write_to_json. It MUST always successfully resolve OR imeplement write_to_json.", target.get_descriptor_uid())}
+{
 }

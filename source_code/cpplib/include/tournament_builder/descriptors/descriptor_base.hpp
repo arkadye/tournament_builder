@@ -5,8 +5,6 @@
 
 namespace tournament_builder::descriptor
 {
-	using DescriptorHandle = internal_descriptor::DescriptorHandle;
-
 	DescriptorHandle parse_descriptor(const nlohmann::json& input);
 
 	template <typename T>
@@ -21,6 +19,9 @@ namespace tournament_builder::descriptor
 
 		// Parse the JSON object here.
 		virtual DescriptorHandle parse(const nlohmann::json& input) const = 0;
+
+		// Overwrite this if generate() can ever fail. This is used to serialize the descriptor if it isn't resolved.
+		virtual void write_to_json(nlohmann::json& target) const { internal_descriptor::DescriptorBaseImpl::write_to_json(target); }
 
 	protected:
 		// Implement this function to generate the actual competition structure we want.
