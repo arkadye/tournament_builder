@@ -1,0 +1,7 @@
+{
+  "competition": {
+    "comment": "This descriptor will *never* resolve. The output should be the same as the input (more or less).",
+    "descriptor_type": "DEBUG_never_resolves",
+    "name": "non_resolving_competition"
+  }
+}

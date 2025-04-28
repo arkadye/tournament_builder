@@ -60,6 +60,8 @@ namespace tournament_builder::descriptor::internal_descriptor
 			}
 		}
 
+		void add_name_and_descriptor_type_to_json(nlohmann::json& target) const;
+
 		DescriptorHandle parse_wrapper(const nlohmann::json& input) const;
 		virtual DescriptorHandle parse(const nlohmann::json& input) const = 0;
 	};

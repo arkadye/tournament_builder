@@ -30,6 +30,7 @@ add_example_file("round_robin.json")
 add_example_file("set_finishing_positions.json")
 add_example_file("simple_elim.json")
 add_example_file("test_references.json")
+add_example_file("DEBUG_never_resolves.json")
 
 set(EXAMPLE_FILES ${EXAMPLE_INPUT_FILES} ${EXAMPLE_OUTPUT_FILES})
 

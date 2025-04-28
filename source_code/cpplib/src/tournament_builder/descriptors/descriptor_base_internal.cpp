@@ -25,6 +25,12 @@ namespace tournament_builder::descriptor::internal_descriptor
 		assert(std::string_view{ type } == get_descriptor_uid());
 	}
 
+	void DescriptorBaseImpl::add_name_and_descriptor_type_to_json(nlohmann::json& target) const
+	{
+		target["name"] = name.to_string();
+		target["descriptor_type"] = get_descriptor_uid().to_string();
+	}
+
 	DescriptorHandle DescriptorBaseImpl::parse_wrapper(const nlohmann::json& input) const
 	{
 		DescriptorHandle result = parse(input);
