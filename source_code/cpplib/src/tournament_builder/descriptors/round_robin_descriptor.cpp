@@ -60,7 +60,9 @@ namespace tournament_builder
 			// Generate the first round from scratch
 			for (std::size_t i = 0u; i < rounds_per_repetition; ++i)
 			{
-				result.phases.emplace_back(round.generate());
+				auto round_opt = round.generate_wrapper();
+				assert(round_opt.has_value());
+				result.phases.emplace_back(std::move(round_opt.value()));
 				if (i < rounds_per_repetition - 1) [[likely]]
 				{
 					// Advance data to next round.
@@ -106,7 +108,7 @@ namespace tournament_builder
 	descriptor::DescriptorHandle descriptor::RoundRobin::parse(const nlohmann::json& input) const
 	{
 		const Name name = Name::parse(input);
-		RoundRobin* result = new RoundRobin{ name };
+		auto result = std::make_shared<RoundRobin>(name);
 
 		result->entry_list = Competitor::parse_entry_list(input, "entry_list");
 		result->num_times_to_play_each_opponent = json_helper::get_int_or(input, "num_times_to_play_each_opponent", 1);
@@ -114,6 +116,6 @@ namespace tournament_builder
 		result->generate_byes = json_helper::get_bool_or(input, "generate_byes", false);
 		result->shuffle_entries = json_helper::get_bool_or(input,"shuffle_entries", false);
 
-		return DescriptorHandle{result};
+		return result;
 	}
 }
