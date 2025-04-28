@@ -19,7 +19,7 @@ namespace tournament_builder
 			}
 			catch (const tournament_builder::exception::TournamentBuilderException& ex)
 			{
-				result["error"] = ex.what();
+				result["errors"] = { ex.what() };
 			}
 			return result;
 		}

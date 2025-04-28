@@ -22,7 +22,7 @@ namespace tournament_builder::descriptor
 		bool shuffle_entries = false;
 		bool generate_byes = false;
 
-		Competition generate() const override;
+		std::optional<RealCompetition> generate() const override;
 	private:
 		DescriptorHandle parse(const nlohmann::json& input) const override;
 	};

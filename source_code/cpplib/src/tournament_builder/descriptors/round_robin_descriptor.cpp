@@ -12,7 +12,7 @@
 
 namespace tournament_builder
 {
-	Competition descriptor::RoundRobin::generate() const
+	std::optional<RealCompetition> descriptor::RoundRobin::generate() const
 	{
 		if (num_times_to_play_each_opponent <= 0)
 		{
@@ -31,7 +31,7 @@ namespace tournament_builder
 			}
 		}
 
-		Competition result{ name };
+		RealCompetition result{ name };
 		if (entry_list.size() == 0u) return result;
 
 		RoundOfMatches round{ "round_0" };
@@ -77,12 +77,18 @@ namespace tournament_builder
 			const bool invert_left_and_right = alternate_left_and_right && (rep % 2);
 			for (std::size_t idx = 0u; idx < rounds_per_repetition; ++idx)
 			{
-				Competition round = result.phases[idx];
+				Competition comp_round = result.phases[idx];
+				RealCompetition* p_round = comp_round.get_real_competition();
+				assert(p_round != nullptr);
+				RealCompetition& round = *p_round;
 				round.name = Name{ std::format("round_{}", result.phases.size() + 1) };
 				if (invert_left_and_right) [[unlikely]]
 				{
-					for (Competition& match : round.phases)
+					for (Competition& comp_match : round.phases)
 					{
+						RealCompetition* p_match = comp_match.get_real_competition();
+						assert(p_match != nullptr);
+						RealCompetition& match = *p_match;
 						assert(match.entry_list.size() == 1u || match.entry_list.size() == 2u);
 						if (match.entry_list.size() == 2u) [[likely]]
 						{

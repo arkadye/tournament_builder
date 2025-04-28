@@ -24,6 +24,7 @@ namespace tournament_builder
 		static std::vector<RealCompetitor> parse_entry_list(const nlohmann::json& input, std::string_view field_name);
 
 		std::optional<nlohmann::json> user_data;
+		virtual ~RealCompetitor() = default;
 	};
 
 	class Bye {};
@@ -39,6 +40,7 @@ namespace tournament_builder
 		Competitor(Bye b) noexcept : m_data{ b } {}
 		Competitor(const Competitor&) = default;
 		Competitor(Competitor&&) noexcept = default;
+		virtual ~Competitor() = default;
 		Competitor& operator=(const Competitor&) = default;
 		Competitor& operator=(Competitor&&) noexcept = default;
 		underlying_t& data() noexcept { return m_data; }

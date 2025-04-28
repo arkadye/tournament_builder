@@ -12,14 +12,17 @@ namespace tournament_builder
     {
         void set_entry_tags(Competition& competition)
         {
-            for (Competition& phase : competition.phases)
+            RealCompetition* p_rc = competition.get_real_competition();
+            if (p_rc == nullptr) return;
+            RealCompetition& rc = *p_rc;
+            for (Competition& phase : rc.phases)
             {
                 set_entry_tags(phase);
             }
 
-            for (std::size_t i=0u;i<competition.entry_list.size();++i)
+            for (std::size_t i=0u;i<rc.entry_list.size();++i)
             {
-                Reference<Competitor>& competitor_ref = competition.entry_list[i];
+                Reference<Competitor>& competitor_ref = rc.entry_list[i];
                 if (competitor_ref.is_resolved())
                 {
                     Competitor& competitor = competitor_ref.get();

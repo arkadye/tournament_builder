@@ -29,8 +29,7 @@ namespace tournament_builder
 	{
 	public:
 		Name name;
-		template <typename StringIsh>
-		NamedElement(const StringIsh& init) : name{ init } {}
+		NamedElement(std::string_view init) : name{ init } {}
 		bool matches_name(Name a_name) const { return name == a_name; }
 		auto operator<=>(const NamedElement& other) const noexcept = default;
 		std::string_view to_string() const { return name.to_string(); }

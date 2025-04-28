@@ -25,6 +25,12 @@ namespace tournament_builder::descriptor::internal_descriptor
 		assert(std::string_view{ type } == get_descriptor_uid());
 	}
 
+	void DescriptorBaseImpl::add_name_and_descriptor_type_to_json(nlohmann::json& target) const
+	{
+		target["name"] = name.to_string();
+		target["descriptor_type"] = get_descriptor_uid().to_string();
+	}
+
 	DescriptorHandle DescriptorBaseImpl::parse_wrapper(const nlohmann::json& input) const
 	{
 		DescriptorHandle result = parse(input);
@@ -58,10 +64,13 @@ namespace tournament_builder::descriptor::internal_descriptor
 		return exemplar->parse_wrapper(input);
 	}
 
-	Competition DescriptorBaseImpl::generate_wrapper() const
+	std::optional<RealCompetition> DescriptorBaseImpl::generate_wrapper() const
 	{
-		Competition result = generate();
-		static_cast<TaggableMixin&>(result) = *this;
+		std::optional<RealCompetition> result = generate();
+		if(result.has_value())
+		{
+			static_cast<TaggableMixin&>(*result) = *this;
+		}
 		return result;
 	}
 
@@ -69,4 +78,14 @@ namespace tournament_builder::descriptor::internal_descriptor
 	{
 		return DescriptorRegister::parse_descriptor(input);
 	}
+
+	void DescriptorBaseImpl::write_to_json(nlohmann::json& out) const
+	{
+		throw tournament_builder::exception::WriteToJSONNotImplemented{ *this };
+	}
+}
+
+tournament_builder::exception::WriteToJSONNotImplemented::WriteToJSONNotImplemented(const tournament_builder::descriptor::internal_descriptor::DescriptorBaseImpl& target)
+	: TournamentBuilderException{ std::format("Descriptor '{}' does not implement write_to_json. It MUST always successfully resolve OR imeplement write_to_json.", target.get_descriptor_uid())}
+{
 }

@@ -323,7 +323,7 @@ struct std::formatter<tournament_builder::ReferenceResult<T>>
 			}
 			oss << n.to_string();
 		}
-		const auto* as_named = ref_result.get_as<tournament_builder::NamedElement>();
+		const auto* as_named = ref_result.template get_as<tournament_builder::NamedElement>();
 		oss << "]." << as_named->name.to_string();
 		return std::format_to(ctx.out(), "{}", oss.str());
 	}

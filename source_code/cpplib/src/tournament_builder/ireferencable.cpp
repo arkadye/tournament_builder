@@ -6,6 +6,11 @@ namespace tournament_builder
 {
     bool IReferencable::matches_token(const Token& token) const
     {
+        if (get_reference_key() == token)
+        {
+            return true;
+        }
+
         if (const auto* as_named = dynamic_cast<const NamedElement*>(this))
         {
             if (as_named->name == token)

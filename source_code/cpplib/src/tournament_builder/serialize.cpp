@@ -4,6 +4,7 @@
 #include "tournament_builder/competition.hpp"
 #include "tournament_builder/tag.hpp"
 #include "tournament_builder/world.hpp"
+#include "tournament_builder/descriptors/descriptor_base_internal.hpp"
 
 #include "nlohmann/json.hpp"
 
@@ -59,7 +60,7 @@ namespace tournament_builder
 			return std::visit(Serializer{}, comp.data());
 		}
 
-		json to_json_internal(const Competition& comp)
+		json to_json_internal(const RealCompetition& comp)
 		{
 			using namespace internal_serialize;
 			json result = to_json_ne(comp);
@@ -71,6 +72,29 @@ namespace tournament_builder
 			{
 				result["phases"] = to_json_array(comp.phases);
 			}
+			return result;
+		}
+
+		nlohmann::json to_json_internal(const Competition& comp)
+		{
+			struct Impl
+			{
+				nlohmann::json operator()(const descriptor::DescriptorHandle& dh) const
+				{
+					return to_json(*dh.get());
+				}
+				nlohmann::json operator()(const RealCompetition& rc) const
+				{
+					return to_json(rc);
+				}
+			};
+			return std::visit(Impl{}, comp.get_data());
+		}
+
+		nlohmann::json to_json_internal(const descriptor::internal_descriptor::DescriptorBaseImpl& desc)
+		{
+			nlohmann::json result;
+			desc.write_to_json(result);
 			return result;
 		}
 
