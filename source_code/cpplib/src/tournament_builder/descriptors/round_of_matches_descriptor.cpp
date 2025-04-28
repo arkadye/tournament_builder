@@ -75,12 +75,12 @@ namespace tournament_builder::descriptor
     DescriptorHandle RoundOfMatches::parse(const nlohmann::json& input) const
     {
         const Name name = Name::parse(input);
-        RoundOfMatches* result = new RoundOfMatches{ name };
+        auto result = std::make_shared<RoundOfMatches>(name);
 
         result->entry_list = Competitor::parse_entry_list(input, "entry_list");
         result->swap_left_and_right = json_helper::get_bool_or(input, "swap_left_and_right", false);
         result->generate_explicit_byes = json_helper::get_bool_or(input, "generate_explicit_byes", true);
 
-        return DescriptorHandle{result};
+        return result;
     }
 }
