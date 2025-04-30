@@ -27,6 +27,7 @@ target_sources(${CLIEXE} PRIVATE ${INVOKE_HEADER})
 target_sources(${CLIEXE} PRIVATE ${CLI_MAINFILE})
 
 set(CLILIB tournament_builder_cli_lib PARENT_SCOPE)
+set(CLIEXE tournament_builder_cli PARENT_SCOPE)
 
 # Install instructions below.
 
