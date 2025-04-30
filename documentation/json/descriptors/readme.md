@@ -32,4 +32,4 @@ All descriptors are identified by a field named `descriptor_type` which tells th
 
 These types are provided for debugging or testing, and are not intended to be used in any real situations.
 
-- [**Never resolves:**(DEBUG_never_resolves.md) `DEBUG_never_resolves`: Test whether functionality allowing descriptors to defer resolving works correctly.
+- [**Never resolves:**](DEBUG_never_resolves.md) `DEBUG_never_resolves`: Test whether functionality allowing descriptors to defer resolving works correctly.
