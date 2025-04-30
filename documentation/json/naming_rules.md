@@ -1,6 +1,10 @@
-This is of the JSON object specifications. [See here for an overview](../readme.md)
+### Navigation
+- [Back to top](../../readme.md)
+  - [Documentation home](../readme.md)
+    - [Input and output JSON](readme.md)
+      - Names
 
-## Names
+# Names
 
 Many objects are identified by a `name` field. The name itself is a string, with some rules.
 
