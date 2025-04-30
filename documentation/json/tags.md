@@ -2,7 +2,7 @@
 
 - [Back to top](../../readme.md)
   - [Documentation home](../readme.md)
-    - Input and output JSON
+    - [Input and output JSON](readme.md)
       - Tags
 
 # Tags
