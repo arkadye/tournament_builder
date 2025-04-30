@@ -10,7 +10,7 @@ This takes an entry list and produces a single-elimination knockout bracket.
 
 ## Fields
 
-- `descriptor_type: "knockout_bracket"`.
+- `"descriptor_type": "knockout_bracket"`.
 - **Required:** `entry_list`: an array of [competitors](../competitor.md). Use `null` objects to create byes. This must have a power-of-two number of entries, including the byes.
 
 In the first round Entry 1 will play Entry 2, entry 3 will play entry 4, and so on. Then in the second round the winner of 1&2 will play the winner of 3&4, and so on. Rounds are generated until there is a winner.
