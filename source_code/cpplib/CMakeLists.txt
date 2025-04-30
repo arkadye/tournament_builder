@@ -100,7 +100,7 @@ set(JSON_HEADERS
 )
 set(JSON_FILES ${JSON_SOURCES} ${JSON_HEADERS})
 	
-set(NATVIS_FILES "../thirdparty/nlohmann/json/nlohmann_json.natvis")
+set(NLOHMANN_NATVIS "../thirdparty/nlohmann/json/nlohmann_json.natvis")
 
 set(LIB_FILES ${SOURCE_FILES} ${DESCRIPTOR_SOURCES} ${JSON_SOURCES} ${EVENT_SOURCES} ${TYPE_SOURCES} ${TYPE_HEADERS} ${DESCRIPTOR_HEADERS} ${EVENT_HEADERS} ${SOURCE_HEADERS}  ${JSON_HEADERS})
 set(HEADER_FILES ${SOURCE_HEADERS})
@@ -114,7 +114,9 @@ add_library(${CPPLIB} STATIC ${LIB_FILES})
 
 target_sources(${CPPLIB} PRIVATE ${LIB_FILES})
 target_sources(${CPPLIB} PUBLIC ${HEADER_FILES})
-target_sources(${CPPLIB} PRIVATE ${NATVIS_FILES})
+if(EXISTS ${NLOHMANN_NATVIS})
+target_sources(${CPPLIB} PRIVATE ${NLOHMANN_NATVIS})
+endif()
 target_include_directories(${CPPLIB} PRIVATE "include" "../thirdparty/nlohmann/json/single_include")
 
 set(CPPLIB tournament_builder_cpplib PARENT_SCOPE)
