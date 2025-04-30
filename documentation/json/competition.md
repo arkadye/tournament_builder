@@ -13,7 +13,7 @@ Generally, anything can use a competition object can also have a [competition de
 
 ## Fields:
 
-- **Required:** `name`: the name of the Competition.
+- **Required:** `name`: the [name](naming_rules.md) of the Competition.
 - *Optional*: `entry_list`: this is an ordered list of [competitors](competitor.md) or [references to competitors](references.md).
 - *Optional*: `phases`: this is an ordered list of competitions or [competition descriptors](descriptors/readme.md).
 - *Optional*: `tags`: an array of [tags](tags.md).
