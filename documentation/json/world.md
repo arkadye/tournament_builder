@@ -13,8 +13,8 @@ For examples of what a world object looks like, [you may refer to the examples f
 
 ## Fields:
 
-- **Required:** `competition`: the [Competition](competition.md) object to be worked with.
-- *Optional:* `events`: an array of [Event objects](events/readme.md) to apply to `competition`.
+- **Required:** `competition`: the [competition object](competition.md) or the [competition descriptor](descriptors/readme.md) to be worked with.
+- *Optional:* `events`: an array of [event objects](events/readme.md) to apply to `competition`.
 
 Additionally, planned for Beta:
 
