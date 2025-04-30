@@ -2,7 +2,7 @@
 
 - [Back to top](../../readme.md)
   - [Documentation home](../readme.md)
-    - [Input and output JSON](readme.txt
+    - [Input and output JSON](readme.md)
       - Error messages
 
 # Error messages
