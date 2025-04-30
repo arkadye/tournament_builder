@@ -1,3 +1,10 @@
+### Navigation
+
+- [Back to top](../../readme.md)
+  - [Documentation home](../readme.md)
+    - Input and output JSON
+      - Tags
+
 # Tags
 
 Things with tags or attributes have a field named `tags`, which holds an array of tag objects. Tags are similar to names and generally follow the same rules. However, a tag may consist of multiple tokens, separated by `.` (e.g. `"part_1.part_2.part_3"`). Furthermore, there are some special tokens, identified by starting with a `$` symbol, which have special meanings, such as `$ANY` which will match with everything.
