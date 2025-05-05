@@ -9,10 +9,10 @@
 #include <format>
 
 // Set this to only run on files containing this pattern.
-constexpr std::string_view PATTERN_TO_MATCH{ "multireferences.json" };
+constexpr std::string_view PATTERN_TO_MATCH{ "json" };
 
 // If true run as a test comparing against the output examples. Otherwise, write to them.
-constexpr bool testing = false;
+constexpr bool testing = true;
 
 int main(int argc, char** argv)
 {
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	constexpr int num_args = 5;
+	constexpr int num_args = 7;
 	std::array<char*, num_args> args{};
 
 	auto make_c_str_vec = [](const auto& stringish) -> std::vector<char>
@@ -51,9 +51,15 @@ int main(int argc, char** argv)
 	auto input_arg = make_c_str_vec("--input");
 	auto output_arg = testing ? make_c_str_vec("--test-reference") : make_c_str_vec("--output");
 
+	auto seed_arg = make_c_str_vec("--random-seed");
+	auto seed_val = make_c_str_vec("42");
+
 	args[0] = argv[0];
 	args[1] = input_arg.data();
 	args[3] = output_arg.data();
+	args[5] = seed_arg.data();
+	args[6] = seed_val.data();
+
 
 	const std::filesystem::path input_directory = target / "in";
 
