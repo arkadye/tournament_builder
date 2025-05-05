@@ -39,7 +39,7 @@ install(FILES ${PACKAGE_EXTRAS} DESTINATION ${INSTALL_TARGET})
 # Testing
 
 function(test_example_file filename)
-	set(BASE_PATH "../examples")
+	set(BASE_PATH "../../examples")
 	set(INPUT_PATH "${BASE_PATH}/in/${filename}.json")
 	set(OUTPUT_PATH "${BASE_PATH}/out/${filename}.json")
 	add_test(NAME ${filename} COMMAND "$<TARGET_FILE:${CLIEXE}>" "--input" "${INPUT_PATH}" "--test-reference" "${OUTPUT_PATH}")
