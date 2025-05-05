@@ -16,5 +16,6 @@ IF DEFINED DESTINATION (
 PUSHD .
 
 cd /D %~dp0/source_code
+call clean_workspace.bat
 cmake . && cmake --build . --config %CONFIG% && cmake --install . --config Release --prefix %DESTINATION%/%CONFIG%
 POPD
