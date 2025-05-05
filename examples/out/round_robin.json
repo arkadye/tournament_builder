@@ -37,10 +37,7 @@
           },
           {
             "entry_list": [
-              {
-                "name": "england",
-                "tags": [ "HOME_NATION" ]
-              },
+              { "name": "france" },
               {
                 "name": "scotland",
                 "tags": [ "HOME_NATION" ]
@@ -51,10 +48,13 @@
           {
             "entry_list": [
               {
-                "name": "wales",
+                "name": "england",
                 "tags": [ "HOME_NATION" ]
               },
-              { "name": "france" }
+              {
+                "name": "wales",
+                "tags": [ "HOME_NATION" ]
+              }
             ],
             "name": "game_3"
           }
@@ -65,10 +65,7 @@
         "phases": [
           {
             "entry_list": [
-              {
-                "name": "england",
-                "tags": [ "HOME_NATION" ]
-              },
+              { "name": "france" },
               {
                 "name": "ireland",
                 "tags": [ "HOME_NATION" ]
@@ -79,7 +76,7 @@
           {
             "entry_list": [
               {
-                "name": "wales",
+                "name": "england",
                 "tags": [ "HOME_NATION" ]
               },
               {
@@ -92,7 +89,10 @@
           {
             "entry_list": [
               { "name": "italy" },
-              { "name": "france" }
+              {
+                "name": "wales",
+                "tags": [ "HOME_NATION" ]
+              }
             ],
             "name": "game_3"
           }
@@ -117,20 +117,20 @@
           {
             "entry_list": [
               {
-                "name": "wales",
+                "name": "england",
                 "tags": [ "HOME_NATION" ]
               },
-              { "name": "france" }
+              {
+                "name": "wales",
+                "tags": [ "HOME_NATION" ]
+              }
             ],
             "name": "game_2"
           },
           {
             "entry_list": [
               { "name": "italy" },
-              {
-                "name": "england",
-                "tags": [ "HOME_NATION" ]
-              }
+              { "name": "france" }
             ],
             "name": "game_3"
           }
@@ -142,7 +142,7 @@
           {
             "entry_list": [
               {
-                "name": "wales",
+                "name": "england",
                 "tags": [ "HOME_NATION" ]
               },
               {
@@ -155,7 +155,10 @@
           {
             "entry_list": [
               { "name": "italy" },
-              { "name": "france" }
+              {
+                "name": "wales",
+                "tags": [ "HOME_NATION" ]
+              }
             ],
             "name": "game_2"
           },
@@ -165,10 +168,7 @@
                 "name": "scotland",
                 "tags": [ "HOME_NATION" ]
               },
-              {
-                "name": "england",
-                "tags": [ "HOME_NATION" ]
-              }
+              { "name": "france" }
             ],
             "name": "game_3"
           }
@@ -183,17 +183,17 @@
                 "name": "ireland",
                 "tags": [ "HOME_NATION" ]
               },
-              { "name": "france" }
+              {
+                "name": "wales",
+                "tags": [ "HOME_NATION" ]
+              }
             ],
             "name": "game_1"
           },
           {
             "entry_list": [
               { "name": "italy" },
-              {
-                "name": "england",
-                "tags": [ "HOME_NATION" ]
-              }
+              { "name": "france" }
             ],
             "name": "game_2"
           },
@@ -204,7 +204,7 @@
                 "tags": [ "HOME_NATION" ]
               },
               {
-                "name": "wales",
+                "name": "england",
                 "tags": [ "HOME_NATION" ]
               }
             ],
