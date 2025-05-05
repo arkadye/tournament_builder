@@ -32,14 +32,19 @@ namespace tournament_builder::random
 			}
 		}
 
-		EngineType& get_engine()
+		EngineType& get_engine_base()
 		{
 			static EngineType engine;
+			return engine;
+		}
+
+		EngineType& get_engine()
+		{
 			if (!seeded)
 			{
 				initialize_engine();
 			}
-			return engine;
+			return get_engine_base();
 		}
 	}
 
@@ -50,7 +55,7 @@ namespace tournament_builder::random
 		assert(!seeded);
 		seeded = true;
 #endif
-		get_engine().seed(seed);
+		get_engine_base().seed(seed);
 		internal_random::seed_used = seed;
 	}
 
