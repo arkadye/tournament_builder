@@ -53,3 +53,4 @@ cpp/x64
 */install_manifest.txt
 **/Testing/*
 DartConfiguration.tcl
+source_code/clib/include/tournament_builder/clib_export.h
