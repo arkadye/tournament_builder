@@ -23,15 +23,19 @@ namespace tournament_builder::descriptor
         {
             if (min_entries_opt.has_value() || max_entries_opt.has_value())
             {
-                throw exception::InvalidArgument{ "Descriptor type 'entry_list' cannot have 'expected_num_entries' with 'min_entries' or 'max_entries'" };
+                throw exception::InvalidArgument{ std::format("In '{}': Descriptor type 'entry_list' cannot have 'expected_num_entries' with 'min_entries' or 'max_entries'", name) };
             }
 
-            result->min_entries = result->max_entries = expected_num_opt.has_value();
+            result->min_entries = result->max_entries = *expected_num_opt;
         }
         else if (min_entries_opt.has_value() || max_entries_opt.has_value())
         {
-            result->min_entries = min_entries_opt.value_or(0);
+            result->min_entries = min_entries_opt.value_or(1);
             result->max_entries = max_entries_opt.value_or(std::numeric_limits<int32_t>::max());
+            if (result->min_entries > result->max_entries)
+            {
+                throw exception::InvalidArgument{ std::format("In '{}': Descriptor type `entry_list` cannot have min_entries ({}) smaller than max_entries ({})", name, result->min_entries, result->max_entries) };
+            }
         }
         else
         {
@@ -62,13 +66,15 @@ namespace tournament_builder::descriptor
 
     void CompetitorView::resolve_contained_references(World& world, std::vector<Name>& location)
     {
+        location.push_back(name);
         auto unpack_result = unpack_entry_list(world, location, entry_list, min_entries, max_entries);
+        location.pop_back();
         if (unpack_result.has_value())
         {
             entry_list = std::move(*unpack_result);
         }
     }
-    std::optional<std::vector<Reference<Competitor>>> CompetitorView::unpack_entry_list(World& world, std::vector<Name>& location, const std::vector<Reference<Competitor>> in_list, int32_t min_entries, int32_t max_entries)
+    std::optional<std::vector<Reference<Competitor>>> CompetitorView::unpack_entry_list(World& world, const std::vector<Name>& location, const std::vector<Reference<Competitor>> in_list, int32_t min_entries, int32_t max_entries)
     {
         std::vector<Reference<Competitor>> entries;
         entries.reserve(max_entries);
@@ -99,7 +105,9 @@ namespace tournament_builder::descriptor
 
                 if (std::ranges::any_of(entries, matches_name) || std::ranges::any_of(in_list, matches_name)) continue;
                 if (std::ssize(entries) >= max_entries) return std::nullopt;
-                entries.emplace_back(std::move(*result));
+
+                const ReferenceCopyOptions copy_opts = rc.get_copy_opts();
+                entries.emplace_back(result->copy_ref(copy_opts));
             }
         }
 

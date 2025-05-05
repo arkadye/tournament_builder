@@ -10,6 +10,7 @@
       - [Competition object](competition.md)
       - [Competitor object](competitor.md)
       - [Competition Descriptor object](descriptors/readme.md)
+	    - [Competitor view](descriptors/competitor_view.md)
         - [Round of matches](descriptors/round_of_matches.md)
         - [Round-robin](descriptors/round_robin.md)
         - [Knockout bracket](descriptors/knockout_bracket.md)

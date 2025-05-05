@@ -4,6 +4,7 @@
   - [Documentation home](../../readme.md)
     - [Input and output JSON](../readme.md)
       - [Competition Descriptor object](readme.md)
+	    - [Competitor view](competitor_view.md)
         - [Round of matches](round_of_matches.md)
         - [Round-robin](round_robin.md)
         - [Knockout bracket](knockout_bracket.md)

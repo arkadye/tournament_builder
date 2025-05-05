@@ -15,3 +15,4 @@ To understand what the inputs mean, refer to [the input and output JSON document
 - `set_finishing_positions.json`: Demonstrates how the [set finishing positions event](../documentation/json/events/set_finishing_positions.md) works.
 - `simple_elim.json`: Demonstrates how the [round_of_matches](../documentation/json/descriptors/round_of_matches.md) works with a simple example.
 - `test_references.json`: Tests various more unusual cases for [references](../documentation/json/references.md).
+- `test_multireferences.json`: Test more cases for references, particularly cases where they may resolve to more than one element.

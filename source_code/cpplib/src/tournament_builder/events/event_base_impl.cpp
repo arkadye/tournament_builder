@@ -75,6 +75,6 @@ namespace tournament_builder::event
 }
 
 tournament_builder::exception::EventExecutionException::EventExecutionException(const event::EventImpl& event, std::string_view explanation)
-	: TournamentBuilderException{ std::format("While executing event type {}: {}",event.get_event_uid(), explanation) }
+	: TournamentBuilderException{ std::format("While executing event type '{}': {}",event.get_event_uid(), explanation) }
 {
 }

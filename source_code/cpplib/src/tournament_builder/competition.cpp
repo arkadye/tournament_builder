@@ -11,10 +11,15 @@
 namespace tournament_builder
 {
 	using nlohmann::json;
+	bool RealCompetition::has_resolved_all_references() const
+	{
+		const bool contents_result = std::ranges::all_of(phases, [](const Competition& inner) {return inner.has_resolved_all_references(); });
+		return contents_result && has_finalized_entry_list();
+	}
+
 	bool RealCompetition::has_finalized_entry_list() const
 	{
-		const bool contents_result = std::ranges::all_of(phases, [](const Competition& inner) {return inner.has_finalized_entry_list(); });
-		return contents_result && std::ranges::all_of(entry_list, &Reference<Competitor>::is_resolved);
+		return std::ranges::all_of(entry_list, &Reference<Competitor>::is_resolved);
 	}
 
 	bool RealCompetition::resolve_all_references_impl(World& context, std::vector<Name>& location)
@@ -56,7 +61,7 @@ namespace tournament_builder
 	{
 		// Keep trying until we fail to make a change
 		while (resolve_all_references_impl(context, location));
-		return has_finalized_entry_list();
+		return has_resolved_all_references();
 	}
 
 	RealCompetition RealCompetition::parse(const json& input)
@@ -100,6 +105,15 @@ namespace tournament_builder
 		std::ranges::transform(phases, std::back_inserter(result), [](Competition& comp) {return &comp; });
 		return result;
 	}
+	bool Competition::has_resolved_all_references() const
+	{
+		if (const auto* rc = std::get_if<RealCompetition>(&m_data))
+		{
+			return rc->has_resolved_all_references();
+		}
+		return false;
+	}
+
 	bool Competition::has_finalized_entry_list() const
 	{
 		if (const auto* rc = std::get_if<RealCompetition>(&m_data))
@@ -112,7 +126,7 @@ namespace tournament_builder
 	bool Competition::resolve_all_references(World& context, std::vector<Name>& location)
 	{
 		while (resolve_all_references_impl(context, location));
-		return has_finalized_entry_list();
+		return has_resolved_all_references();
 	}
 
 	bool Competition::resolve_all_references_impl(World& context, std::vector<Name>& location)
