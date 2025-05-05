@@ -21,7 +21,17 @@ namespace tournament_builder::descriptor
 		virtual DescriptorHandle parse(const nlohmann::json& input) const = 0;
 
 		// Overwrite this if generate() can ever fail. This is used to serialize the descriptor if it isn't resolved.
-		virtual void write_to_json(nlohmann::json& target) const { internal_descriptor::DescriptorBaseImpl::write_to_json(target); }
+		void write_to_json(nlohmann::json& target) const override { internal_descriptor::DescriptorBaseImpl::write_to_json(target); }
+
+		// If this is ever copied via reference, this is used. By default it uses the copy constructor.
+		std::shared_ptr<IReferencable> copy_ref(const ReferenceCopyOptions&) const;
+
+		// Override this to allow parts of the descriptor to be found via a reference.
+		std::vector<IReferencable*> get_next_locations() override { return {}; }
+
+		// If there are overridden references that you may want to resolve before resolving
+		// this descriptor, resolve them in this function.
+		void resolve_contained_references(World& world, std::vector<Name>& location) override { internal_descriptor::DescriptorBaseImpl::resolve_contained_references(world, location); }
 
 	protected:
 		// Implement this function to generate the actual competition structure we want.
@@ -46,6 +56,15 @@ namespace tournament_builder::descriptor
 	inline DescriptorHandle DescriptorBase<T>::parse(const nlohmann::json& input) const
 	{
 		return internal_descriptor::DescriptorBaseImpl::parse(input);
+	}
+
+	template<typename T>
+	inline std::shared_ptr<IReferencable> DescriptorBase<T>::copy_ref(const ReferenceCopyOptions& rco) const
+	{
+		const T* this_as_actual_type = dynamic_cast<const T*>(this);
+		auto result = std::make_shared<T>(*this_as_actual_type);
+		result->take_tags_via_reference(*this, rco);
+		return result;
 	}
 
 	template<typename T>

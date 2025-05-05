@@ -13,16 +13,6 @@ namespace tournament_builder
 	namespace internal_serialize
 	{
 		using nlohmann::json;
-		json to_json_array(const auto& range)
-		{
-			json result;
-			for (const auto& elem : range)
-			{
-				result.push_back(::tournament_builder::to_json(elem));
-			}
-			return result;
-		}
-
 		json to_json_ne(const NamedElement& ne)
 		{
 			return json{ {"name" , ne.name.to_string() } };
@@ -66,11 +56,11 @@ namespace tournament_builder
 			json result = to_json_ne(comp);
 			if (!comp.entry_list.empty())
 			{
-				result["entry_list"] = to_json_array(comp.entry_list);
+				result["entry_list"] = to_json(comp.entry_list);
 			}
 			if (!comp.phases.empty())
 			{
-				result["phases"] = to_json_array(comp.phases);
+				result["phases"] = to_json(comp.phases);
 			}
 			return result;
 		}
@@ -142,7 +132,7 @@ namespace tournament_builder
 			std::ranges::copy_if(maybe_taggable->get_tags(), std::back_inserter(tags_copy), [](const Tag& t) {return t.get_type() != Tag::TagType::entry; });
 			if (!tags_copy.empty())
 			{
-				input["tags"] = to_json_array(tags_copy);
+				input["tags"] = to_json(tags_copy);
 			}
 			return input;
 		}

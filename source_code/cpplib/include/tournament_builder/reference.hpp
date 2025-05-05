@@ -79,6 +79,7 @@ namespace tournament_builder
 		template <typename T> friend class Reference;
 		friend class internal_reference::ReferenceBase;
 		std::vector<Token> m_elements;
+		ReferenceCopyOptions m_copy_opts;
 	public:
 		SoftReference() : SoftReference{ std::string_view{""} } {}
 		explicit SoftReference(std::string_view input);
@@ -87,6 +88,7 @@ namespace tournament_builder
 		SoftReference& operator=(const SoftReference&) = default;
 		SoftReference& operator=(SoftReference&&) noexcept = default;
 		std::string to_string() const;
+		const ReferenceCopyOptions& get_copy_opts() const { return m_copy_opts; }
 		static SoftReference parse(const nlohmann::json& input);
 	private:
 		// This should only be accessed via a Reference
@@ -117,6 +119,8 @@ namespace tournament_builder
 			bool is_resolved() const noexcept { return std::holds_alternative<std::shared_ptr<IReferencable>>(m_data); }
 
 			std::string to_string() const;
+
+			ReferenceCopyOptions get_copy_opts() const;
 
 			const std::variant<SoftReference, std::shared_ptr<IReferencable>>& data() const noexcept { return m_data; }
 		protected:
@@ -176,8 +180,7 @@ namespace tournament_builder
 			IReferencable* result = candidate.get();
 			if(result != nullptr)
 			{
-				ReferenceCopyOptions opts;
-				m_data = result->copy_ref(opts);
+				m_data = result->copy_ref(get_copy_opts());
 				return true;
 			}
 		}

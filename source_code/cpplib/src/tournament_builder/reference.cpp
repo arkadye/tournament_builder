@@ -352,7 +352,16 @@ namespace tournament_builder
 			oss << ']' << (result != nullptr ? result->get_reference_key().to_string() : std::string{"!NULL!"});
 			return oss.str();
 		}
-}
+
+		ReferenceCopyOptions ReferenceBase::get_copy_opts() const
+		{
+			if (const auto* sr = std::get_if<SoftReference>(&m_data))
+			{
+				return sr->get_copy_opts();
+			}
+			return ReferenceCopyOptions{};
+		}
+	}
 
 	SoftReference::SoftReference(std::string_view init)
 	{

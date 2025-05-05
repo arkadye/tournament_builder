@@ -26,7 +26,7 @@ namespace tournament_builder
 
 namespace tournament_builder::descriptor::internal_descriptor
 {
-	class DescriptorBaseImpl : public NamedElement , public TaggableMixin
+	class DescriptorBaseImpl : public NamedElement , public TaggableMixin , public IReferencable
 	{
 	public:
 		using NamedElement::NamedElement;
@@ -36,6 +36,10 @@ namespace tournament_builder::descriptor::internal_descriptor
 
 		virtual Name get_descriptor_uid() const = 0;
 		virtual void write_to_json(nlohmann::json& out) const; // Done this way to avoid having to include the full JSON header.
+
+		Name get_reference_key() const override { return name; }
+
+		virtual void resolve_contained_references(World& world, std::vector<Name>& location) {}
 	protected:
 		friend class DescriptorRegister;
 

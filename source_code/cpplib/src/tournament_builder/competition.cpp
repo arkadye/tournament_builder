@@ -11,10 +11,15 @@
 namespace tournament_builder
 {
 	using nlohmann::json;
+	bool RealCompetition::has_resolved_all_references() const
+	{
+		const bool contents_result = std::ranges::all_of(phases, [](const Competition& inner) {return inner.has_resolved_all_references(); });
+		return contents_result && has_finalized_entry_list();
+	}
+
 	bool RealCompetition::has_finalized_entry_list() const
 	{
-		const bool contents_result = std::ranges::all_of(phases, [](const Competition& inner) {return inner.has_finalized_entry_list(); });
-		return contents_result && std::ranges::all_of(entry_list, &Reference<Competitor>::is_resolved);
+		return std::ranges::all_of(entry_list, &Reference<Competitor>::is_resolved);
 	}
 
 	bool RealCompetition::resolve_all_references_impl(World& context, std::vector<Name>& location)
@@ -56,7 +61,7 @@ namespace tournament_builder
 	{
 		// Keep trying until we fail to make a change
 		while (resolve_all_references_impl(context, location));
-		return has_finalized_entry_list();
+		return has_resolved_all_references();
 	}
 
 	RealCompetition RealCompetition::parse(const json& input)
@@ -100,6 +105,15 @@ namespace tournament_builder
 		std::ranges::transform(phases, std::back_inserter(result), [](Competition& comp) {return &comp; });
 		return result;
 	}
+	bool Competition::has_resolved_all_references() const
+	{
+		if (const auto* rc = std::get_if<RealCompetition>(&m_data))
+		{
+			return rc->has_resolved_all_references();
+		}
+		return false;
+	}
+
 	bool Competition::has_finalized_entry_list() const
 	{
 		if (const auto* rc = std::get_if<RealCompetition>(&m_data))
@@ -112,17 +126,21 @@ namespace tournament_builder
 	bool Competition::resolve_all_references(World& context, std::vector<Name>& location)
 	{
 		while (resolve_all_references_impl(context, location));
-		return has_finalized_entry_list();
+		return has_resolved_all_references();
 	}
 
 	bool Competition::resolve_all_references_impl(World& context, std::vector<Name>& location)
 	{
+		using descriptor::DescriptorHandle;
 		bool result = false;
-		if (auto* p_desc = std::get_if<descriptor::DescriptorHandle>(&m_data))
+		if (auto* p_desc = std::get_if<DescriptorHandle>(&m_data))
 		{
-			if (auto real_comp_opt = (*p_desc)->generate_wrapper())
+			DescriptorHandle& desc = *p_desc;
+			desc->resolve_contained_references(context, location);
+			if (auto real_comp_opt = desc->generate_wrapper())
 			{
-				// Warning! This will invalidate p_desc.
+				// Warning! This will invalidate p_desc and desc!!!
+				// DO NOT access those variables after this move.
 				m_data = std::move(*real_comp_opt);
 				result = true;
 			}

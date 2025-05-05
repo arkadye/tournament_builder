@@ -1,5 +1,6 @@
 #include "tournament_builder/descriptors/descriptor_base_internal.hpp"
 #include "tournament_builder/json/json_helpers.hpp"
+#include "tournament_builder/serialize.hpp"
 
 
 #include <cassert>

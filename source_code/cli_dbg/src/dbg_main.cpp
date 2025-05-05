@@ -9,10 +9,10 @@
 #include <format>
 
 // Set this to only run on files containing this pattern.
-constexpr std::string_view PATTERN_TO_MATCH{ ".json" };
+constexpr std::string_view PATTERN_TO_MATCH{ "multireferences.json" };
 
 // If true run as a test comparing against the output examples. Otherwise, write to them.
-constexpr bool testing = true;
+constexpr bool testing = false;
 
 int main(int argc, char** argv)
 {

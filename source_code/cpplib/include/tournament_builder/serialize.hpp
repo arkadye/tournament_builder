@@ -28,6 +28,7 @@ namespace tournament_builder
 {
 	template <typename T> nlohmann::json to_json(const T& serializable);
 	template <typename T> nlohmann::json to_json(const Reference<T>& reference);
+	template <typename T> nlohmann::json to_json(const std::vector<T>& array);
 
 	namespace internal_serialize
 	{
@@ -74,5 +75,16 @@ namespace tournament_builder
 			}
 		};
 		return std::visit(Impl{}, reference.data());
+	}
+
+	template <typename T>
+	inline nlohmann::json to_json(const std::vector<T>& range)
+	{
+		nlohmann::json result;
+		for (const T& elem : range)
+		{
+			result.push_back(to_json(elem));
+		}
+		return result;
 	}
 }

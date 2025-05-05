@@ -139,6 +139,8 @@ Use these links to navigate all the documentation:
       - [Competition object](documentation/json/competition.md)
       - [Competitor object](documentation/json/competitor.md)
       - [Competition descriptor object](documentation/json/descriptors/readme.md)
+	    - [Competitor view](documentation/json/descriptors/competitor_view.md)
+		- [DEBUG: Never resolves](documentation/json/descriptors/DEBUG_never_resolves.md)
         - [Round of matches](documentation/json/descriptors/round_of_matches.md)
         - [Round-robin](documentation/json/descriptors/round_robin.md)
         - [Knockout bracket](documentation/json/descriptors/knockout_bracket.md)
@@ -147,3 +149,4 @@ Use these links to navigate all the documentation:
         - [Resolve all references](documentation/json/events/resolve_all_references.md)
         - [Add tags](documentation/json/events/add_tags.md)
         - [Set finishing positions](documentation/json/events/set_finishing_positions.md)
+  - [Examples](examples/readme.md)

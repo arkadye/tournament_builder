@@ -27,7 +27,10 @@ namespace tournament_builder
 		std::vector<Reference<Competitor>> entry_list;
 		std::vector<Competition> phases;
 
-		// Returns true if all the entry list are actual Competitor types and not refrences.
+		//  Returns ture if a RealCompetition and all the entry list references have been resolved and the same is true for all phases.
+		bool has_resolved_all_references() const;
+
+		// Returns ture if a RealCompetition and all the entry list references have been resolved.
 		bool has_finalized_entry_list() const;
 
 		// Returns true if it successfully resolves all the references.
@@ -58,7 +61,10 @@ namespace tournament_builder
 		explicit Competition(RealCompetition competition) : m_data{ std::move(competition) } {}
 		virtual ~Competition() = default;
 
-		// Returns true if a RealCompetition and all the entry list are actual Competitor types and not refrences.
+		//  Returns ture if a RealCompetition and all the entry list references have been resolved and the same is true for all phases.
+		bool has_resolved_all_references() const;
+
+		// Returns ture if a RealCompetition and all the entry list references have been resolved.
 		bool has_finalized_entry_list() const;
 
 		// If working with a descriptor, tries to resolve the descriptor.
