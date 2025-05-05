@@ -60,6 +60,7 @@ set(DESCRIPTOR_HEADERS
 	"include/tournament_builder/descriptors/round_of_matches_descriptor.hpp"
 	"include/tournament_builder/descriptors/knockout_bracket.hpp"
 	"include/tournament_builder/descriptors/DEBUG_never_resolves.hpp"
+	"include/tournament_builder/descriptors/competitor_view.hpp"
 )
 
 set(DESCRIPTOR_SOURCES
@@ -70,6 +71,7 @@ set(DESCRIPTOR_SOURCES
 	"src/tournament_builder/descriptors/round_of_matches_descriptor.cpp"
 	"src/tournament_builder/descriptors/knockout_bracket.cpp"
 	"src/tournament_builder/descriptors/DEBUG_never_resolves.cpp"
+	"src/tournament_builder/descriptors/competitor_view.cpp"
 )
 source_group("src/descriptors" FILES ${DESCRIPTOR_HEADERS} ${DESCRIPTOR_SOURCES})
 

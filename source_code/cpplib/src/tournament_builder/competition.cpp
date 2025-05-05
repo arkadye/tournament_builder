@@ -117,12 +117,16 @@ namespace tournament_builder
 
 	bool Competition::resolve_all_references_impl(World& context, std::vector<Name>& location)
 	{
+		using descriptor::DescriptorHandle;
 		bool result = false;
-		if (auto* p_desc = std::get_if<descriptor::DescriptorHandle>(&m_data))
+		if (auto* p_desc = std::get_if<DescriptorHandle>(&m_data))
 		{
-			if (auto real_comp_opt = (*p_desc)->generate_wrapper())
+			DescriptorHandle& desc = *p_desc;
+			desc->resolve_contained_references(context, location);
+			if (auto real_comp_opt = desc->generate_wrapper())
 			{
-				// Warning! This will invalidate p_desc.
+				// Warning! This will invalidate p_desc and desc!!!
+				// DO NOT access those variables after this move.
 				m_data = std::move(*real_comp_opt);
 				result = true;
 			}
