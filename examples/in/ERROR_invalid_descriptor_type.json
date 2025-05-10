@@ -1,0 +1,7 @@
+{
+	"competition": {
+		"name": "invalid_descriptor_type",
+		"descriptor_type": "this_is_an_invalid_descriptor_type_do_not_use_this_for_any_descriptor_ever_you_dolt",
+		"entry_list": [ { "name": "a" } ]
+	}
+}
