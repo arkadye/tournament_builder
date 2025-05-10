@@ -1,5 +1,7 @@
 #pragma once
 
+#include "tournament_builder/exceptions.hpp"
+
 #include "nlohmann/json.hpp"
 
 #include <initializer_list>
@@ -56,7 +58,19 @@ namespace tournament_builder::json_helper
 		std::vector<ArrayType> result;
 		const std::size_t num_elements = json_array.size();
 		result.reserve(num_elements);
-		std::ranges::transform(json_array, std::back_inserter(result), parser);
+		for (std::size_t i = 0u; i < num_elements; ++i)
+		{
+			try
+			{
+				const nlohmann::json& element = json_array[i];
+				result.push_back(parser(element));
+			}
+			catch(tournament_builder::exception::TournamentBuilderException& ex)
+			{
+				ex.add_context(std::format("At array elem [{}]", i));
+				throw ex;
+			}
+		}
 		return result;
 	}
 
