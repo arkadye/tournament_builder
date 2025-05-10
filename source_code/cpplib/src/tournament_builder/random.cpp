@@ -51,10 +51,7 @@ namespace tournament_builder::random
 	void initialize_engine(uint64_t seed)
 	{
 		using namespace internal_random;
-#ifndef NDEBUG
-		assert(!seeded);
 		seeded = true;
-#endif
 		get_engine_base().seed(seed);
 		internal_random::seed_used = seed;
 	}
