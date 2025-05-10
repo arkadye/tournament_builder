@@ -27,6 +27,6 @@
     "num_times_to_play_each_opponent": 1,
     "alternate_left_and_right": true,
     "generate_byes": false,
-    "shuffle_entries": true
+    "shuffle_entries": false
   }
 }
