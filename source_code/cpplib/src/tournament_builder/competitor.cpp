@@ -111,8 +111,16 @@ namespace tournament_builder
 
 	std::vector< Reference<Competitor>> Competitor::parse_entry_list(const json& input, std::string_view field_name)
 	{
-		json array_view = json_helper::get_array_object(input, field_name);
-		return parse_entry_list(array_view);
+		try
+		{
+			json array_view = json_helper::get_array_object(input, field_name);
+			return parse_entry_list(array_view);
+		}
+		catch (exception::TournamentBuilderException& ex)
+		{
+			ex.add_context(std::format("In field '{}'", field_name));
+			throw ex;
+		}
 	}
 
 	Name Competitor::get_reference_key() const
