@@ -1,0 +1,7 @@
+{
+	"competition": {
+		"name": "mismatched_brackets",
+		"descriptor_type": "competitor_view",
+		"entry_list": [ { "ref": "prefix.[oops.forgot.to.close.this.bracket" } ]
+	}
+}
