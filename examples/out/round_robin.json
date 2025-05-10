@@ -28,27 +28,27 @@
           {
             "entry_list": [
               {
-                "name": "ireland",
+                "name": "england",
                 "tags": [ "HOME_NATION" ]
               },
-              { "name": "italy" }
+              { "name": "france" }
             ],
             "name": "game_1"
           },
           {
             "entry_list": [
-              { "name": "france" },
               {
-                "name": "scotland",
+                "name": "ireland",
                 "tags": [ "HOME_NATION" ]
-              }
+              },
+              { "name": "italy" }
             ],
             "name": "game_2"
           },
           {
             "entry_list": [
               {
-                "name": "england",
+                "name": "scotland",
                 "tags": [ "HOME_NATION" ]
               },
               {
@@ -65,9 +65,12 @@
         "phases": [
           {
             "entry_list": [
-              { "name": "france" },
               {
                 "name": "ireland",
+                "tags": [ "HOME_NATION" ]
+              },
+              {
+                "name": "england",
                 "tags": [ "HOME_NATION" ]
               }
             ],
@@ -76,19 +79,16 @@
           {
             "entry_list": [
               {
-                "name": "england",
-                "tags": [ "HOME_NATION" ]
-              },
-              {
                 "name": "scotland",
                 "tags": [ "HOME_NATION" ]
-              }
+              },
+              { "name": "italy" }
             ],
             "name": "game_2"
           },
           {
             "entry_list": [
-              { "name": "italy" },
+              { "name": "france" },
               {
                 "name": "wales",
                 "tags": [ "HOME_NATION" ]
@@ -104,20 +104,17 @@
           {
             "entry_list": [
               {
-                "name": "ireland",
+                "name": "england",
                 "tags": [ "HOME_NATION" ]
               },
-              {
-                "name": "scotland",
-                "tags": [ "HOME_NATION" ]
-              }
+              { "name": "italy" }
             ],
             "name": "game_1"
           },
           {
             "entry_list": [
               {
-                "name": "england",
+                "name": "scotland",
                 "tags": [ "HOME_NATION" ]
               },
               {
@@ -129,8 +126,11 @@
           },
           {
             "entry_list": [
-              { "name": "italy" },
-              { "name": "france" }
+              { "name": "france" },
+              {
+                "name": "ireland",
+                "tags": [ "HOME_NATION" ]
+              }
             ],
             "name": "game_3"
           }
@@ -142,11 +142,11 @@
           {
             "entry_list": [
               {
-                "name": "england",
+                "name": "scotland",
                 "tags": [ "HOME_NATION" ]
               },
               {
-                "name": "ireland",
+                "name": "england",
                 "tags": [ "HOME_NATION" ]
               }
             ],
@@ -154,7 +154,7 @@
           },
           {
             "entry_list": [
-              { "name": "italy" },
+              { "name": "france" },
               {
                 "name": "wales",
                 "tags": [ "HOME_NATION" ]
@@ -164,11 +164,11 @@
           },
           {
             "entry_list": [
+              { "name": "italy" },
               {
-                "name": "scotland",
+                "name": "ireland",
                 "tags": [ "HOME_NATION" ]
-              },
-              { "name": "france" }
+              }
             ],
             "name": "game_3"
           }
@@ -180,7 +180,7 @@
           {
             "entry_list": [
               {
-                "name": "ireland",
+                "name": "england",
                 "tags": [ "HOME_NATION" ]
               },
               {
@@ -192,19 +192,19 @@
           },
           {
             "entry_list": [
-              { "name": "italy" },
-              { "name": "france" }
+              { "name": "france" },
+              {
+                "name": "ireland",
+                "tags": [ "HOME_NATION" ]
+              }
             ],
             "name": "game_2"
           },
           {
             "entry_list": [
+              { "name": "italy" },
               {
                 "name": "scotland",
-                "tags": [ "HOME_NATION" ]
-              },
-              {
-                "name": "england",
                 "tags": [ "HOME_NATION" ]
               }
             ],
