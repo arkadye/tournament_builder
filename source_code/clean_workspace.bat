@@ -23,6 +23,7 @@ rmdir /S/Q CMakeFiles
 rmdir /S/Q Debug
 rmdir /S/Q Release
 rmdir /S/Q MinSizeRel
+rmdir /S/Q Testing
 rmdir /S/Q RelWithDebInfo
 rmdir /S/Q tournament_builder_clib.dir
 rmdir /S/Q tournament_builder_cpplib.dir
