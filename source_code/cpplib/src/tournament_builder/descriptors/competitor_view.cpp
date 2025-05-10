@@ -23,7 +23,7 @@ namespace tournament_builder::descriptor
         {
             if (min_entries_opt.has_value() || max_entries_opt.has_value())
             {
-                throw exception::InvalidArgument{ std::format("In '{}': Descriptor type 'entry_list' cannot have 'expected_num_entries' with 'min_entries' or 'max_entries'", name) };
+                throw exception::InvalidArgument{ std::format("In '{}': cannot have 'expected_num_entries' with 'min_entries' or 'max_entries'", name) };
             }
 
             result->min_entries = result->max_entries = *expected_num_opt;
@@ -34,7 +34,7 @@ namespace tournament_builder::descriptor
             result->max_entries = max_entries_opt.value_or(std::numeric_limits<int32_t>::max());
             if (result->min_entries > result->max_entries)
             {
-                throw exception::InvalidArgument{ std::format("In '{}': Descriptor type `entry_list` cannot have min_entries ({}) smaller than max_entries ({})", name, result->min_entries, result->max_entries) };
+                throw exception::InvalidArgument{ std::format("In '{}': cannot have min_entries ({}) greater than max_entries ({})", name, result->min_entries, result->max_entries) };
             }
         }
         else
