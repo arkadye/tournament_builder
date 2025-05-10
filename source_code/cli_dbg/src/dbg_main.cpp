@@ -8,6 +8,10 @@
 #include <iostream>
 #include <format>
 
+#ifndef EXAMPLES_FOLDER_DEFAULT_LOCATION
+#define EXAMPLES_FOLDER_DEFAULT_LOCATION "../../examples"
+#endif
+
 // Set this to only run on files containing this pattern.
 constexpr std::string_view PATTERN_TO_MATCH{ "json" };
 
@@ -18,7 +22,7 @@ int main(int argc, char** argv)
 {
 	using tournament_builder::tournament_builder_internal::invoke_cli;
 
-	std::filesystem::path target{ "../../examples" };
+	std::filesystem::path target{ EXAMPLES_FOLDER_DEFAULT_LOCATION };
 	if (argc > 1)
 	{
 		target = argv[1];
