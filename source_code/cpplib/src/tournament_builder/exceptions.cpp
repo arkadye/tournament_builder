@@ -10,6 +10,6 @@ namespace tournament_builder::exception
 
 	void TournamentBuilderException::add_context(const tournament_builder::NamedElement& context)
 	{
-		add_context(std::format("In {}", context.name));
+		add_context(std::format("In '{}'", context.name));
 	}
 }
