@@ -16,7 +16,7 @@ namespace tournament_builder
 	{
 		if (num_times_to_play_each_opponent <= 0)
 		{
-			exception::InvalidArgument error{ std::format("Round-robin argument 'num_times_to_play_each_opponent' must be 1 or more.") };
+			exception::InvalidArgument error{ std::format("Round-robin argument 'num_times_to_play_each_opponent' was {}. Must be 1 or more, or not set.", num_times_to_play_each_opponent) };
 			error.add_context(*this);
 			throw error;
 		}

@@ -1,0 +1,6 @@
+{
+  "competition": {
+    "name": "reference_any_too_many_args",
+    "entry_list": [ "@ANY:2:3:4" ]
+  }
+}

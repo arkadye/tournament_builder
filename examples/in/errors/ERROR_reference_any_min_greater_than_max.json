@@ -1,0 +1,6 @@
+{
+  "competition": {
+    "name": "reference_any_max_greater_than_min",
+    "entry_list": [ "@ANY:3:1" ]
+  }
+}

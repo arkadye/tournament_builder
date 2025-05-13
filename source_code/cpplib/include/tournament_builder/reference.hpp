@@ -17,7 +17,7 @@
 namespace tournament_builder
 {
 	class World;
-	using Location = std::vector<Name>;
+	using Location = ::std::vector<Name>;
 	namespace internal_reference
 	{
 		class ReferenceBase;
@@ -64,7 +64,7 @@ namespace tournament_builder
 			return result->get_as<T>();
 		}
 
-		bool is_a() const
+		bool is_correct_type() const
 		{
 			if (result != nullptr)
 			{
@@ -176,12 +176,15 @@ namespace tournament_builder
 	{
 		if (is_reference())
 		{
-			ReferenceResult candidate = dereference_single(context, location);
-			IReferencable* result = candidate.get();
-			if(result != nullptr)
+			ReferenceResult<T> candidate = dereference_single(context, location);
+			if (candidate.is_correct_type())
 			{
-				m_data = result->copy_ref(get_copy_opts());
-				return true;
+				IReferencable* result = candidate.get();
+				if (result != nullptr)
+				{
+					m_data = result->copy_ref(get_copy_opts());
+					return true;
+				}
 			}
 		}
 		return false;

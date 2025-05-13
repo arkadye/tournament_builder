@@ -1,0 +1,1 @@
+{"errors":["Field 'name' was not found or had the wrong type: Error in JSON '{\"entry_list\":[\"a\",\"b\"]}': Invalid type: 'object' but expected one of [ string ]"]}

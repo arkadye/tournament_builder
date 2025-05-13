@@ -1,0 +1,6 @@
+{
+  "competition": {
+    "name": "reference_outer_from_top_level",
+    "entry_list": [ "@OUTER:2" ]
+  }
+}

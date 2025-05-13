@@ -1,0 +1,9 @@
+{
+	"competition": {
+		"max_entries": 1,
+		"min_entries": 2,
+		"name": "min_greater_than_max",
+		"descriptor_type": "competitor_view",
+		"entry_list": [ { "name": "a" } ]
+	}
+}

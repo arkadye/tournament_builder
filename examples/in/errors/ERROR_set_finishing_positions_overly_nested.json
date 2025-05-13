@@ -1,0 +1,29 @@
+{
+  "competition": {
+    "name": "overly_nested_array",
+    "entry_list": [
+      { "name": "a" },
+      { "name": "b" },
+      { "name": "c" },
+      { "name": "d" },
+      { "name": "e" }
+    ]
+  },
+  "events": [
+    {
+      "event_type": "set_finishing_positions",
+      "target": "overly_nested_array",
+      "finish_order": [
+        "a",
+        [
+          "b",
+          [
+            "c",
+            "d"
+          ],
+          "e"
+        ]
+      ]
+    }
+  ]
+}

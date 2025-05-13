@@ -1,0 +1,6 @@
+{
+  "competition": {
+    "name": "reference_any_negative_min",
+    "entry_list": [ "@ANY:-1" ]
+  }
+}

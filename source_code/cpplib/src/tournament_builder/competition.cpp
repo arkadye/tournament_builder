@@ -25,36 +25,44 @@ namespace tournament_builder
 	bool RealCompetition::resolve_all_references_impl(World& context, std::vector<Name>& location)
 	{
 		// In general, working outside-in will work better.
-#ifndef NDEBUG
-		auto location_copy = location;
-#endif
-		location.push_back(name);
-		bool result = false;
-		for (std::size_t i = 0u;i<entry_list.size();++i)
+		try
 		{
-			Reference<Competitor>& competitor_ref = entry_list[i];
-			if (competitor_ref.is_reference())
+#ifndef NDEBUG
+			auto location_copy = location;
+#endif
+			location.push_back(name);
+			bool result = false;
+			for (std::size_t i = 0u; i < entry_list.size(); ++i)
 			{
-				result = competitor_ref.resolve(context, location) || result; // We DO NOT want to short circuit this.
-				if (competitor_ref.is_resolved())
+				Reference<Competitor>& competitor_ref = entry_list[i];
+				if (competitor_ref.is_reference())
 				{
-					Competitor& competitor = competitor_ref.get();
-					competitor.add_tag(Tag{ std::format("$ENTRY:{}", i + 1), false });
+					result = competitor_ref.resolve(context, location) || result; // We DO NOT want to short circuit this.
+					if (competitor_ref.is_resolved())
+					{
+						Competitor& competitor = competitor_ref.get();
+						competitor.add_tag(Tag{ std::format("$ENTRY:{}", i + 1), false });
+					}
 				}
 			}
-		}
 
-		for (Competition& phase : phases)
-		{
-			result = phase.resolve_all_references_impl(context, location) || result;
-		}
+			for (Competition& phase : phases)
+			{
+				result = phase.resolve_all_references_impl(context, location) || result;
+			}
 
-		location.pop_back();
+			location.pop_back();
 #ifndef NDEBUG
-		assert(location_copy == location);
+			assert(location_copy == location);
 #endif
 
-		return result;
+			return result;
+		}
+		catch (tournament_builder::exception::TournamentBuilderException& ex)
+		{
+			ex.add_context(*this);
+			throw ex;
+		}
 	}
 
 	bool RealCompetition::resolve_all_references(World& context, std::vector<Name>& location)
@@ -72,16 +80,32 @@ namespace tournament_builder
 		// It's not a descriptor, so parse it properly.
 		const Name name = Name::parse(input);
 		RealCompetition result{ name };
-		if (input.contains("phases"))
+		try
 		{
-			result.phases = json_helper::get_array(input["phases"], &Competition::parse);
+			if (input.contains("phases"))
+			{
+				try
+				{
+					result.phases = json_helper::get_array(input["phases"], &Competition::parse);
+				}
+				catch (tournament_builder::exception::TournamentBuilderException& ex)
+				{
+					ex.add_context("While parsing 'phases'");
+					throw ex;
+				}
+			}
+			if (input.contains("entry_list"))
+			{
+				result.entry_list = Competitor::parse_entry_list(input, "entry_list");
+			}
+			result.add_tags_from_json(input);
+			return result;
 		}
-		if (input.contains("entry_list"))
+		catch (tournament_builder::exception::TournamentBuilderException& ex)
 		{
-			result.entry_list = Competitor::parse_entry_list(input["entry_list"]);
+			ex.add_context(result);
+			throw ex;
 		}
-		result.add_tags_from_json(input);
-		return result;
 	}
 
 	std::shared_ptr<IReferencable> RealCompetition::copy_ref(const ReferenceCopyOptions&) const

@@ -1,7 +1,7 @@
 #include "tournament_builder/descriptors/descriptor_base_internal.hpp"
 #include "tournament_builder/json/json_helpers.hpp"
 #include "tournament_builder/serialize.hpp"
-
+#include "tournament_builder/exceptions.hpp"
 
 #include <cassert>
 #include <vector>
@@ -62,7 +62,15 @@ namespace tournament_builder::descriptor::internal_descriptor
 		}
 
 		const auto& exemplar = find_it->second;
-		return exemplar->parse_wrapper(input);
+		try
+		{
+			return exemplar->parse_wrapper(input);
+		}
+		catch (exception::TournamentBuilderException& ex)
+		{
+			ex.add_context(std::format("Parsing descriptor type '{}:'", exemplar->get_descriptor_uid()));
+			throw ex;
+		}
 	}
 
 	std::optional<RealCompetition> DescriptorBaseImpl::generate_wrapper() const

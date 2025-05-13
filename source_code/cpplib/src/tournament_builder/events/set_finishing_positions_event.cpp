@@ -17,22 +17,31 @@ namespace tournament_builder::event
 		result->target = SoftReference::parse(ref);
 
 		const json& finish_array = json_helper::get_array_object(input, "finish_order");
-		for (const json& element : finish_array)
+		for (std::size_t idx=0u;idx < finish_array.size();++idx)
 		{
-			if (element.type() == json::value_t::string)
+			try
 			{
-				result->finish_order.emplace_back(Name::parse(element));
+				const json& element = finish_array[idx];
+				if (element.type() == json::value_t::string)
+				{
+					result->finish_order.emplace_back(Name::parse(element));
+				}
+				else if (element.type() == json::value_t::array)
+				{
+					EqualPlacedGroup group;
+					group.reserve(element.size());
+					std::ranges::transform(element, std::back_inserter(group), Name::parse);
+					result->finish_order.emplace_back(std::move(group));
+				}
+				else
+				{
+					json_helper::throw_invalid_types_exception(element, { json::value_t::string, json::value_t::array });
+				}
 			}
-			else if (element.type() == json::value_t::array)
+			catch(tournament_builder::exception::TournamentBuilderException& ex)
 			{
-				EqualPlacedGroup group;
-				group.reserve(element.size());
-				std::ranges::transform(element, std::back_inserter(group), Name::parse);
-				result->finish_order.emplace_back(std::move(group));
-			}
-			else
-			{
-				json_helper::throw_invalid_types_exception(element, { json::value_t::string, json::value_t::array });
+				ex.add_context(std::format("Processing finish_order[{}]", idx));
+				throw ex;
 			}
 		}
 		return EventHandle{ result };
@@ -59,7 +68,7 @@ namespace tournament_builder::event
 
 		if (!competition_target.has_finalized_entry_list())
 		{
-			throw_execution_exception("Target did not resolve to a real competition, or still had references in its entry list.");
+			throw_execution_exception(std::format("Target '{}' did not resolve to a real competition, or still had references in its entry list.", target_ref));
 		}
 
 		RealCompetition* p_target = competition_target.get_real_competition();
@@ -120,7 +129,7 @@ namespace tournament_builder::event
 			const auto find_result = std::ranges::find_if(target.entry_list, matches_competitor);
 			if (find_result == end(target.entry_list))
 			{
-				throw_execution_exception(std::format("Could not find {} in entry list. All elements must be in the entry list.", placement.name));
+				throw_execution_exception(std::format("Could not find '{}' in entry list. All elements must be in the entry list.", placement.name));
 			}
 		}
 
@@ -141,7 +150,7 @@ namespace tournament_builder::event
 			}
 			else
 			{
-				throw_execution_exception(std::format("Entry {} was not placed. All entries which are not byes must be given a finishing position.", entry.to_string()));
+				throw_execution_exception(std::format("Entry '{}' was not placed. All entries which are not byes must be given a finishing position.", entry.to_string()));
 			}
 		}
 	}

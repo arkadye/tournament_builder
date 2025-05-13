@@ -1,0 +1,1 @@
+{"errors":["Parsing descriptor type 'competitor_view:': Invalid argument: In 'mix_expected_and_min_entries': cannot have 'expected_num_entries' with 'min_entries' or 'max_entries'"]}

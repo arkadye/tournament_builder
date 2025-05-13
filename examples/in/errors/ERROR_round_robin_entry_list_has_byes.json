@@ -1,0 +1,12 @@
+{
+	"competition": {
+		"name": "entry_list_has_byes",
+		"descriptor_type": "round_robin",
+		"entry_list": [
+			{ "name": "a" },
+			{ "name": "b" },
+			{ "name": "c" },
+			null
+		]
+	}
+}

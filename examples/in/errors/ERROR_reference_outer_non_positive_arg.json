@@ -1,0 +1,6 @@
+{
+  "competition": {
+    "name": "reference_outer_non_positive_arg",
+    "entry_list": [ "@OUTER:0" ]
+  }
+}

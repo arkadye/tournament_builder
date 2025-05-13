@@ -1,0 +1,19 @@
+{
+  "competition": {
+    "name": "invalid_type_in_set_finishing_positions",
+    "entry_list": [
+      { "name": "a" },
+      { "name": "b" }
+    ]
+  },
+  "events": [
+    {
+      "event_type": "set_finishing_positions",
+      "target": "invalid_type_in_set_finishing_positions",
+      "finish_order": [
+        { "ref": "ENTRY:2" },
+        { "ref": "ENTRY:1" }
+      ]
+    }
+  ]
+}
