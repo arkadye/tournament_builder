@@ -34,7 +34,6 @@ namespace tournament_builder::exception
 		TournamentBuilderException& operator=(TournamentBuilderException&&) = default;
 		std::string_view what() const { return msg; }
 		void add_context(std::string_view message);
-		void add_context(std::string message) { add_context(std::string_view{ message }); }
 		void add_context(const tournament_builder::NamedElement& named_element);
 	};
 
