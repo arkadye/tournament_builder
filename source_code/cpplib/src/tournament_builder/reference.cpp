@@ -119,12 +119,12 @@ namespace tournament_builder
 				{
 					if (outer_args.size() > 1u) [[unlikely]]
 					{
-						throw_error("Token has multiple arguments after the ':'. Can only have 1 argument or fewer.");
+						throw_error(std::format("Token '{}' has multiple arguments ({}) after the ':'. Can only have 1 argument or fewer.",current_token, outer_args.size()));
 					}
 
 					if (const std::string_view* str_arg = std::get_if<std::string_view>(&outer_args.front())) [[unlikely]]
 					{
-						throw_error(std::format("Argument to {} must be positive number. Got '{}', which is not a number", OUTER_PREFIX, *str_arg));
+						throw_error(std::format("Argument to '{}' must be positive number. Got '{}', which is not a number", OUTER_PREFIX, *str_arg));
 					}
 
 					assert(std::holds_alternative<int64_t>(outer_args.front()));
@@ -132,18 +132,18 @@ namespace tournament_builder
 
 					if (num_levels <= 0) [[unlikely]]
 					{
-						throw_error(std::format("Argument to {} must be positive number.Got '{}', which is less than 1", OUTER_PREFIX, num_levels));
+						throw_error(std::format("Argument to '{}' must be positive number. Got '{}', which is less than 1", OUTER_PREFIX, num_levels));
 					}
 				}
 
-				for (int i = 0; i < num_levels; ++i)
+				if (num_levels >= std::ssize(current_working_location))
 				{
-					if (current_working_location.empty()) [[unlikely]]
-					{
-						throw_error("Outer command used, but already at the outermost part.");
-					}
-					current_working_location.pop_back();
+					throw_error(std::format("{} element in reference would try to get outside the World object.", current_token));
 				}
+
+				auto new_end_it = end(current_working_location) - num_levels;
+				current_working_location.erase(new_end_it, end(current_working_location));
+
 				return dereference_to(context, start, current + 1, last, current_working_location);
 			}
 
@@ -205,7 +205,7 @@ namespace tournament_builder
 
 					if (const std::string_view* str_arg = std::get_if<std::string_view>(&any_args.front())) [[unlikely]]
 					{
-						throw_error(std::format("Argument to {} must be positive number. Got '{}', which is not a number", ANY_PREFIX, *str_arg));
+						throw_error(std::format("Argument to '{}' must be positive number. Got '{}', which is not a number", ANY_PREFIX, *str_arg));
 					}
 
 					if (is_any || (any_args.size() == 2u))
@@ -235,12 +235,12 @@ namespace tournament_builder
 
 					if (min_levels < 0) [[unlikely]]
 					{
-						throw_error(std::format("Min levels argument to {} must not be a negative number. Got '{}', which is less than 0", ANY_PREFIX, min_levels));
+						throw_error(std::format("Min levels argument to '{}' must not be a negative number. Got '{}', which is less than 0", ANY_PREFIX, min_levels));
 					}
 
 					if (max_levels <= 0) [[unlikely]]
 					{
-						throw_error(std::format("Max levels argument to {} must be positive number. Got '{}', which is less than 1", ANY_PREFIX, max_levels));
+						throw_error(std::format("Max levels argument to '{}' must be positive number. Got '{}', which is less than 1", ANY_PREFIX, max_levels));
 					}
 
 					if (min_levels > max_levels) [[unlikely]]
@@ -267,9 +267,12 @@ namespace tournament_builder
 					{
 						IReferencable* r = current_working_location.back();
 						Location l;
-						const std::size_t location_size = current_working_location.size() - 2; // Drop the current locatio and the world at the beginning.
-						l.reserve(location_size);
-						std::ranges::transform(current_working_location | std::views::drop(1) | std::views::take(location_size), std::back_inserter(l), [](IReferencable* ref) {return ref->get_reference_key(); });
+						if (current_working_location.size() >= 2u)
+						{
+							const std::size_t location_size = current_working_location.size() - 2; // Drop the current location and the world at the beginning.
+							l.reserve(location_size);
+							std::ranges::transform(current_working_location | std::views::drop(1) | std::views::take(location_size), std::back_inserter(l), [](IReferencable* ref) {return ref->get_reference_key(); });
+						}
 						return ReferenceResultBase{ r, std::move(l) };
 					}();
 
@@ -433,12 +436,12 @@ namespace tournament_builder
 		}
 
 		InvalidReferenceToken::InvalidReferenceToken(std::string_view reference, std::string_view token, std::size_t pos, std::string_view explanation)
-			: ReferenceException{ std::format("In {}: invalid '{}' found at position {}: {}", reference, token, pos, explanation) }
+			: ReferenceException{ std::format("In '{}': invalid '{}' found at position {}: {}", reference, token, pos, explanation) }
 		{
 		}
 
 		ExpectedSingleResult::ExpectedSingleResult(const SoftReference& reference, std::size_t num_results)
-			: ReferenceException{ std::format("Expected a single result dereferencing {}, but got {} results", reference, num_results) }
+			: ReferenceException{ std::format("Expected a single result dereferencing '{}', but got {} results", reference, num_results) }
 		{
 		}
 	}
