@@ -25,36 +25,44 @@ namespace tournament_builder
 	bool RealCompetition::resolve_all_references_impl(World& context, std::vector<Name>& location)
 	{
 		// In general, working outside-in will work better.
-#ifndef NDEBUG
-		auto location_copy = location;
-#endif
-		location.push_back(name);
-		bool result = false;
-		for (std::size_t i = 0u;i<entry_list.size();++i)
+		try
 		{
-			Reference<Competitor>& competitor_ref = entry_list[i];
-			if (competitor_ref.is_reference())
+#ifndef NDEBUG
+			auto location_copy = location;
+#endif
+			location.push_back(name);
+			bool result = false;
+			for (std::size_t i = 0u; i < entry_list.size(); ++i)
 			{
-				result = competitor_ref.resolve(context, location) || result; // We DO NOT want to short circuit this.
-				if (competitor_ref.is_resolved())
+				Reference<Competitor>& competitor_ref = entry_list[i];
+				if (competitor_ref.is_reference())
 				{
-					Competitor& competitor = competitor_ref.get();
-					competitor.add_tag(Tag{ std::format("$ENTRY:{}", i + 1), false });
+					result = competitor_ref.resolve(context, location) || result; // We DO NOT want to short circuit this.
+					if (competitor_ref.is_resolved())
+					{
+						Competitor& competitor = competitor_ref.get();
+						competitor.add_tag(Tag{ std::format("$ENTRY:{}", i + 1), false });
+					}
 				}
 			}
-		}
 
-		for (Competition& phase : phases)
-		{
-			result = phase.resolve_all_references_impl(context, location) || result;
-		}
+			for (Competition& phase : phases)
+			{
+				result = phase.resolve_all_references_impl(context, location) || result;
+			}
 
-		location.pop_back();
+			location.pop_back();
 #ifndef NDEBUG
-		assert(location_copy == location);
+			assert(location_copy == location);
 #endif
 
-		return result;
+			return result;
+		}
+		catch (tournament_builder::exception::TournamentBuilderException& ex)
+		{
+			ex.add_context(*this);
+			throw ex;
+		}
 	}
 
 	bool RealCompetition::resolve_all_references(World& context, std::vector<Name>& location)
