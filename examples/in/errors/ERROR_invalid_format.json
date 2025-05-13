@@ -1,0 +1,14 @@
+{
+  "competition": {
+    "name": "array_in_entry_list",
+    "entry_list": [
+      { "ref": "@ROOT.a" }
+    ]
+  },
+  "events": [
+    {
+      "event_type": "set_finishing_positions",
+      "target": "array_in_entry_list",
+      "finish_order": [ "a" ]
+    }
+  ]

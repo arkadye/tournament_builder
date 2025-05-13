@@ -1,0 +1,10 @@
+{
+	"competition": {
+		"name": "wrong_number_of_entries",
+		"descriptor_type": "knockout_bracket",
+		"entry_list": [
+			{ "name": "a" },
+			{ "name": "b" },
+			{"name": "c"} ]
+	}
+}

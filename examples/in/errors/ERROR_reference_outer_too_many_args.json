@@ -1,0 +1,6 @@
+{
+  "competition": {
+    "name": "reference_outer_too_many_args",
+    "entry_list": [ "@OUTER:1:2" ]
+  }
+}

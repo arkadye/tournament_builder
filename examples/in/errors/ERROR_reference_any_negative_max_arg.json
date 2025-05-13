@@ -1,0 +1,6 @@
+{
+  "competition": {
+    "name": "reference_any_negative_max",
+    "entry_list": [ "@ANY:1:0" ]
+  }
+}

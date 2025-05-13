@@ -1,0 +1,12 @@
+{
+	"competition": {
+		"name": "invalid_times_played",
+		"descriptor_type": "round_robin",
+		"entry_list": [
+			{ "name": "a" },
+			{ "name": "b" },
+			{ "name": "c" }
+		],
+		"num_times_to_play_each_opponent": 0
+	}
+}

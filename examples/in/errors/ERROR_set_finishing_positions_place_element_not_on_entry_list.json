@@ -1,0 +1,22 @@
+{
+  "competition": {
+    "name": "place_entry_not_on_list",
+    "entry_list": [
+      { "name": "a" },
+      { "name": "b" },
+      { "name": "c" }
+    ]
+  },
+  "events": [
+    {
+      "event_type": "set_finishing_positions",
+      "target": "place_entry_not_on_list",
+      "finish_order": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ]
+    }
+  ]
+}

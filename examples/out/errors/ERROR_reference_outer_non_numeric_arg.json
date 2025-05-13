@@ -1,0 +1,1 @@
+{"errors":["In the world's resolve_all_references step: In 'reference_outer_non_numeric_arg': Reference error: In '@OUTER:one': invalid '@OUTER:one' found at position 0: Argument to '@OUTER' must be positive number. Got 'one', which is not a number"]}

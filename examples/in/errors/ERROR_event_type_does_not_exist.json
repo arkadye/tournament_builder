@@ -1,0 +1,14 @@
+{
+  "competition": {
+    "name": "event_type_does_not_exist",
+    "entry_list": [
+      { "name": "a" },
+      { "name": "b" }
+    ]
+  },
+  "events": [
+    {
+      "event_type": "this_event_type_does_not_exist_please_do_not_use_this_event_type_for_anything_or_you_will_break_this_testcase"
+    }
+  ]
+}

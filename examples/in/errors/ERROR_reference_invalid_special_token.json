@@ -1,0 +1,6 @@
+{
+  "competition": {
+    "name": "reference_invalid_special_token",
+    "entry_list": [ "@INVALID_SPECIAL_TOKEN" ]
+  }
+}
