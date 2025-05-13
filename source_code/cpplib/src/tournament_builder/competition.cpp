@@ -80,16 +80,32 @@ namespace tournament_builder
 		// It's not a descriptor, so parse it properly.
 		const Name name = Name::parse(input);
 		RealCompetition result{ name };
-		if (input.contains("phases"))
+		try
 		{
-			result.phases = json_helper::get_array(input["phases"], &Competition::parse);
+			if (input.contains("phases"))
+			{
+				try
+				{
+					result.phases = json_helper::get_array(input["phases"], &Competition::parse);
+				}
+				catch (tournament_builder::exception::TournamentBuilderException& ex)
+				{
+					ex.add_context("While parsing 'phases'");
+					throw ex;
+				}
+			}
+			if (input.contains("entry_list"))
+			{
+				result.entry_list = Competitor::parse_entry_list(input, "entry_list");
+			}
+			result.add_tags_from_json(input);
+			return result;
 		}
-		if (input.contains("entry_list"))
+		catch (tournament_builder::exception::TournamentBuilderException& ex)
 		{
-			result.entry_list = Competitor::parse_entry_list(input["entry_list"]);
+			ex.add_context(result);
+			throw ex;
 		}
-		result.add_tags_from_json(input);
-		return result;
 	}
 
 	std::shared_ptr<IReferencable> RealCompetition::copy_ref(const ReferenceCopyOptions&) const
