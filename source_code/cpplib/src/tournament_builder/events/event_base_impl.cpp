@@ -41,11 +41,20 @@ namespace tournament_builder::event
 			const auto find_it = find_event(Name{ *descriptor_type });
 			if (find_it == end(m_derived_events_register))
 			{
-				throw exception::JsonInvalidEvent{ input, *descriptor_type };
+				exception::JsonInvalidEvent error{ input, *descriptor_type };
+				throw error;
 			}
 
 			const auto& exemplar = find_it->second;
-			return exemplar->parse(input);
+			try
+			{
+				return exemplar->parse(input);
+			}
+			catch (tournament_builder::exception::TournamentBuilderException& ex)
+			{
+				ex.add_context(std::format("While parsing event type '{}'", exemplar->get_event_uid()));
+				throw ex;
+			}
 		}
 	}
 
