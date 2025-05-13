@@ -39,7 +39,15 @@ namespace tournament_builder
         World result{ std::move(competition) };
         if (const auto& event_array_opt = json_helper::get_optional_array_object(input, "events"))
         {
-            result.events = json_helper::get_array(event_array_opt.value(), &event::parse_event);
+            try
+            {
+                result.events = json_helper::get_array(event_array_opt.value(), &event::parse_event);
+            }
+            catch (tournament_builder::exception::TournamentBuilderException& ex)
+            {
+                ex.add_context("While parsing events");
+                throw ex;
+            }
         }
 
         return result;
@@ -47,17 +55,33 @@ namespace tournament_builder
 
     void World::resolve_all_references()
     {
-        std::vector<Name> location;
-        competition.resolve_all_references(*this, location);
+        try
+        {
+            std::vector<Name> location;
+            competition.resolve_all_references(*this, location);
+        }
+        catch (tournament_builder::exception::TournamentBuilderException& ex)
+        {
+            ex.add_context("In the world's resolve_all_references step");
+            throw ex;
+        }
     }
 
     void World::execute_all_events()
     {
         using namespace event;
         resolve_all_references();
-        for (const EventHandle& ev : events)
+        for (std::size_t idx{ 0u };idx < events.size();++idx)
         {
-            ev->execute(*this);
+            const EventHandle& ev = events[idx];
+            try
+            {
+                ev->execute(*this);
+            }
+            catch (tournament_builder::exception::TournamentBuilderException& ex)
+            {
+                ex.add_context(std::format("Executing event index={} ('{}')", idx, ev->get_event_uid()));
+            }
         }
         if (!events.empty())
         {
