@@ -27,7 +27,6 @@ set(TYPE_SOURCES
 	"src/tournament_builder/competitor.cpp"
 	"src/tournament_builder/competition.cpp"
 	"src/tournament_builder/exceptions.cpp"
-	"src/tournament_builder/random.cpp"
 	"src/tournament_builder/reference.cpp"
 	"src/tournament_builder/ireferencable.cpp"
 	"src/tournament_builder/tag.cpp"
@@ -42,7 +41,6 @@ set(TYPE_HEADERS
 	"include/tournament_builder/competitor.hpp"
 	"include/tournament_builder/competition.hpp"
 	"include/tournament_builder/exceptions.hpp"
-	"include/tournament_builder/random.hpp"
 	"include/tournament_builder/reference.hpp"
 	"include/tournament_builder/ireferencable.hpp"
 	"include/tournament_builder/stats.hpp"
@@ -50,9 +48,21 @@ set(TYPE_HEADERS
 	"include/tournament_builder/itaggable.hpp"
 	"include/tournament_builder/token.hpp"
 	"include/tournament_builder/world.hpp"
-	"include/tournament_builder/generic_utils.hpp"
 )
 set(TYPES ${TYPE_SOURCES} ${TYPE_HEADERS})
+
+set(HELPER_HEADERS
+	"include/tournament_builder/generic_utils.hpp"
+	"include/tournament_builder/tag_and_reference_helpers.hpp"
+	"include/tournament_builder/random.hpp"
+)
+
+set(HELPER_SOURCES
+	"src/tournament_builder/tag_and_reference_helpers.cpp"
+	"src/tournament_builder/random.cpp"
+)
+
+set(HELPERS ${HELPER_HEADERS} ${HELPER_SOURCES})
 	
 set(DESCRIPTOR_HEADERS
 	"include/tournament_builder/descriptors/descriptor_handle.hpp"
@@ -75,7 +85,6 @@ set(DESCRIPTOR_SOURCES
 	"src/tournament_builder/descriptors/DEBUG_never_resolves.cpp"
 	"src/tournament_builder/descriptors/competitor_view.cpp"
 )
-source_group("src/descriptors" FILES ${DESCRIPTOR_HEADERS} ${DESCRIPTOR_SOURCES})
 
 set(EVENT_HEADERS
 	"include/tournament_builder/events/event_base_impl.hpp"
@@ -92,7 +101,6 @@ set(EVENT_SOURCES
 	"src/tournament_builder/events/set_finishing_positions_event.cpp"
 	"src/tournament_builder/events/add_tags_event.cpp"
 )
-source_group("src/events" FILES ${EVENT_HEADERS} ${EVENT_SOURCES})
 
 set (JSON_SOURCES
 	"src/tournament_builder/json/json_helpers.cpp"
@@ -106,13 +114,16 @@ set(JSON_FILES ${JSON_SOURCES} ${JSON_HEADERS})
 	
 set(NLOHMANN_NATVIS "../thirdparty/nlohmann/json/nlohmann_json.natvis")
 
-set(LIB_FILES ${SOURCE_FILES} ${DESCRIPTOR_SOURCES} ${JSON_SOURCES} ${EVENT_SOURCES} ${TYPE_SOURCES} ${TYPE_HEADERS} ${DESCRIPTOR_HEADERS} ${EVENT_HEADERS} ${SOURCE_HEADERS}  ${JSON_HEADERS})
+set(LIB_FILES ${SOURCE_FILES} ${DESCRIPTOR_SOURCES} ${JSON_SOURCES} ${EVENT_SOURCES} ${TYPE_SOURCES} ${TYPE_HEADERS} ${DESCRIPTOR_HEADERS} ${EVENT_HEADERS} ${SOURCE_HEADERS} ${JSON_HEADERS} ${HELPERS})
 set(HEADER_FILES ${SOURCE_HEADERS})
 
 source_group("src/json" FILES ${JSON_FILES})
 source_group("src/descriptors" FILES ${DESCRIPTORS})
 source_group("src/types" FILES ${TYPES})
 source_group("src" FILES ${SOURCE_FILES} ${SOURCE_HEADERS})
+source_group("src/events" FILES ${EVENT_HEADERS} ${EVENT_SOURCES})
+source_group("src/descriptors" FILES ${DESCRIPTOR_HEADERS} ${DESCRIPTOR_SOURCES})
+source_group("src/helpers" FILES ${HELPERS})
 
 add_library(${CPPLIB} STATIC ${LIB_FILES})
 
