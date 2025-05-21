@@ -6,7 +6,7 @@ pushd .
 
 cd %~dp0
 
-cmake .
+cmake -D DEV_MODE=On .
 cmake --build . --config %TARGET%
 ctest . -C %TARGET%
 
