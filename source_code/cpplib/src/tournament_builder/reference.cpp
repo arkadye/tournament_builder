@@ -6,6 +6,7 @@
 
 #include "tournament_builder/generic_utils.hpp"
 #include "tournament_builder/json/json_helpers.hpp"
+#include "tournament_builder/tag_and_reference_helpers.hpp"
 
 #include "nlohmann/json.hpp"
 
@@ -185,71 +186,29 @@ namespace tournament_builder
 
 			std::vector<ReferenceResultBase> dereference_any_tag(SpecialRefType any_or_glob, Token current_token, const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<IReferencable*>& current_working_location)
 			{
-				auto throw_error = [current_token, start, current, &context](std::string_view explanation)
-					{
-						throw exception::InvalidReferenceToken{ context.to_string(), current_token, static_cast<std::size_t>(std::distance(start, current)), explanation };
-					};
-				const auto any_args = Token::get_args(current_token, ARGUMENT_DIVIDER);
-
-				const bool is_any = (any_or_glob == SpecialRefType::any_prefix);
-				assert(is_any || (any_or_glob == SpecialRefType::glob_prefix));
-
-				int64_t min_levels = is_any ? 1 : 0;
-				int64_t max_levels = is_any ? 1 : std::numeric_limits<int64_t>::max();
-				if (!any_args.empty())
+				helpers::WildcardType wildcard_type{};
+				switch (any_or_glob)
 				{
-					if (any_args.size() > 2u) [[unlikely]]
-					{
-						throw_error(std::format("Token has {} arguments after the ':'. Can only have 0, 1, or 2 arguments.", any_args.size()));
-					}
-
-					if (const std::string_view* str_arg = std::get_if<std::string_view>(&any_args.front())) [[unlikely]]
-					{
-						throw_error(std::format("Argument to '{}' must be positive number. Got '{}', which is not a number", ANY_PREFIX, *str_arg));
-					}
-
-					if (is_any || (any_args.size() == 2u))
-					{
-						assert(std::holds_alternative<int64_t>(any_args.front()));
-						min_levels = std::get<int64_t>(any_args.front());
-
-						assert(std::holds_alternative<int64_t>(any_args.back()));
-						max_levels = std::get<int64_t>(any_args.back());
-					}
-					else // is_glob
-					{
-						switch (any_args.size())
-						{
-						case 0u:
-							// Nothing to do
-							break;
-						case 1u:
-							// The argument is the maximum number of levels we can use.
-							assert(std::holds_alternative<int64_t>(any_args.front()));
-							max_levels = std::get<int64_t>(any_args.front());
-							break;
-						default:
-							assert(false);
-						}
-					}
-
-					if (min_levels < 0) [[unlikely]]
-					{
-						throw_error(std::format("Min levels argument to '{}' must not be a negative number. Got '{}', which is less than 0", ANY_PREFIX, min_levels));
-					}
-
-					if (max_levels <= 0) [[unlikely]]
-					{
-						throw_error(std::format("Max levels argument to '{}' must be positive number. Got '{}', which is less than 1", ANY_PREFIX, max_levels));
-					}
-
-					if (min_levels > max_levels) [[unlikely]]
-					{
-						throw_error(std::format("Min levels ({}) is greater than max levels ({}).", min_levels, max_levels));
-					}
+				case SpecialRefType::any_prefix:
+					wildcard_type = helpers::WildcardType::any;
+					break;
+				case SpecialRefType::glob_prefix:
+					wildcard_type = helpers::WildcardType::glob;
+					break;
+				default:
+					assert(false && "SpecialRefType was not any or glob types.");
 				}
 
-				return dereference_any_tag(min_levels, max_levels, context, start, current, last, current_working_location);
+				try
+				{
+					const helpers::GetWildcardArgsResult get_args_result = helpers::get_wildcard_args(current_token, wildcard_type, ARGUMENT_DIVIDER);
+					return dereference_any_tag(get_args_result.min, get_args_result.max, context, start, current, last, current_working_location);
+				}
+				catch (const exception::TournamentBuilderException& ex)
+				{
+					throw exception::InvalidReferenceToken{ context.to_string(), current_token, static_cast<std::size_t>(std::distance(start, current)), ex.what() };
+				}
+
 			}
 		}
 
