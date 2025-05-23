@@ -19,6 +19,8 @@ namespace tournament_builder
 			normal,
 			pos,
 			entry,
+			any,
+			glob,
 			invalid
 		};
 
