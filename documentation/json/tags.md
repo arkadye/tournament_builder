@@ -123,6 +123,8 @@ Unlike other special tags, these tags will appear on the output.
 
 This tag is unique. It cannot appear as part of a chain. So `example.$POS:1.oops` is an error, as is `$POS:1.example`.
 
+If this tag is given a negative index (e.g. `$POS:-1`) it counts from the back. So `$POS:-1` will be the competitor in *last* place, `$POS:-2` the competitor 2nd to last, and so on. The bottom three could be referenced using `$POS-3:-1`, and first-and-last would be $POS:-1:1`.
+
 [^1]: Note to programmers: this is 1-indexed because actual league tables are also 1-indexed.
 
 ### Special Tag `$ENTRY`
@@ -130,6 +132,8 @@ This tag is unique. It cannot appear as part of a chain. So `example.$POS:1.oops
 This corresponds to a competitor in a competition. Whichever competitor is listed first in the entry list implicity has the tag `$ENTRY:1`, and the numbering works exactly like the `$POS` numbering.
 
 This tag is unique. It cannot appear as part of a chain. So `example.$ENTRY:1.oops` is an error, as is `$ENTRY:1.example`.
+
+If this tag is given a negative index (e.g. `$ENTRY:-1`) it counts from the back. So `$ENTRY:-1` will be the *last* competitor in the entry list, `$ENTRY:-2` the competitor 2nd to last, and so on. The last three could be referenced using `$ENTRY-3:-1`, and first-and-last would be $ENTRY:-1:1`.
 
 This tag is omitted from the output.
 
@@ -148,5 +152,7 @@ The `$GLOB` tag acts similarly, but with different defaults. `$GLOB` with no arg
 With a single argument, this sets a maximum. So `$GLOB:10` is equivalent to `$ANY:0:10`.
 
 `$GLOB` can also be given multiple arguments (`$GLOB:3:5`, for example). In this case it behaves exactly the same as an `$ANY` tag with the same arguments.
+
+Wildcard tags do not consider `$POS` or `$ENTRY` tags when matching.
 
 [^2]: 2147483647 is 2^31  - 1 - the largest number can than be stored in a signed 32-bit integer.
