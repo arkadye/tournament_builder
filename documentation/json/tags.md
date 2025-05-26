@@ -132,3 +132,21 @@ This corresponds to a competitor in a competition. Whichever competitor is liste
 This tag is unique. It cannot appear as part of a chain. So `example.$ENTRY:1.oops` is an error, as is `$ENTRY:1.example`.
 
 This tag is omitted from the output.
+
+### Special Tag tokens `$ANY` and `$GLOB`
+
+These special tokens are wildcards. For example: `Example.$ANY` will match with `Example.Fred`, `Example.Shaggy`, `Example.Scooby`, etc...
+
+An `$ANY` tag may be given an argument like so: `$ANY:3`. This example requires `$ANY` to match with three tokens, and is equivalent to `$ANY.$ANY.$ANY`.
+
+An `$ANY` tag can be given two arguments to match with a variable number of tags. So `X.$ANY:0:2.Y` is equivalent to `X.Y` and `X.$ANY.Y` and `X.$ANY.$ANY.Y`.
+
+`$ANY:5` (for example) is equivalent to `$ANY:5:5`. And `$ANY` (without an argument) is equivalent to `$ANY:1` and `$ANY:1:1`.
+
+The `$GLOB` tag acts similarly, but with different defaults. `$GLOB` with no arguments is equivalent to `$ANY:0:2147483647` [^2]. By default this will match with any number of tokens.
+
+With a single argument, this sets a maximum. So `$GLOB:10` is equivalent to `$ANY:0:10`.
+
+`$GLOB` can also be given multiple arguments (`$GLOB:3:5`, for example). In this case it behaves exactly the same as an `$ANY` tag with the same arguments.
+
+[^2]: 2147483647 is 2^31  - 1 - the largest number can than be stored in a signed 32-bit integer.
