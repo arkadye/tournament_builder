@@ -10,13 +10,14 @@
 
 #include <algorithm>
 
+#include <iostream>
 
 namespace tournament_builder
 {
     namespace internal_tag
     {
         constexpr char SPECIAL_TAG_INDICATOR = '$';
-        constexpr char TAG_DELIMINATOR = '-';
+        constexpr char TAG_DELIMINATOR = '.';
         constexpr char ARG_DELIMINATOR = ':';
 
         constexpr std::string_view POS = "$POS";
@@ -54,6 +55,23 @@ namespace tournament_builder
             return false;
         }
 
+        bool is_solo_type(Tag::TagType stt)
+        {
+            using enum Tag::TagType;
+            switch (stt)
+            {
+            case pos:
+            case entry:
+                return true;
+            case invalid:
+            case normal:
+            case any:
+            case glob:
+                break;
+            }
+            return false;
+        }
+
         bool are_normal_tags_equal(const Tag& left_context, TokenIterator left_start, TokenIterator left_current, TokenIterator left_finish, const Tag& right_context, TokenIterator right_start, TokenIterator right_current, TokenIterator right_finish);
 
         bool are_wildcard_tags_equal(const Tag& left_context, TokenIterator left_start, TokenIterator left_current_wc, TokenIterator left_finish, const Tag& right_context, TokenIterator right_start, TokenIterator right_current, TokenIterator right_finish)
@@ -78,9 +96,14 @@ namespace tournament_builder
             {
                 helpers::GetWildcardArgsResult wildcard_args = helpers::get_wildcard_args(*left_current_wc, wildcard_type, ARG_DELIMINATOR);
                 const auto next_left = std::next(left_current_wc);
-                for (int64_t lvl{ 0 }; lvl < wildcard_args.max; ++lvl, ++right_current)
+                for (int64_t lvl{ 0 }; lvl <= wildcard_args.max; ++lvl, ++right_current)
                 {
-                    if (right_current == right_finish) return lvl >= wildcard_args.min;
+                    if (right_current == right_finish) return (lvl >= wildcard_args.min) && (next_left == left_finish);
+
+                    // If the right-hand-side is a solo-type tag, we cannot match with it.
+                    const Tag::TagType right_type = get_type(*right_current);
+                    if (is_solo_type(right_type)) return false;
+
                     if (lvl < wildcard_args.min) continue;
 
                     const bool candidate = are_normal_tags_equal(left_context, left_start, next_left, left_finish, right_context, right_start, right_current, right_finish);
@@ -209,22 +232,6 @@ namespace tournament_builder
             const Tag::TagType lt = get_type(l);
             const Tag::TagType rt = get_type(r);
 
-            auto is_solo_type = [](Tag::TagType stt)
-                {
-                    using enum Tag::TagType;
-                    switch (stt)
-                    {
-                    case pos:
-                    case entry:
-                        return true;
-                    case invalid:
-                    case normal:
-                    case any:
-                    case glob:
-                        break;
-                    }
-                    return false;
-                };
 
             if (is_solo_type(lt) && (lt == rt))
             {
@@ -266,13 +273,19 @@ namespace tournament_builder
 
     Tag::Tag(std::string_view input, bool copy_on_reference_arg)
     {
+        if (input.starts_with('[') && input.ends_with(']'))
+        {
+            input.remove_prefix(1);
+            input.remove_suffix(1);
+        }
         utils::split_tokens<Token>(input, internal_tag::TAG_DELIMINATOR, std::back_inserter(m_data));
         copy_on_reference = copy_on_reference_arg;
     }
 
     bool Tag::operator==(const Tag& other) const noexcept
     {
-        return internal_tag::are_tags_equal(*this, this->m_data, other, other.m_data);
+        const bool result = internal_tag::are_tags_equal(*this, this->m_data, other, other.m_data);
+        return result;
     }
 
     std::string tournament_builder::Tag::to_string() const

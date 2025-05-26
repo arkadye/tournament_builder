@@ -17,6 +17,9 @@ namespace tournament_builder::helpers
 				throw exception::TournamentBuilderException{ std::format("Error parsing args in token '{}': {}", token, explanation) };
 			};
 		GetWildcardArgsResult result;
+		const bool is_any = (type == WildcardType::any);
+		result.min = is_any ? 1 : 0;
+		result.max = is_any ? 1 : std::numeric_limits<int64_t>::max();
 		{
 			std::string_view tok_str = token.to_string();
 			const auto first_delim_location = tok_str.find(arg_delim);
@@ -29,9 +32,6 @@ namespace tournament_builder::helpers
 		}
 		const auto any_args = Token::get_args(token, arg_delim);
 
-		const bool is_any = (type == WildcardType::any);
-		result.min = is_any ? 1 : 0;
-		result.max = is_any ? 1 : std::numeric_limits<int64_t>::max();
 		if (!any_args.empty())
 		{
 			if (any_args.size() > 2u) [[unlikely]]

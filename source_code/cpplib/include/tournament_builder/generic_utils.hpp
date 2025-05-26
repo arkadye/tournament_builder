@@ -78,15 +78,6 @@ namespace tournament_builder::utils
 					data_view = "";
 				}
 
-				for (const auto [open, close] : brackets)
-				{
-					if (result.front() == open && result.back() == close)
-					{
-						result.remove_prefix(1);
-						result.remove_suffix(1);
-					}
-				}
-
 				return result;
 			};
 
