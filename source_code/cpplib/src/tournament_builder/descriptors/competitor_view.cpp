@@ -77,7 +77,6 @@ namespace tournament_builder::descriptor
     std::optional<std::vector<Reference<Competitor>>> CompetitorView::unpack_entry_list(World& world, const std::vector<Name>& location, const std::vector<Reference<Competitor>> in_list, int32_t min_entries, int32_t max_entries)
     {
         std::vector<Reference<Competitor>> entries;
-        entries.reserve(max_entries);
 
         for (const Reference<Competitor>& rc : in_list)
         {
