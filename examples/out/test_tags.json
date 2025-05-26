@@ -1,0 +1,195 @@
+{
+  "competition": {
+    "entry_list": [
+      {
+        "name": "entry_a",
+        "tags": [ "a.b.c.d.e.f" ]
+      },
+      {
+        "name": "entry_a_duplicate",
+        "tags": [ "a.b.c.d.e.f" ]
+      },
+      {
+        "name": "entry_b",
+        "tags": [ "a.b.c.d.Z.f" ]
+      },
+      {
+        "name": "entry_c",
+        "tags": [ "f.e.d.c.b.a" ]
+      },
+      {
+        "name": "entry_d",
+        "tags": [ "a.b.f" ]
+      },
+      {
+        "name": "entry_e",
+        "tags": [ "a.f" ]
+      },
+      {
+        "name": "entry_f",
+        "tags": [ "a" ]
+      }
+    ],
+    "name": "demo_competition",
+    "phases": [
+      {
+        "entry_list": [
+          {
+            "name": "entry_a",
+            "tags": [ "a.b.c.d.e.f" ]
+          },
+          {
+            "name": "entry_a_duplicate",
+            "tags": [ "a.b.c.d.e.f" ]
+          },
+          {
+            "name": "entry_b",
+            "tags": [ "a.b.c.d.Z.f" ]
+          }
+        ],
+        "name": "simple_capture_by_tag"
+      },
+      {
+        "entry_list": [
+          {
+            "name": "entry_a",
+            "tags": [ "a.b.c.d.e.f" ]
+          },
+          {
+            "name": "entry_a_duplicate",
+            "tags": [ "a.b.c.d.e.f" ]
+          },
+          {
+            "name": "entry_b",
+            "tags": [ "a.b.c.d.Z.f" ]
+          }
+        ],
+        "name": "capture_with_any_no_args"
+      },
+      {
+        "entry_list": [
+          {
+            "name": "entry_a",
+            "tags": [ "a.b.c.d.e.f" ]
+          },
+          {
+            "name": "entry_a_duplicate",
+            "tags": [ "a.b.c.d.e.f" ]
+          },
+          {
+            "name": "entry_b",
+            "tags": [ "a.b.c.d.Z.f" ]
+          }
+        ],
+        "name": "capture_with_any_one_arg"
+      },
+      {
+        "entry_list": [
+          {
+            "name": "entry_a",
+            "tags": [ "a.b.c.d.e.f" ]
+          },
+          {
+            "name": "entry_a_duplicate",
+            "tags": [ "a.b.c.d.e.f" ]
+          },
+          {
+            "name": "entry_b",
+            "tags": [ "a.b.c.d.Z.f" ]
+          },
+          {
+            "name": "entry_d",
+            "tags": [ "a.b.f" ]
+          },
+          {
+            "name": "entry_e",
+            "tags": [ "a.f" ]
+          }
+        ],
+        "name": "capture_with_glob_no_args"
+      },
+      {
+        "entry_list": [
+          {
+            "name": "entry_d",
+            "tags": [ "a.b.f" ]
+          },
+          {
+            "name": "entry_e",
+            "tags": [ "a.f" ]
+          }
+        ],
+        "name": "capture_with_glob_one_arg"
+      },
+      { "name": "trailing_glob" },
+      {
+        "entry_list": [
+          {
+            "name": "entry_a",
+            "tags": [ "a.b.c.d.e.f" ]
+          },
+          {
+            "name": "entry_a_duplicate",
+            "tags": [ "a.b.c.d.e.f" ]
+          },
+          {
+            "name": "entry_b",
+            "tags": [ "a.b.c.d.Z.f" ]
+          },
+          {
+            "name": "entry_d",
+            "tags": [ "a.b.f" ]
+          },
+          {
+            "name": "entry_e",
+            "tags": [ "a.f" ]
+          }
+        ],
+        "name": "leading_glob"
+      },
+      {
+        "entry_list": [
+          {
+            "name": "entry_a",
+            "tags": [ "a.b.c.d.e.f" ]
+          },
+          {
+            "name": "entry_a_duplicate",
+            "tags": [ "a.b.c.d.e.f" ]
+          },
+          {
+            "name": "entry_b",
+            "tags": [ "a.b.c.d.Z.f" ]
+          },
+          {
+            "name": "entry_c",
+            "tags": [ "f.e.d.c.b.a" ]
+          },
+          {
+            "name": "entry_d",
+            "tags": [ "a.b.f" ]
+          },
+          {
+            "name": "entry_e",
+            "tags": [ "a.f" ]
+          },
+          {
+            "name": "entry_f",
+            "tags": [ "a" ]
+          }
+        ],
+        "name": "just_a_glob"
+      },
+      {
+        "entry_list": [
+          {
+            "name": "entry_f",
+            "tags": [ "a" ]
+          }
+        ],
+        "name": "just_an_any"
+      },
+      { "name": "should_miss_everything" }
+    ]
+  }
+}

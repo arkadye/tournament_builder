@@ -47,6 +47,7 @@ add_example_file("simple_elim")
 add_example_file("test_references")
 add_example_file("DEBUG_never_resolves")
 add_example_file("test_multireferences")
+add_example_file("test_tags")
 
 add_error_example_file("ERROR_invalid_competitor_view_1")
 add_error_example_file("ERROR_invalid_competitor_view_2")

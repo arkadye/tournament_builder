@@ -19,6 +19,8 @@ namespace tournament_builder
 			normal,
 			pos,
 			entry,
+			any,
+			glob,
 			invalid
 		};
 
@@ -27,7 +29,7 @@ namespace tournament_builder
 		explicit Tag(std::string_view input, bool copy_on_reference_arg = false);
 		bool operator==(const Tag& other) const noexcept;
 		bool operator==(std::string_view other) const { return operator==(Tag{ other }); }
-		bool operator==(Token other) const { return operator==(std::string{ other.to_string()}); }
+		bool operator==(Token other) const { return operator==(other.to_string()); }
 		std::string to_string() const;
 		static Tag parse_default_copy(const nlohmann::json& in) { return parse(in, true); }
 		static Tag parse_default_no_copy(const nlohmann::json& in) { return parse(in, false); }
