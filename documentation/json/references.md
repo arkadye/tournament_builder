@@ -142,7 +142,7 @@ Multiple `@OUTER`s chained together can be expressed using the shorthand `@OUTER
 
 ### `@ANY` and `@GLOB`
 
-The `@ANY` token matches with any (or all) items. This may allow a reference to match with multiple items. (Support for `@GLOB` is planned.)
+The `@ANY` token matches with any (or all) items. This may allow a reference to match with multiple items.
 
 Consider:
 
@@ -201,3 +201,5 @@ The reference `grandparent.@ANY.childX` will resolve to `[grandparent.parent_A.c
 As a shorthand for chaining multiple `@ANY` references, a single number can be added to the end. `@ANY:2` is equivalent to `@ANY.@ANY`, for example. `@ANY` and `@ANY:1` are the same as well.
 
 This shorthand can also be used to chain variable numbers of `@ANY` references by giving two arguments. So `@ANY:1:3` is the equivalent chaining together `@ANY`, `@ANY.@ANY` and `@ANY.@ANY.@ANY` and getting all the results. In this case the first argument can be 0, so `@ANY:0:2` is valid. Using a `@ANY` with a single argument is effectively the equivalent of having the same argument in both spaces. For example: `@ANY:2` is equivalent to `@ANY:2:2`; and `@ANY` is equivalent to `@ANY:1` and `@ANY:1:1`.
+
+The `@GLOB` tag acts similarly, but defaults to matching any number of elements. `GLOB` is equivalent to `@ANY:0:2147483647`. A single argument can be provided to set the maximum, so `@GLOB:10` is equivalent to `@ANY:0:10`. When there are two arguments `@GLOB` and `@ANY` are equivalent.
