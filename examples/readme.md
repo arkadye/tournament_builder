@@ -16,3 +16,4 @@ To understand what the inputs mean, refer to [the input and output JSON document
 - `simple_elim.json`: Demonstrates how the [round_of_matches](../documentation/json/descriptors/round_of_matches.md) works with a simple example.
 - `test_references.json`: Tests various more unusual cases for [references](../documentation/json/references.md).
 - `test_multireferences.json`: Test more cases for references, particularly cases where they may resolve to more than one element.
+- `test_tags.json`: Test cases for [tags](../documentation/json/tags.md) and using tags to match with references.
