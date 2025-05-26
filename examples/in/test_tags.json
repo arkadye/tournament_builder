@@ -1,0 +1,98 @@
+{
+  "comment": "A testcase for various ways to match with tags.",
+  "competition": {
+    "name": "demo_competition",
+    "entry_list": [
+      {
+        "name": "entry_a",
+        "tags": [ "a.b.c.d.e.f" ]
+      },
+      {
+        "name": "entry_a_duplicate",
+        "tags": [ "a.b.c.d.e.f" ]
+      },
+      {
+        "name": "entry_b",
+        "tags": [ "a.b.c.d.Z.f" ]
+      },
+      {
+        "name": "entry_c",
+        "tags": [ "f.e.d.c.b.a" ]
+      },
+      {
+        "name": "entry_d",
+        "tags": [ "a.b.f" ]
+      },
+      {
+        "name": "entry_e",
+        "tags": [ "a.f" ]
+      },
+      {
+        "name": "entry_f",
+        "tags": [ "a" ]
+      }
+    ],
+    "phases": [
+      {
+        "descriptor_type": "competitor_view",
+        "name": "simple_capture_by_tag",
+        "entry_list": [ "@OUTER.[a.b.c.d.e.f]", "@OUTER.[a.b.c.d.Z.f]" ],
+        "min_entries": 0
+      },
+      {
+        "descriptor_type": "competitor_view",
+        "name": "capture_with_any_no_args",
+        "entry_list": [ "@OUTER.[a.b.c.d.$ANY.f]" ],
+        "min_entries": 0
+      },
+      {
+        "descriptor_type": "competitor_view",
+        "name": "capture_with_any_one_arg",
+        "entry_list": [ "@OUTER.[a.b.c.$ANY:2.f]" ],
+        "min_entries": 0
+      },
+      {
+        "descriptor_type": "competitor_view",
+        "name": "capture_with_glob_no_args",
+        "entry_list": [ "@OUTER.[a.$GLOB.f]" ],
+        "min_entries": 0
+      },
+      {
+        "descriptor_type": "competitor_view",
+        "name": "capture_with_glob_one_arg",
+        "entry_list": [ "@OUTER.[a.$GLOB:1.f]" ],
+        "min_entries": 0
+      },
+      {
+        "descriptor_type": "competitor_view",
+        "name": "trailing_glob",
+        "entry_list": [ "@OUTER.[a.f.$GLOB]" ],
+        "min_entries": 0
+      },
+      {
+        "descriptor_type": "competitor_view",
+        "name": "leading_glob",
+        "entry_list": [ "@OUTER.[$GLOB.f]" ],
+        "min_entries": 0
+      },
+      {
+        "descriptor_type": "competitor_view",
+        "name": "just_a_glob",
+        "entry_list": [ "@OUTER.$GLOB" ],
+        "min_entries": 0
+      },
+      {
+        "descriptor_type": "competitor_view",
+        "name": "just_an_any",
+        "entry_list": [ "@OUTER.$ANY" ],
+        "min_entries": 0
+      },
+      {
+        "descriptor_type": "competitor_view",
+        "name": "should_miss_everything",
+        "entry_list": [ "@OUTER.$ANY:42", "@OUTER.$GLOB:42:999" ],
+        "min_entries": 0
+      }
+    ]
+  }
+}
