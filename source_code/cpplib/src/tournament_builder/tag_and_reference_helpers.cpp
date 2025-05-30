@@ -10,16 +10,48 @@
 
 namespace tournament_builder::helpers
 {
-	GetWildcardArgsResult get_wildcard_args(const tournament_builder::Token& token, WildcardType type, char arg_delim)
+	GetSpecialTagArgsResult get_special_tag_args(const tournament_builder::Token& token, SpecialTagType type, char arg_delim)
 	{
 		auto throw_error = [&token](std::string_view explanation)
 			{
 				throw exception::TournamentBuilderException{ std::format("Error parsing args in token '{}': {}", token, explanation) };
 			};
-		GetWildcardArgsResult result;
-		const bool is_any = (type == WildcardType::any);
-		result.min = is_any ? 1 : 0;
-		result.max = is_any ? 1 : std::numeric_limits<int64_t>::max();
+
+		enum class SingleArgBehaviour
+		{
+			set_min,
+			set_both,
+			set_max
+		};
+		bool allow_negative_min = false;
+		bool allow_zero_min = false;
+		bool allow_negative_max = false;
+		bool allow_zero_max = false;
+		SingleArgBehaviour single_arg_behaviour = SingleArgBehaviour::set_both;
+		GetSpecialTagArgsResult result;
+
+		switch (type)
+		{
+		case SpecialTagType::any:
+			result.min = 1;
+			result.max = 1;
+			allow_zero_min = true;
+			break;
+		case SpecialTagType::glob:
+			result.min = 0;
+			result.max = std::numeric_limits<int64_t>::max();
+			allow_zero_min = true;
+			SingleArgBehaviour::set_max;
+			break;
+		case SpecialTagType::entry:
+		case SpecialTagType::pos:
+			result.min = 0;
+			result.max = 0;
+			allow_negative_min = true;
+			allow_negative_max = true;
+			break;
+		}
+
 		{
 			std::string_view tok_str = token.to_string();
 			const auto first_delim_location = tok_str.find(arg_delim);
@@ -34,54 +66,67 @@ namespace tournament_builder::helpers
 
 		if (!any_args.empty())
 		{
-			if (any_args.size() > 2u) [[unlikely]]
+			for (std::size_t arg_idx = 0u; arg_idx < any_args.size(); ++arg_idx)
 			{
-				throw_error(std::format("Token has {} arguments after the ':'. Can only have 0, 1, or 2 arguments.", any_args.size()));
-			}
-
-			if (const std::string_view* str_arg = std::get_if<std::string_view>(&any_args.front())) [[unlikely]]
-			{
-				throw_error(std::format("Argument to '{}' must be positive number. Got '{}', which is not a number", result.prefix, *str_arg));
-			}
-
-			if (is_any || (any_args.size() == 2u))
-			{
-				assert(std::holds_alternative<int64_t>(any_args.front()));
-				result.min = std::get<int64_t>(any_args.front());
-
-				assert(std::holds_alternative<int64_t>(any_args.back()));
-				result.max = std::get<int64_t>(any_args.back());
-			}
-			else // is_glob
-			{
-				switch (any_args.size())
+				if (const std::string_view* str_arg = std::get_if<std::string_view>(&any_args[arg_idx])) [[unlikely]]
 				{
-				case 0u:
-					// Nothing to do
-					break;
-				case 1u:
-					// The argument is the maximum number of levels we can use.
-					assert(std::holds_alternative<int64_t>(any_args.front()));
-					result.max = std::get<int64_t>(any_args.front());
-					break;
-				default:
-					assert(false);
+					throw_error(std::format("Argument to '{}' must be positive number. Arg {} is '{}', which is not a number", result.prefix, arg_idx, *str_arg));
 				}
 			}
 
-			if (result.min < 0) [[unlikely]]
+			switch (any_args.size())
 			{
-				throw_error(std::format("Min levels argument to '{}' must not be a negative number. Got '{}', which is less than 0", result.prefix, result.min));
+			default:
+				throw_error(std::format("Token has {} arguments after the '{}'. Can only have 0, 1, or 2 arguments.", any_args.size(), arg_delim));
+				break;
+			case 0u:
+				// Nothing to be done.
+				break;
+			case 1u:
+			{
+				const int64_t arg_val = std::get<int64_t>(any_args.front());
+				switch (single_arg_behaviour)
+				{
+				case SingleArgBehaviour::set_min:
+					result.min = arg_val;
+					break;
+				case SingleArgBehaviour::set_max:
+					result.max = arg_val;
+					break;
+				case SingleArgBehaviour::set_both:
+					result.min = result.max = arg_val;
+					break;
+				}
 			}
-
-			if (result.max <= 0) [[unlikely]]
-			{
-				throw_error(std::format("Max levels argument to '{}' must be positive number. Got '{}', which is less than 1", result.prefix, result.max));
+			case 2u:
+				result.min = std::get<int64_t>(any_args.front());
+				result.max = std::get<int64_t>(any_args.back());
+				break;
 			}
 
 			if (result.min > result.max) [[unlikely]]
 			{
-				throw_error(std::format("Min levels ({}) is greater than max levels ({}).", result.min, result.max));
+				throw_error(std::format("Min argument to '{}' must not be greater than the max argument. Got {} and {}.", result.prefix, result.min, result.max));
+			}
+
+			if (!allow_negative_min && result.min < 0) [[unlikely]]
+			{
+				throw_error(std::format("Min argument to '{}' must not be a negative number. Got '{}', which is less than 0", result.prefix, result.min));
+			}
+
+			if (!allow_zero_min && result.min == 0) [[unlikely]]
+			{
+				throw_error(std::format("Min argument to '{}' must not be zero. Got '{}'.", result.prefix, result.min));
+			}
+
+			if (!allow_negative_max && result.max < 0) [[unlikely]]
+			{
+				throw_error(std::format("Max argument to '{}' must not be a negative number. Got '{}', which is less than 0", result.prefix, result.min));
+			}
+
+			if (!allow_zero_max && result.max == 0) [[unlikely]]
+			{
+				throw_error(std::format("Max argument to '{}' must not be zero. Got '{}'.", result.prefix, result.min));
 			}
 		}
 		return result;

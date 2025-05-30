@@ -46,12 +46,15 @@ namespace tournament_builder
 		std::shared_ptr<IReferencable> copy_ref(const ReferenceCopyOptions&) const;
 
 		// Get a list of all the possible inner targets for use when parsing a reference.
-		std::vector<IReferencable*> get_next_locations();
+		std::vector<IReferencable*> get_all_next_locations();
+		std::vector<IReferencable*> get_next_locations(const Token& token);
 
 	private:
 		friend class Competition;
 		// Returns true if it makes any changes
 		bool resolve_all_references_impl(World& context, std::vector<Name>& location);
+		std::vector<IReferencable*> get_next_locations_entry_tag(const Token& tag);
+		std::vector<IReferencable*> get_next_locations_pos_tags(const Token& tag);
 	};
 
 	class Competition : public IReferencable , public ITaggable
@@ -77,7 +80,8 @@ namespace tournament_builder
 		// IReferencable
 		Name get_reference_key() const override;
 		std::shared_ptr<IReferencable> copy_ref(const ReferenceCopyOptions&) const override;
-		std::vector<IReferencable*> get_next_locations() override;
+		std::vector<IReferencable*> get_next_locations(const Token& token) override;
+		std::vector<IReferencable*> get_all_next_locations() override;
 
 		// ITaggable
 		const std::vector<Tag>& get_tags() const override;

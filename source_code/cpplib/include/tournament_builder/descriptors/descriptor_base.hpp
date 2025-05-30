@@ -27,7 +27,7 @@ namespace tournament_builder::descriptor
 		std::shared_ptr<IReferencable> copy_ref(const ReferenceCopyOptions&) const;
 
 		// Override this to allow parts of the descriptor to be found via a reference.
-		std::vector<IReferencable*> get_next_locations() override { return {}; }
+		std::vector<IReferencable*> get_all_next_locations() override { return {}; }
 
 		// If there are overridden references that you may want to resolve before resolving
 		// this descriptor, resolve them in this function.

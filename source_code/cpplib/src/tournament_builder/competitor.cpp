@@ -43,6 +43,15 @@ namespace tournament_builder
 		}
 	}
 
+	std::optional<std::pair<int, int>> Competitor::get_finishing_positions() const
+	{
+		if (const RealCompetitor* prc = std::get_if<RealCompetitor>(&m_data))
+		{
+			return prc->finishing_position;
+		}
+		return std::nullopt;
+	}
+
 	std::string_view Competitor::to_string() const
 	{
 		struct Impl
@@ -159,7 +168,7 @@ namespace tournament_builder
 		return std::visit(Impl{ copy_options }, m_data);
 	}
 
-	std::vector<IReferencable*> Competitor::get_next_locations()
+	std::vector<IReferencable*> Competitor::get_all_next_locations()
 	{
 		struct Impl
 		{

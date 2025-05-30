@@ -78,14 +78,14 @@ namespace tournament_builder
         {
             assert(is_wildcard(*left_current_wc));
             const Tag::TagType tag_type = get_type(*left_current_wc);
-            helpers::WildcardType wildcard_type{};
+            helpers::SpecialTagType wildcard_type{};
             switch (tag_type)
             {
             case Tag::TagType::any:
-                wildcard_type = helpers::WildcardType::any;
+                wildcard_type = helpers::SpecialTagType::any;
                 break;
             case Tag::TagType::glob:
-                wildcard_type = helpers::WildcardType::glob;
+                wildcard_type = helpers::SpecialTagType::glob;
                 break;
             default:
                 assert(false && "Invalid tag_type");
@@ -94,7 +94,7 @@ namespace tournament_builder
 
             try
             {
-                helpers::GetWildcardArgsResult wildcard_args = helpers::get_wildcard_args(*left_current_wc, wildcard_type, ARG_DELIMINATOR);
+                helpers::GetSpecialTagArgsResult wildcard_args = helpers::get_special_tag_args(*left_current_wc, wildcard_type, ARG_DELIMINATOR);
                 const auto next_left = std::next(left_current_wc);
                 for (int64_t lvl{ 0 }; lvl <= wildcard_args.max; ++lvl, ++right_current)
                 {
@@ -160,94 +160,13 @@ namespace tournament_builder
             }
         }
 
-        bool are_solo_tags_equal(const Token& left, const Token& right, Tag::TagType type)
-        {
-            using enum Tag::TagType;
-            switch (type)
-            {
-            case entry:
-            case pos:
-                break;
-            // These types are unsupported.
-            case normal:
-            case invalid:
-                assert(false);
-                break;
-            }
-
-            auto throw_error = [](Token tok, std::string_view explanation)
-                {
-                    throw exception::InvalidTagToken{ tok.to_string(), tok.to_string(), 0u, explanation };
-                };
-
-            auto get_as_num = [&throw_error](Token tok, std::variant<int64_t, std::string_view> parse_result)
-                {
-                    if (std::string_view* svp = std::get_if<std::string_view>(&parse_result))
-                    {
-                        throw_error(tok, std::format("All arguments must be a positive number. Got {} which is not a number", *svp));
-                    }
-                    assert(std::holds_alternative<int64_t>(parse_result));
-                    const int64_t result = std::get<int64_t>(parse_result);
-                    if (result <= 0)
-                    {
-                        throw_error(tok, std::format("All arguments must be a positive number. Got {} which is not positive.", result));
-                    }
-                    return result;
-                };
-
-            auto get_token_args = [&throw_error, &get_as_num](Token tok)
-                {
-                    std::pair<int64_t, int64_t> result{ 0,0 };
-                    const auto args = Token::get_args(tok, ARG_DELIMINATOR);
-                    if (args.empty() || args.size() > 2u)
-                    {
-                        throw_error(tok, std::format("Must have either 1 or 2 positive arguments. (E.g. '{0}{1}3' or {0}{1}2{1}4. Got {2}", tok, ARG_DELIMINATOR, args.size()));
-                    }
-
-                    result.first = get_as_num(tok, args.front());
-                    result.second = get_as_num(tok, args.back());
-                    if (result.second < result.first)
-                    {
-                        throw_error(tok, std::format("The second argument must be greater or equal to the first argument. Got {} and {}", result.first, result.second));
-                    }
-                    return result;
-                };
-
-            const auto [left_min,left_max] = get_token_args(left);
-            const auto [right_min, right_max] = get_token_args(right);
-
-            if (left_min > right_max) return false;
-            if (left_max < right_min) return false;
-            return true;
-        }
-
-        bool are_single_tags_equal(const Tag& left_context, const TokenVector& left, const Tag& right_context, const TokenVector& right)
-        {
-            assert(left.size() == 1u);
-            assert(right.size() == 1u);
-
-            const Token l = left.front();
-            const Token r = right.front();
-
-            const Tag::TagType lt = get_type(l);
-            const Tag::TagType rt = get_type(r);
-
-
-            if (is_solo_type(lt) && (lt == rt))
-            {
-                return are_solo_tags_equal(l, r, lt);
-            }
-
-            return are_normal_tags_equal(left_context, begin(left), begin(left), end(left), right_context, begin(right), begin(right), end(right));
-        }
-
         bool are_tags_equal(const Tag& left_context, const TokenVector& left, const Tag& right_context, const TokenVector& right)
         {
-            if (left.size() == 1u && right.size() == 1u)
-            {
-                return are_single_tags_equal(left_context, left, right_context, right);
-            }
-            return are_normal_tags_equal(left_context, begin(left), begin(left), end(left), right_context, begin(right), begin(right), end(right));
+            auto bl = begin(left);
+            auto el = end(left);
+            auto br = begin(right);
+            auto er = end(right);
+            return are_normal_tags_equal(left_context,bl, bl, el, right_context, br, br, er);
         }
     }
 

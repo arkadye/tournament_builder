@@ -3,6 +3,7 @@
 #include "tournament_builder/competitor.hpp"
 
 #include "tournament_builder/json/json_helpers.hpp"
+#include "tournament_builder/tag_and_reference_helpers.hpp"
 
 #include "nlohmann/json.hpp"
 
@@ -115,7 +116,7 @@ namespace tournament_builder
 		return std::shared_ptr<IReferencable>(icopy);
 	}
 
-	std::vector<IReferencable*> RealCompetition::get_next_locations()
+	std::vector<IReferencable*> RealCompetition::get_all_next_locations()
 	{
 		std::vector<IReferencable*> result;
 		result.reserve(entry_list.size() + phases.size());
@@ -129,6 +130,142 @@ namespace tournament_builder
 		std::ranges::transform(phases, std::back_inserter(result), [](Competition& comp) {return &comp; });
 		return result;
 	}
+
+	std::vector<IReferencable*> RealCompetition::get_next_locations_entry_tag(const Token& tag)
+	{
+		std::vector<IReferencable*> result;
+
+		// If we still have unresolved references, skip this.
+		if (std::ranges::any_of(entry_list, [](const Reference<Competitor>& rc) { return rc.is_reference(); }))
+		{
+			return result;
+		}
+
+		helpers::GetSpecialTagArgsResult arg_result = helpers::get_special_tag_args(tag, helpers::SpecialTagType::entry, ':');
+		const auto entry_list_size = std::ssize(entry_list);
+
+		// If neither max is below the range or min is above it, we find no results.
+		if (arg_result.max < -entry_list_size) return result;
+		if (arg_result.min > entry_list_size) return result;
+		arg_result.max = std::min(arg_result.max, entry_list_size);
+		arg_result.min = std::max(arg_result.min, -entry_list_size);
+		assert(arg_result.min <= arg_result.max);
+		const auto num_elements = 1 + arg_result.max - arg_result.min;
+		result.reserve(num_elements);
+
+		auto get_entry_positive_idx_only = [&entries = entry_list, entry_list_size](int64_t idx) -> IReferencable*
+			{
+				assert(idx > 0);
+				assert(idx <= entry_list_size);
+				Reference<Competitor>& result_ref = entries[idx - 1];
+				assert(result_ref.is_resolved());
+				Competitor& result = result_ref.get();
+				return &result;
+			};
+
+		auto get_entry = [entry_list_size, &get_entry_positive_idx_only](int64_t idx)
+			{
+				assert(idx != 0);
+				if (idx < 0)
+				{
+					const int64_t new_idx = 1 + entry_list_size + idx;
+					return get_entry_positive_idx_only(new_idx);
+				}
+				// else
+				return get_entry_positive_idx_only(idx);
+			};
+
+		for (int64_t i = arg_result.min; i <= arg_result.max; ++i)
+		{
+			if (i == 0) continue;
+			IReferencable* entry = get_entry(i);
+			result.push_back(entry);
+		}
+		return result;
+	}
+
+	std::vector<IReferencable*> RealCompetition::get_next_locations_pos_tags(const Token& tag)
+	{
+		std::vector<IReferencable*> result;
+		// If we still have unresolved references, skip this.
+		if (std::ranges::any_of(entry_list, [](const Reference<Competitor>& rc) { return rc.is_reference(); }))
+		{
+			return result;
+		}
+
+		helpers::GetSpecialTagArgsResult arg_result = helpers::get_special_tag_args(tag, helpers::SpecialTagType::entry, ':');
+		const auto entry_list_size = std::ssize(entry_list);
+
+		// If neither max is below the range or min is above it, we find no results.
+		if (arg_result.max < -entry_list_size) return result;
+		if (arg_result.min > entry_list_size) return result;
+		arg_result.max = std::min(arg_result.max, entry_list_size);
+		arg_result.min = std::max(arg_result.min, -entry_list_size);
+		assert(arg_result.min <= arg_result.max);
+
+		for (Reference<Competitor>& entry : entry_list)
+		{
+			assert(entry.is_resolved());
+			Competitor& competitor = entry.get();
+			const auto finishing_positions = competitor.get_finishing_positions();
+
+			if (!finishing_positions.has_value()) continue;
+			const auto [pos_low, pos_high] = finishing_positions.value();
+			
+			const int neg_low = pos_low - entry_list_size;
+			const int neg_high = pos_high - entry_list_size;
+
+			auto ranges_overlap = [&arg_result](int low, int high)
+				{
+					if (arg_result.max < low) return false;
+					if (arg_result.min > high) return false;
+					return true;
+				};
+
+			if (ranges_overlap(pos_low, pos_high) || ranges_overlap(neg_low, neg_high))
+			{
+				result.push_back(&competitor);
+			}
+		}
+		std::ranges::sort(result, {},
+			[](IReferencable* ir) {
+				Competitor* comp = dynamic_cast<Competitor*>(ir);
+				assert(comp != nullptr);
+				const auto pos = comp->get_finishing_positions();
+				assert(pos.has_value());
+				return pos.value();
+			});
+		return result;
+	}
+
+	std::vector<IReferencable*> RealCompetition::get_next_locations(const Token& token)
+	{
+		{
+			const Tag tag{ token };
+			switch (tag.get_type())
+			{
+			case Tag::TagType::entry:
+				return get_next_locations_entry_tag(token);
+			case Tag::TagType::pos:
+				return get_next_locations_pos_tags(token);
+			default:
+				break;
+			}
+		}
+
+		std::vector<IReferencable*> result;
+		result = get_all_next_locations();
+		auto filter = [token](IReferencable* iref)
+			{
+				return !iref->matches_token(token);
+			};
+		auto remove_result = std::ranges::remove_if(result, filter);
+		result.erase(begin(remove_result), end(remove_result));
+		result.shrink_to_fit();
+		return result;
+
+	}
+
 	bool Competition::has_resolved_all_references() const
 	{
 		if (const auto* rc = std::get_if<RealCompetition>(&m_data))
@@ -215,11 +352,20 @@ namespace tournament_builder
 		return std::visit(Impl{ reference_copy_options }, m_data);
 	}
 
-	std::vector<IReferencable*> Competition::get_next_locations()
+	std::vector<IReferencable*> Competition::get_all_next_locations()
 	{
 		if (auto* prc = std::get_if<RealCompetition>(&m_data))
 		{
-			return prc->get_next_locations();
+			return prc->get_all_next_locations();
+		}
+		return {};
+	}
+
+	std::vector<IReferencable*> Competition::get_next_locations(const Token& token)
+	{
+		if (auto* prc = std::get_if<RealCompetition>(&m_data))
+		{
+			return prc->get_next_locations(token);
 		}
 		return {};
 	}
