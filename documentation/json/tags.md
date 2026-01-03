@@ -133,7 +133,7 @@ This corresponds to a competitor in a competition. Whichever competitor is liste
 
 This tag is unique. It cannot appear as part of a chain. So `example.$ENTRY:1.oops` is an error, as is `$ENTRY:1.example`.
 
-If this tag is given a negative index (e.g. `$ENTRY:-1`) it counts from the back. So `$ENTRY:-1` will be the *last* competitor in the entry list, `$ENTRY:-2` the competitor 2nd to last, and so on. The last three could be referenced using `$ENTRY-3:-1`, and first-and-last would be $ENTRY:-1:1`.
+If this tag is given a negative index (e.g. `$ENTRY:-1`) it counts from the back. So `$ENTRY:-1` will be the *last* competitor in the entry list, `$ENTRY:-2` the competitor 2nd to last, and so on. The last three could be referenced using `$ENTRY-3:-1`, and first-and-last would be `$ENTRY:-1:1`.
 
 This tag is omitted from the output.
 
