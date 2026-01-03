@@ -41,7 +41,7 @@ namespace tournament_builder::helpers
 			result.min = 0;
 			result.max = std::numeric_limits<int64_t>::max();
 			allow_zero_min = true;
-			SingleArgBehaviour::set_max;
+			single_arg_behaviour = SingleArgBehaviour::set_max;
 			break;
 		case SpecialTagType::entry:
 		case SpecialTagType::pos:
@@ -97,6 +97,7 @@ namespace tournament_builder::helpers
 					result.min = result.max = arg_val;
 					break;
 				}
+				break;
 			}
 			case 2u:
 				result.min = std::get<int64_t>(any_args.front());
