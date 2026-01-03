@@ -98,6 +98,30 @@
         "name": "multiple_and_tie",
         "entry_list": [ "@OUTER.$POS:4:5" ],
         "max_entries": 5
+      },
+      {
+        "descriptor_type": "competitor_view",
+        "name": "negative_position_single",
+        "entry_list": [ "@OUTER.$POS:-1" ],
+        "max_entries": 1
+      },
+      {
+        "descriptor_type": "competitor_view",
+        "name": "negative_position_multiple",
+        "entry_list": [ "@OUTER.$POS:-2:-1" ],
+        "max_entries": 3
+      },
+      {
+        "descriptor_type": "competitor_view",
+        "name": "negative_entry_single",
+        "entry_list": [ "@OUTER.$ENTRY:-1" ],
+        "max_entries": 1
+      },
+      {
+        "descriptor_type": "competitor_view",
+        "name": "negative_entry_multiple",
+        "entry_list": [ "@OUTER.$ENTRY:-4:-2" ],
+        "max_entries": 3
       }
     ]
   }
