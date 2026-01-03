@@ -20,6 +20,9 @@ namespace tournament_builder
 	public:
 		using NamedElement::NamedElement;
 		RealCompetitor copy_ref(const ReferenceCopyOptions&) const;
+
+		void add_tags_from_json(const nlohmann::json& input) override;
+
 		static RealCompetitor parse(const nlohmann::json& input);
 		static std::vector<RealCompetitor> parse_entry_list(const nlohmann::json& input);
 		static std::vector<RealCompetitor> parse_entry_list(const nlohmann::json& input, std::string_view field_name);
@@ -51,6 +54,7 @@ namespace tournament_builder
 		const underlying_t& data() const noexcept { return m_data; }
 		bool is_bye() const noexcept { return std::holds_alternative<Bye>(m_data); }
 		std::optional<std::pair<int, int>> get_finishing_positions() const;
+		void set_finish_positions(std::pair<int, int> positions);
 
 		std::string_view to_string() const;
 
