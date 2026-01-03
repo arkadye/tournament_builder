@@ -118,7 +118,7 @@ std::pair<int, int> run_testcases_on_examples(auto& args, const std::filesystem:
 				const bool found = find_result < filename_sv.size();
 				if (!found)
 				{
-					std::cout << std::format("Skipping file '{}' - did not match pattern '{}'\n", filename_sv, PATTERN_TO_MATCH);
+					//std::cout << std::format("Skipping file '{}' - did not match pattern '{}'\n", filename_sv, PATTERN_TO_MATCH);
 					continue;
 				}
 			}

@@ -2,6 +2,7 @@
 #include "tournament_builder/itaggable.hpp"
 #include "tournament_builder/name.hpp"
 
+#include <algorithm>
 namespace tournament_builder
 {
     bool IReferencable::matches_token(const Token& token) const
@@ -27,5 +28,13 @@ namespace tournament_builder
             }
         }
         return false;
+    }
+
+    std::vector<IReferencable*> IReferencable::get_next_locations(const Token& token)
+    {
+        auto result = get_all_next_locations();
+        auto remove_result = std::ranges::remove_if(result, [&token](IReferencable* ir) {return !ir->matches_token(token); });
+        result.erase(begin(remove_result), end(remove_result));
+        return result;
     }
 }

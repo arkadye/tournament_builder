@@ -33,7 +33,7 @@ namespace tournament_builder
 		// IReferencable
 		Name get_reference_key() const final;
 		std::shared_ptr<IReferencable> copy_ref(const ReferenceCopyOptions&) const final;
-		std::vector<IReferencable*> get_next_locations() final;
+		std::vector<IReferencable*> get_all_next_locations() final;
 		bool matches_token(const Token&) const final;
 	};
 

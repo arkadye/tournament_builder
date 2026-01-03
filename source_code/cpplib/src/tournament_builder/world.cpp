@@ -103,7 +103,7 @@ namespace tournament_builder
         return std::shared_ptr<IReferencable>{};
     }
 
-    std::vector<IReferencable*> World::get_next_locations()
+    std::vector<IReferencable*> World::get_all_next_locations()
     {
         return { &competition };
     }

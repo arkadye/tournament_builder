@@ -36,12 +36,8 @@ namespace tournament_builder
 
 		std::vector<IReferencable*> get_next_locations(IReferencable* target, const Token& token)
 		{
-			std::vector<IReferencable*> next_locations = target->get_next_locations();
-			auto remove_result = std::ranges::remove_if(next_locations, [&token](const IReferencable* referencable)
-				{
-					return !referencable->matches_token(token);
-				});
-			next_locations.erase(begin(remove_result),end(remove_result));
+			assert(target != nullptr);
+			std::vector<IReferencable*> next_locations = target->get_next_locations(token);
 			return next_locations;
 		}
 
@@ -170,7 +166,7 @@ namespace tournament_builder
 				{
 					IReferencable* location = current_working_location.back();
 					std::vector<ReferenceResultBase> sub_result;
-					for (IReferencable* next_location : location->get_next_locations())
+					for (IReferencable* next_location : location->get_all_next_locations())
 					{
 						current_working_location.push_back(next_location);
 						sub_result = dereference_any_tag(min_levels - 1, max_levels - 1, context, start, current, last, current_working_location);
@@ -186,14 +182,14 @@ namespace tournament_builder
 
 			std::vector<ReferenceResultBase> dereference_any_tag(SpecialRefType any_or_glob, Token current_token, const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<IReferencable*>& current_working_location)
 			{
-				helpers::WildcardType wildcard_type{};
+				helpers::SpecialTagType wildcard_type{};
 				switch (any_or_glob)
 				{
 				case SpecialRefType::any_prefix:
-					wildcard_type = helpers::WildcardType::any;
+					wildcard_type = helpers::SpecialTagType::any;
 					break;
 				case SpecialRefType::glob_prefix:
-					wildcard_type = helpers::WildcardType::glob;
+					wildcard_type = helpers::SpecialTagType::glob;
 					break;
 				default:
 					assert(false && "SpecialRefType was not any or glob types.");
@@ -201,7 +197,7 @@ namespace tournament_builder
 
 				try
 				{
-					const helpers::GetWildcardArgsResult get_args_result = helpers::get_wildcard_args(current_token, wildcard_type, ARGUMENT_DIVIDER);
+					const helpers::GetSpecialTagArgsResult get_args_result = helpers::get_special_tag_args(current_token, wildcard_type, ARGUMENT_DIVIDER);
 					return dereference_any_tag(get_args_result.min, get_args_result.max, context, start, current, last, current_working_location);
 				}
 				catch (const exception::TournamentBuilderException& ex)

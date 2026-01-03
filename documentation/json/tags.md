@@ -117,6 +117,10 @@ When a competition the finishing order of all the entries are set. Whichever com
 
 If a group of competitors finished equal in a position they get a tag indicating the range of positions. So if four competitors finished equal third they would all get the tag `$POS:3:6`. This will match with references `$POS:3`, `$POS:4`, `$POS:5`, and `$POS:6`, or any references looking for a range of those positions (e.g. a reference to `$POS:6:8` will pick up all those competitors as well).
 
+Negative indices can be used to count from the end. So to capture the entry who finished 4th from bottom, use `$POS:-4`. To get the bottom three use `$POS:-3:-1`.
+
+A zero index does not exist. Trying to get `$POS:0` will always fail, but will not report an error.
+
 To set these tags use the `"set_finishing_order"` event.
 
 Unlike other special tags, these tags will appear on the output.

@@ -1,6 +1,8 @@
 #include "tournament_builder/competitor.hpp"
+#include "tournament_builder/tag_and_reference_helpers.hpp"
 
 #include "tournament_builder/json/json_helpers.hpp"
+
 
 #include "nlohmann/json.hpp"
 
@@ -14,7 +16,26 @@ namespace tournament_builder
 	{
 		RealCompetitor result = *this;
 		result.take_tags_via_reference(*this, rco);
+		result.finishing_position = std::nullopt;
 		return result;
+	}
+
+	void RealCompetitor::add_tags_from_json(const nlohmann::json& input)
+	{
+		TaggableMixin::add_tags_from_json(input);
+		auto position_tag_it = std::ranges::find(m_tags, Tag::TagType::pos, &Tag::get_type);
+		if (position_tag_it != end(m_tags))
+		{
+			using namespace helpers;
+			const Tag& position_tag = *position_tag_it;
+
+			GetSpecialTagArgsResult tag_args = get_special_tag_args(Token{ position_tag.to_string() }, SpecialTagType::pos, ':');
+			const int min = static_cast<int>(tag_args.min);
+			const int max = static_cast<int>(tag_args.max);
+			finishing_position = std::pair{ min,max };
+
+			m_tags.erase(position_tag_it);
+		}
 	}
 
 	const std::vector<Tag>& Competitor::get_tags() const
@@ -41,6 +62,22 @@ namespace tournament_builder
 		{
 			prc->take_tags_via_reference(other, options);
 		}
+	}
+
+	std::optional<std::pair<int, int>> Competitor::get_finishing_positions() const
+	{
+		if (const RealCompetitor* prc = std::get_if<RealCompetitor>(&m_data))
+		{
+			return prc->finishing_position;
+		}
+		return std::nullopt;
+	}
+
+	void Competitor::set_finish_positions(std::pair<int, int> positions)
+	{
+		assert(std::holds_alternative<RealCompetitor>(m_data));
+		RealCompetitor& rc = std::get<RealCompetitor>(m_data);
+		rc.finishing_position = std::move(positions);
 	}
 
 	std::string_view Competitor::to_string() const
@@ -159,7 +196,7 @@ namespace tournament_builder
 		return std::visit(Impl{ copy_options }, m_data);
 	}
 
-	std::vector<IReferencable*> Competitor::get_next_locations()
+	std::vector<IReferencable*> Competitor::get_all_next_locations()
 	{
 		struct Impl
 		{

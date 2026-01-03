@@ -8,6 +8,7 @@
 
 namespace tournament_builder
 {
+	class Token;
 	class ReferenceCopyOptions
 	{
 		// Current nothing.
@@ -22,8 +23,11 @@ namespace tournament_builder
 		// Copy this as through a reference.
 		virtual std::shared_ptr<IReferencable> copy_ref(const ReferenceCopyOptions&) const = 0;
 
-		// Get a list of all the possible inner targets for use when parsing a reference.
-		virtual std::vector<IReferencable*> get_next_locations() = 0;
+		// Get a list of all the possible inner targets matching the token passed in. As a post-condition all returned items should have matches_token() return true for the same argument.
+		virtual std::vector<IReferencable*> get_next_locations(const Token&);
+
+		// Get a list of all the possible inner targets. 
+		virtual std::vector<IReferencable*> get_all_next_locations() = 0;
 
 		// Returns 'true' if this item matches with a particular token (e.g. same name, or a tag match).
 		virtual bool matches_token(const Token&) const;

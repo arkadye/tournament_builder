@@ -9,21 +9,11 @@
             "entry_list": [
               {
                 "name": "netherlands",
-                "tags": [
-                  {
-                    "copy_on_ref": false,
-                    "tag": "$POS:2"
-                  }
-                ]
+                "tags": [ "$ENTRY:1", "$POS:2" ]
               },
               {
                 "name": "spain",
-                "tags": [
-                  {
-                    "copy_on_ref": false,
-                    "tag": "$POS:1"
-                  }
-                ]
+                "tags": [ "$ENTRY:2", "$POS:1" ]
               }
             ],
             "name": "game_0"
@@ -32,21 +22,11 @@
             "entry_list": [
               {
                 "name": "croatia",
-                "tags": [
-                  {
-                    "copy_on_ref": false,
-                    "tag": "$POS:2"
-                  }
-                ]
+                "tags": [ "$ENTRY:1", "$POS:2" ]
               },
               {
                 "name": "france",
-                "tags": [
-                  {
-                    "copy_on_ref": false,
-                    "tag": "$POS:1"
-                  }
-                ]
+                "tags": [ "$ENTRY:2", "$POS:1" ]
               }
             ],
             "name": "game_1"
@@ -55,21 +35,11 @@
             "entry_list": [
               {
                 "name": "denmark",
-                "tags": [
-                  {
-                    "copy_on_ref": false,
-                    "tag": "$POS:2"
-                  }
-                ]
+                "tags": [ "$ENTRY:1", "$POS:2" ]
               },
               {
                 "name": "portugal",
-                "tags": [
-                  {
-                    "copy_on_ref": false,
-                    "tag": "$POS:1"
-                  }
-                ]
+                "tags": [ "$ENTRY:2", "$POS:1" ]
               }
             ],
             "name": "game_2"
@@ -78,21 +48,11 @@
             "entry_list": [
               {
                 "name": "italy",
-                "tags": [
-                  {
-                    "copy_on_ref": false,
-                    "tag": "$POS:2"
-                  }
-                ]
+                "tags": [ "$ENTRY:1", "$POS:2" ]
               },
               {
                 "name": "germany",
-                "tags": [
-                  {
-                    "copy_on_ref": false,
-                    "tag": "$POS:1"
-                  }
-                ]
+                "tags": [ "$ENTRY:2", "$POS:1" ]
               }
             ],
             "name": "game_3"

@@ -26,7 +26,7 @@ namespace tournament_builder
 		void add_tag(Tag tag) override;
 		void take_tags_via_reference(const ITaggable& other, const ReferenceCopyOptions&) override;
 		virtual void add_tags_from_json(const nlohmann::json& input);
-	private:
+	protected:
 		std::vector<Tag> m_tags;
 	};
 }

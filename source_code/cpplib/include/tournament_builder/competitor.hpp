@@ -14,14 +14,20 @@
 
 namespace tournament_builder
 {
+	class Competition;
 	class RealCompetitor : public NamedElement , public TaggableMixin
 	{
 	public:
 		using NamedElement::NamedElement;
 		RealCompetitor copy_ref(const ReferenceCopyOptions&) const;
+
+		void add_tags_from_json(const nlohmann::json& input) override;
+
 		static RealCompetitor parse(const nlohmann::json& input);
 		static std::vector<RealCompetitor> parse_entry_list(const nlohmann::json& input);
 		static std::vector<RealCompetitor> parse_entry_list(const nlohmann::json& input, std::string_view field_name);
+
+		std::optional<std::pair<int, int>> finishing_position;
 
 		std::optional<nlohmann::json> user_data;
 		virtual ~RealCompetitor() = default;
@@ -34,10 +40,11 @@ namespace tournament_builder
 	public:
 		using underlying_t = std::variant<RealCompetitor, Bye>;
 	private:
+		const Competition* m_parent = nullptr;
 		underlying_t m_data;
 	public:
-		Competitor(RealCompetitor rc) : m_data{ std::move(rc) } {}
-		Competitor(Bye b) noexcept : m_data{ b } {}
+		Competitor(RealCompetitor rc) : m_data { std::move(rc) } {}
+		Competitor(Bye b) noexcept :  m_data { b } {}
 		Competitor(const Competitor&) = default;
 		Competitor(Competitor&&) noexcept = default;
 		virtual ~Competitor() = default;
@@ -46,6 +53,8 @@ namespace tournament_builder
 		underlying_t& data() noexcept { return m_data; }
 		const underlying_t& data() const noexcept { return m_data; }
 		bool is_bye() const noexcept { return std::holds_alternative<Bye>(m_data); }
+		std::optional<std::pair<int, int>> get_finishing_positions() const;
+		void set_finish_positions(std::pair<int, int> positions);
 
 		std::string_view to_string() const;
 
@@ -61,7 +70,8 @@ namespace tournament_builder
 		// IReferencable
 		Name get_reference_key() const override;
 		std::shared_ptr<IReferencable> copy_ref(const ReferenceCopyOptions&) const override;
-		std::vector<IReferencable*> get_next_locations() override;
+		std::vector<IReferencable*> get_next_locations(const Token&) override { return get_all_next_locations(); }
+		std::vector<IReferencable*> get_all_next_locations() override;
 		bool matches_token(const Token&) const override;
 
 		// ITaggable

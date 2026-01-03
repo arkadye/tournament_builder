@@ -10,18 +10,18 @@ namespace tournament_builder
 
 	namespace helpers
 	{
-		struct GetWildcardArgsResult
+		struct GetSpecialTagArgsResult
 		{
 			std::string_view prefix;
 			int64_t min{ 0 };
 			int64_t max{ 0 };
 		};
 
-		enum class WildcardType
+		enum class SpecialTagType
 		{
-			any, glob
+			any, glob, entry, pos
 		};
 
-		GetWildcardArgsResult get_wildcard_args(const tournament_builder::Token& token, WildcardType type, char arg_delim);
+		GetSpecialTagArgsResult get_special_tag_args(const tournament_builder::Token& token, SpecialTagType type, char arg_delim);
 	}
 }
