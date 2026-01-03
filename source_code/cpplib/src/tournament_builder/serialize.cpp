@@ -8,6 +8,8 @@
 
 #include "nlohmann/json.hpp"
 
+#include <algorithm>
+
 namespace tournament_builder
 {
 	namespace internal_serialize
@@ -27,6 +29,29 @@ namespace tournament_builder
 		{
 			using namespace internal_serialize;
 			json result = to_json_ne(competitor);
+
+			// Handle our own tags due to "pos" tags which need writing.
+			if (competitor.finishing_position.has_value())
+			{
+				std::vector<Tag> tags = competitor.get_tags();
+				const auto& finishing_positions = competitor.finishing_position.value();
+				if (finishing_positions.first == finishing_positions.second)
+				{
+					tags.emplace_back(std::format("$POS:{}", finishing_positions.first));
+				}
+				else
+				{
+					tags.emplace_back(std::format("$POS:{}:{}", finishing_positions.first, finishing_positions.second));
+				}
+				if (!tags.empty())
+				{
+					std::ranges::sort(tags, {}, &Tag::to_string);
+					json tags_object;
+					std::ranges::transform(std::move(tags), std::back_inserter(tags_object), &Tag::to_string);
+					result["tags"] = std::move(tags_object);
+				}
+			}
+
 			if (competitor.user_data.has_value())
 			{
 				result["user_data"] = competitor.user_data.value();
