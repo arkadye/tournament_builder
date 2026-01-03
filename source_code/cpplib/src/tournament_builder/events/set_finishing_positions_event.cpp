@@ -78,7 +78,7 @@ namespace tournament_builder::event
 		struct Placement
 		{
 			Name name;
-			std::string tag_str;
+			std::pair<int, int> places;
 		};
 
 		std::vector<Placement> placements;
@@ -93,14 +93,16 @@ namespace tournament_builder::event
 				std::vector<Placement>& placements;
 				void operator()(Name name) const
 				{
-					placements.emplace_back(name, std::format("$POS:{}", place++));
+					const int p = static_cast<int>(place++);
+					placements.emplace_back(name, std::pair{p,p});
 				}
 				void operator()(const EqualPlacedGroup& epg) const
 				{
-					const std::size_t last_place = place + epg.size() - 1;
+					const int first_place = static_cast<int>(place);
+					const int last_place = first_place + epg.size() - 1;
 					for (Name name : epg)
 					{
-						placements.emplace_back(name, std::format("$POS:{}:{}", place, last_place));
+						placements.emplace_back(name, std::pair{ first_place, last_place });
 					}
 
 					place = last_place + 1;
@@ -146,7 +148,7 @@ namespace tournament_builder::event
 			const auto find_result = std::ranges::find_if(placements, matches_placement);
 			if (find_result != end(placements))
 			{
-				entry.add_tag(Tag{ find_result->tag_str , false });
+				entry.set_finish_positions(find_result->places); 
 			}
 			else
 			{
