@@ -141,12 +141,12 @@ namespace tournament_builder
 		return RealCompetitor::parse(input);
 	}
 
-	std::vector< Reference<Competitor>> Competitor::parse_entry_list(const json& input)
+	std::vector<Reference<Competitor>> Competitor::parse_entry_list(const json& input)
 	{
 		return json_helper::get_array(input, Reference<Competitor>::parse);
 	}
 
-	std::vector< Reference<Competitor>> Competitor::parse_entry_list(const json& input, std::string_view field_name)
+	std::vector<Reference<Competitor>> Competitor::parse_entry_list(const json& input, std::string_view field_name)
 	{
 		try
 		{
