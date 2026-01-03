@@ -222,15 +222,4 @@ namespace tournament_builder
 		result.user_data = json_helper::get_optional_object(input, "user_data");
 		return result;
 	}
-
-	std::vector<RealCompetitor> RealCompetitor::parse_entry_list(const json& input)
-	{
-		return json_helper::get_array(input, RealCompetitor::parse);
-	}
-
-	std::vector<RealCompetitor> RealCompetitor::parse_entry_list(const json& input, std::string_view field_name)
-	{
-		json array_view = json_helper::get_array_object(input, field_name);
-		return parse_entry_list(array_view);
-	}
 }
