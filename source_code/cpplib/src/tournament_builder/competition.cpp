@@ -196,9 +196,11 @@ namespace tournament_builder
 		helpers::GetSpecialTagArgsResult arg_result = helpers::get_special_tag_args(tag, helpers::SpecialTagType::entry, ':');
 		const auto entry_list_size = std::ssize(entry_list);
 
-		// If neither max is below the range or min is above it, we find no results.
+		// If either max is below the range or min is above it, we find no results.
 		if (arg_result.max < -entry_list_size) return result;
 		if (arg_result.min > entry_list_size) return result;
+
+		// Clamp the range to within the entry list size. 
 		arg_result.max = std::min(arg_result.max, entry_list_size);
 		arg_result.min = std::max(arg_result.min, -entry_list_size);
 		assert(arg_result.min <= arg_result.max);
@@ -212,8 +214,8 @@ namespace tournament_builder
 			if (!finishing_positions.has_value()) continue;
 			const auto [pos_low, pos_high] = finishing_positions.value();
 			
-			const int neg_low = pos_low - entry_list_size;
-			const int neg_high = pos_high - entry_list_size;
+			const int neg_low = pos_low - entry_list_size - 1;
+			const int neg_high = pos_high - entry_list_size - 1;
 
 			auto ranges_overlap = [&arg_result](int low, int high)
 				{
