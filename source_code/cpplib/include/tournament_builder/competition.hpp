@@ -27,10 +27,10 @@ namespace tournament_builder
 		std::vector<Reference<Competitor>> entry_list;
 		std::vector<Competition> phases;
 
-		//  Returns ture if a RealCompetition and all the entry list references have been resolved and the same is true for all phases.
+		//  Returns true if a RealCompetition and all the entry list references have been resolved and the same is true for all phases.
 		bool has_resolved_all_references() const;
 
-		// Returns ture if a RealCompetition and all the entry list references have been resolved.
+		// Returns true if a RealCompetition and all the entry list references have been resolved.
 		bool has_finalized_entry_list() const;
 
 		// Returns true if it successfully resolves all the references.
