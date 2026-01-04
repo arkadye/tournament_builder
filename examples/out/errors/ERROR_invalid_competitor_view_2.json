@@ -1,1 +1,1 @@
-{"errors":["Parsing descriptor type 'competitor_view:': Invalid argument: In 'mix_expected_and_max_entries': cannot have 'expected_num_entries' with 'min_entries' or 'max_entries'"]}
+{ "errors": [ "In file '../../examples/in/errors/ERROR_invalid_competitor_view_2.json': Parsing descriptor type 'competitor_view:': In field 'entry_list': Invalid argument: Entry list cannot have 'num_entries' set when either 'min_entries' or 'max_entries' are set." ] }

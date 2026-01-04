@@ -65,7 +65,7 @@ namespace tournament_builder
 		std::cout << std::format("Input file '{}' {} output file '{}'", input.generic_string(), result ? "matches" : "does not match", reference.generic_string());
 		if (!result)
 		{
-			std::cout << "\nExpected\n" << ref_object << "'\nGot:\n" << processed << '\n';
+			std::cout << "\nExpected:\n" << ref_object << "'\nGot:\n" << processed << '\n';
 		}
 		return result;
 	}

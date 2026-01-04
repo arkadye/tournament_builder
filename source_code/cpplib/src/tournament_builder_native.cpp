@@ -31,7 +31,15 @@ namespace tournament_builder
         {
             throw tournament_builder::exception::TournamentBuilderException{ std::format("Could not open input file '{}'", input.string()) };
         }
-        return make_tournament_world(infile);
+        try
+        {
+            return make_tournament_world(infile);
+        }
+        catch (tournament_builder::exception::TournamentBuilderException& ex)
+        {
+            ex.add_context(std::format("In file '{}'", input.string()));
+            throw ex;
+        }
     }
 
     tournament_builder::World make_tournament_world(std::istream& input)
