@@ -64,7 +64,7 @@ namespace tournament_builder::descriptor
             game.entry_list.emplace_back(std::move(right));
 
             // We've gone one level in with our stuff, so references need to be adjusted slightly.
-            add_outer_to_references(game.entry_list);
+            add_outer_to_references(game.entry_list.entries);
 
             result.phases.emplace_back(std::move(game));
         }

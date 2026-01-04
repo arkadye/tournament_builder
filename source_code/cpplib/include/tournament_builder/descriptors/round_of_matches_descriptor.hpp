@@ -3,6 +3,7 @@
 #include "tournament_builder/descriptors/descriptor_base.hpp"
 #include "tournament_builder/reference.hpp"
 #include "tournament_builder/competitor.hpp"
+#include "tournament_builder/entry_list.hpp"
 
 #include "nlohmann/json_fwd.hpp"
 
@@ -15,7 +16,7 @@ namespace tournament_builder::descriptor
 	public:
 		using DescriptorBase::DescriptorBase;
 		Name get_descriptor_uid() const override { return Name{ "round_of_matches" }; }
-		std::vector<Reference<Competitor>> entry_list;
+		EntryList entry_list;
 		bool swap_left_and_right = false;
 		bool generate_explicit_byes = true;
 

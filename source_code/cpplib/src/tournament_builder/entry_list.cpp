@@ -4,12 +4,14 @@
 namespace tournament_builder
 {
 	using nlohmann::json;
-	std::vector<Reference<Competitor>> EntryList::parse(const json& input)
+	EntryList EntryList::parse(const json& input)
 	{
-		return json_helper::get_array(input, Reference<Competitor>::parse);
+		EntryList result;
+		result.entries = json_helper::get_array(input, Reference<Competitor>::parse);
+		return result;
 	}
 
-	std::vector<Reference<Competitor>> EntryList::parse(const json& input, std::string_view field_name)
+	EntryList EntryList::parse(const json& input, std::string_view field_name)
 	{
 		try
 		{

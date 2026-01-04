@@ -13,7 +13,7 @@ namespace tournament_builder::descriptor
         verify_input(input);
         Name name = Name::parse(input);
         auto result = std::make_shared<CompetitorView>(name);
-        result->entry_list = EntryList::parse(input, "entry_list");
+        result->entry_list = EntryList::parse(input, "entry_list").entries;
 
         std::optional<int32_t> expected_num_opt = json_helper::get_optional_int(input, "expected_num_entries");
         std::optional<int32_t> min_entries_opt = json_helper::get_optional_int(input, "min_entries");
@@ -121,7 +121,7 @@ namespace tournament_builder::descriptor
         if (std::ranges::all_of(entry_list, &Reference<Competitor>::is_resolved))
         {
             result = RealCompetition{ name };
-            result->entry_list = std::move(entry_list);
+            result->entry_list.entries = std::move(entry_list);
         }
         return result;
     }

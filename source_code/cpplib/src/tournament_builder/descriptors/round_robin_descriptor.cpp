@@ -39,7 +39,7 @@ namespace tournament_builder
 		round.entry_list = entry_list;
 
 		// We're putting these into another sub-competition.
-		add_outer_to_references(round.entry_list);
+		add_outer_to_references(round.entry_list.entries);
 
 		if (round.entry_list.size() % 2u) // is odd
 		{
@@ -91,7 +91,7 @@ namespace tournament_builder
 						RealCompetition* p_match = comp_match.get_real_competition();
 						assert(p_match != nullptr);
 						RealCompetition& match = *p_match;
-						assert(match.entry_list.size() == 1u || match.entry_list.size() == 2u);
+						 assert(match.entry_list.size() == 1u || match.entry_list.size() == 2u);
 						if (match.entry_list.size() == 2u) [[likely]]
 						{
 							std::swap(match.entry_list[0], match.entry_list[1]);

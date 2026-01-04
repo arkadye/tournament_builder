@@ -22,7 +22,7 @@ namespace tournament_builder::descriptor
 		auto next_round_entries = entry_list;
 
 		// We putting these into sub rounds
-		add_outer_to_references(next_round_entries);
+		add_outer_to_references(next_round_entries.entries);
 
 		while (next_round_entries.size() >= 2u)
 		{

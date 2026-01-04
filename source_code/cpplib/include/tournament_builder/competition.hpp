@@ -25,7 +25,7 @@ namespace tournament_builder
 	public:
 		using NamedElement::NamedElement;
 		virtual ~RealCompetition() = default;
-		std::vector<Reference<Competitor>> entry_list;
+		EntryList entry_list;
 		std::vector<Competition> phases;
 
 		//  Returns true if a RealCompetition and all the entry list references have been resolved and the same is true for all phases.

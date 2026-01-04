@@ -10,7 +10,7 @@ namespace tournament_builder::descriptor
 	class KnockoutBracket : public DescriptorBase<KnockoutBracket>
 	{
 	public:
-		std::vector<Reference<Competitor>> entry_list;
+		EntryList entry_list;
 
 		using DescriptorBase::DescriptorBase;
 		Name get_descriptor_uid() const override { return Name{ "knockout_bracket" }; }
