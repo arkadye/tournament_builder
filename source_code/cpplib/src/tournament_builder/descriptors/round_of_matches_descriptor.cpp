@@ -77,7 +77,7 @@ namespace tournament_builder::descriptor
         const Name name = Name::parse(input);
         auto result = std::make_shared<RoundOfMatches>(name);
 
-        result->entry_list = Competitor::parse_entry_list(input, "entry_list");
+        result->entry_list = EntryList::parse(input, "entry_list");
         result->swap_left_and_right = json_helper::get_bool_or(input, "swap_left_and_right", false);
         result->generate_explicit_byes = json_helper::get_bool_or(input, "generate_explicit_byes", true);
 

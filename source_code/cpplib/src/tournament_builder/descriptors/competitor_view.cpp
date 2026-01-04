@@ -13,7 +13,7 @@ namespace tournament_builder::descriptor
         verify_input(input);
         Name name = Name::parse(input);
         auto result = std::make_shared<CompetitorView>(name);
-        result->entry_list = Competitor::parse_entry_list(input, "entry_list");
+        result->entry_list = EntryList::parse(input, "entry_list");
 
         std::optional<int32_t> expected_num_opt = json_helper::get_optional_int(input, "expected_num_entries");
         std::optional<int32_t> min_entries_opt = json_helper::get_optional_int(input, "min_entries");

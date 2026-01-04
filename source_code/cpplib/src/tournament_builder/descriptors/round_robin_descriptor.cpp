@@ -110,7 +110,7 @@ namespace tournament_builder
 		const Name name = Name::parse(input);
 		auto result = std::make_shared<RoundRobin>(name);
 
-		result->entry_list = Competitor::parse_entry_list(input, "entry_list");
+		result->entry_list = EntryList::parse(input, "entry_list");
 		result->num_times_to_play_each_opponent = json_helper::get_int_or(input, "num_times_to_play_each_opponent", 1);
 		result->alternate_left_and_right = json_helper::get_bool_or(input, "alternate_left_and_right", false);
 		result->generate_byes = json_helper::get_bool_or(input, "generate_byes", false);

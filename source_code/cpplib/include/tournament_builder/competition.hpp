@@ -4,6 +4,7 @@
 #include "tournament_builder/itaggable.hpp"
 
 #include "tournament_builder/competitor.hpp"
+#include "tournament_builder/entry_list.hpp"
 #include "tournament_builder/name.hpp"
 #include "tournament_builder/reference.hpp"
 #include "tournament_builder/descriptors/descriptor_handle.hpp"

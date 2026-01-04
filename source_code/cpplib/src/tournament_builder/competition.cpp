@@ -97,7 +97,7 @@ namespace tournament_builder
 			}
 			if (input.contains("entry_list"))
 			{
-				result.entry_list = Competitor::parse_entry_list(input, "entry_list");
+				result.entry_list = EntryList::parse(input, "entry_list");
 			}
 			result.add_tags_from_json(input);
 			return result;

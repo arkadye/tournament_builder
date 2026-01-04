@@ -80,7 +80,7 @@ namespace tournament_builder::descriptor
 		verify_input(input);
 		const Name name = Name::parse(input);
 		auto result = std::make_shared<KnockoutBracket>(name);
-		result->entry_list = Competitor::parse_entry_list(input, "entry_list");
+		result->entry_list = EntryList::parse(input, "entry_list");
 		return  result;
 	}
 }

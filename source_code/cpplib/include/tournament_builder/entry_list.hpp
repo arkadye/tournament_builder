@@ -13,5 +13,8 @@ namespace tournament_builder
 		std::vector<Reference<Competitor>> entries;
 		int32_t min_entries = 0;
 		int32_t max_entries = 0;
+
+		static std::vector<Reference<Competitor>> parse(const nlohmann::json& input);
+		static std::vector<Reference<Competitor>> parse(const nlohmann::json& input, std::string_view field_name);
 	};
 }
