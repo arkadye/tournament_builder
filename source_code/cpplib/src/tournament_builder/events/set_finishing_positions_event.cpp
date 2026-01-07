@@ -128,14 +128,14 @@ namespace tournament_builder::event
 				{
 					return placement_matches_competitor(placement, comp_ref);
 				};
-			const auto find_result = std::ranges::find_if(target.entry_list, matches_competitor);
-			if (find_result == end(target.entry_list))
+			const auto find_result = std::ranges::find_if(target.entry_list.get_entries(), matches_competitor);
+			if (find_result == end(target.entry_list.get_entries()))
 			{
 				throw_execution_exception(std::format("Could not find '{}' in entry list. All elements must be in the entry list.", placement.name));
 			}
 		}
 
-		for (Reference<Competitor>& entry_ref : target.entry_list)
+		for (Reference<Competitor>& entry_ref : target.entry_list.get_entries())
 		{
 			Competitor& entry = entry_ref.get();
 			if (entry.is_bye()) continue;

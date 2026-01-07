@@ -1,1 +1,1 @@
-{"errors":["While parsing events: At array elem [0]: While parsing event type 'set_finishing_positions': Processing finish_order[0]: Error in JSON '{\"ref\":\"ENTRY:2\"}': Invalid type: 'object' but expected one of [ string , array ]"]}
+{ "errors": [ "In file '../../examples/in/errors/ERROR_set_finishing_positions_non_name_type.json': While parsing events: At array elem [0]: While parsing event type 'set_finishing_positions': Processing finish_order[0]: Error in JSON '{\"ref\":\"ENTRY:2\"}': Invalid type: 'object' but expected one of [ string , array ]" ] }

@@ -1,9 +1,11 @@
 {
 	"competition": {
-		"expected_num_entries": 5,
-		"max_entries": 5,
 		"name": "mix_expected_and_max_entries",
 		"descriptor_type": "competitor_view",
-		"entry_list": [ { "name": "a" } ]
+		"entry_list": {
+			"num_entries": 5,
+			"max_entries": 5,
+			"entries": [ { "name": "a" } ]
+		}
 	}
 }

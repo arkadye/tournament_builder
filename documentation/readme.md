@@ -11,8 +11,9 @@ The documentation for this tool is here:
       - [World object](json/world.md)
       - [Competition object](json/competition.md)
       - [Competitor object](json/competitor.md)
+      - [Entry List](json/entry_list.md)
       - [Competition Descriptor object](json/descriptors/readme.md)
-	    - [Competitor view](descriptors/competitor_view.md)
+	    - [Competitor view](json/descriptors/competitor_view.md)
         - [Round of matches](json/descriptors/round_of_matches.md)
         - [Round-robin](json/descriptors/round_robin.md)
         - [Knockout bracket](json/descriptors/knockout_bracket.md)
@@ -25,7 +26,7 @@ The documentation for this tool is here:
        
 The main headers are:
 
-- [**Input and output JSON:**](documentation/json/readme.md) This covers the JSON files that are used as input and output to tournament_builder, whether passed programmatically via one the APIs or to the command-line interface.
+- [**Input and output JSON:**](json/readme.md) This covers the JSON files that are used as input and output to tournament_builder, whether passed programmatically via one the APIs or to the command-line interface.
 - **Command-line interface:** Details on how to use the commmand line interface. (Coming soon.)
 - **C++ Library:** How to build and use the C++ library version. (Coming eventually.)
 - **C interface:** How to build and use the C interface. (Coming soon.)
