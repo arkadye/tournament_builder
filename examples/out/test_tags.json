@@ -121,7 +121,15 @@
         ],
         "name": "capture_with_glob_one_arg"
       },
-      { "name": "trailing_glob" },
+      {
+        "entry_list": [
+          {
+            "name": "entry_e",
+            "tags": [ "a.f" ]
+          }
+        ],
+        "name": "trailing_glob"
+      },
       {
         "entry_list": [
           {
@@ -189,7 +197,14 @@
         ],
         "name": "just_an_any"
       },
-      { "name": "should_miss_everything" }
+      {
+        "descriptor_type": "competitor_view",
+        "entry_list": {
+          "entries": [ "@OUTER.$ANY:42", "@OUTER.$GLOB:42:999" ],
+          "min_entries": 0
+        },
+        "name": "should_miss_everything"
+      }
     ]
   }
 }

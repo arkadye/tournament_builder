@@ -10,12 +10,12 @@ namespace tournament_builder::descriptor
 	class KnockoutBracket : public DescriptorBase<KnockoutBracket>
 	{
 	public:
-		std::vector<Reference<Competitor>> entry_list;
+		EntryList entry_list;
 
 		using DescriptorBase::DescriptorBase;
 		Name get_descriptor_uid() const override { return Name{ "knockout_bracket" }; }
 	private:
 		std::optional<RealCompetition> generate() const override;
-		DescriptorHandle parse(const nlohmann::json& input) const override;
+		DescriptorHandle parse(std::shared_ptr<KnockoutBracket> prototype, const nlohmann::json& input) const override;
 	};
 }

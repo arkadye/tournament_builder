@@ -57,7 +57,7 @@ namespace tournament_builder
     {
         try
         {
-            std::vector<Name> location;
+            Location location;
             competition.resolve_all_references(*this, location);
         }
         catch (tournament_builder::exception::TournamentBuilderException& ex)
@@ -81,6 +81,7 @@ namespace tournament_builder
             catch (tournament_builder::exception::TournamentBuilderException& ex)
             {
                 ex.add_context(std::format("Executing event index={} ('{}')", idx, ev->get_event_uid()));
+                throw ex;
             }
         }
         if (!events.empty())

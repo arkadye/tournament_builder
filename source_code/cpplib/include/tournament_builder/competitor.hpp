@@ -24,8 +24,6 @@ namespace tournament_builder
 		void add_tags_from_json(const nlohmann::json& input) override;
 
 		static RealCompetitor parse(const nlohmann::json& input);
-		static std::vector<RealCompetitor> parse_entry_list(const nlohmann::json& input);
-		static std::vector<RealCompetitor> parse_entry_list(const nlohmann::json& input, std::string_view field_name);
 
 		std::optional<std::pair<int, int>> finishing_position;
 

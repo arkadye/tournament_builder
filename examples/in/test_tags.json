@@ -36,62 +36,82 @@
       {
         "descriptor_type": "competitor_view",
         "name": "simple_capture_by_tag",
-        "entry_list": [ "@OUTER.[a.b.c.d.e.f]", "@OUTER.[a.b.c.d.Z.f]" ],
-        "min_entries": 0
+        "entry_list": {
+          "entries": [ "@OUTER.[a.b.c.d.e.f]", "@OUTER.[a.b.c.d.Z.f]" ],
+          "num_entries": 3
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "capture_with_any_no_args",
-        "entry_list": [ "@OUTER.[a.b.c.d.$ANY.f]" ],
-        "min_entries": 0
-      },
+        "entry_list": {
+          "entries": [ "@OUTER.[a.b.c.d.$ANY.f]" ],
+          "num_entries": 3
+        }
+        },
       {
         "descriptor_type": "competitor_view",
         "name": "capture_with_any_one_arg",
-        "entry_list": [ "@OUTER.[a.b.c.$ANY:2.f]" ],
-        "min_entries": 0
+        "entry_list": {
+          "entries": [ "@OUTER.[a.b.c.$ANY:2.f]" ],
+          "num_entries": 3
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "capture_with_glob_no_args",
-        "entry_list": [ "@OUTER.[a.$GLOB.f]" ],
-        "min_entries": 0
+        "entry_list": {
+          "entries": [ "@OUTER.[a.$GLOB.f]" ],
+          "num_entries": 5
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "capture_with_glob_one_arg",
-        "entry_list": [ "@OUTER.[a.$GLOB:1.f]" ],
-        "min_entries": 0
+        "entry_list": {
+          "entries": [ "@OUTER.[a.$GLOB:1.f]" ],
+          "num_entries": 2
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "trailing_glob",
-        "entry_list": [ "@OUTER.[a.f.$GLOB]" ],
-        "min_entries": 0
+        "entry_list": {
+          "entries": [ "@OUTER.[a.f.$GLOB]" ],
+          "min_entries": 0
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "leading_glob",
-        "entry_list": [ "@OUTER.[$GLOB.f]" ],
-        "min_entries": 0
+        "entry_list": {
+          "entries": [ "@OUTER.[$GLOB.f]" ],
+          "num_entries": 5
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "just_a_glob",
-        "entry_list": [ "@OUTER.$GLOB" ],
-        "min_entries": 0
+        "entry_list": {
+          "entries": [ "@OUTER.$GLOB" ],
+          "num_entries":  7
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "just_an_any",
-        "entry_list": [ "@OUTER.$ANY" ],
-        "min_entries": 0
+        "entry_list": {
+          "entries": [ "@OUTER.$ANY" ],
+          "num_entries":  1
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "should_miss_everything",
-        "entry_list": [ "@OUTER.$ANY:42", "@OUTER.$GLOB:42:999" ],
-        "min_entries": 0
+        "entry_list": {
+          "entries": [ "@OUTER.$ANY:42", "@OUTER.$GLOB:42:999" ],
+          "min_entries": 0
+        }
       }
     ]
   }

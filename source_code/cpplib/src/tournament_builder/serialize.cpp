@@ -90,7 +90,7 @@ namespace tournament_builder
 			return result;
 		}
 
-		nlohmann::json to_json_internal(const Competition& comp)
+		json to_json_internal(const Competition& comp)
 		{
 			struct Impl
 			{
@@ -106,9 +106,59 @@ namespace tournament_builder
 			return std::visit(Impl{}, comp.get_data());
 		}
 
-		nlohmann::json to_json_internal(const descriptor::internal_descriptor::DescriptorBaseImpl& desc)
+		json to_json_internal(const EntryList& entry_list)
 		{
-			nlohmann::json result;
+			json entry_array = to_json(entry_list.get_entries());
+			std::ostringstream oss;
+			oss << entry_array;
+			auto debug_view = oss.str();
+			const auto num_entries = std::ssize(entry_list);
+			const auto min_entries = entry_list.get_min_entries();
+			const auto max_entries = entry_list.get_max_entries();
+			if ((num_entries == min_entries && num_entries == max_entries) || entry_list.is_resolved())
+			{
+				return entry_array;
+			}
+
+			json result;
+			result["entries"] = std::move(entry_array);
+			if (entry_list.get_min_entries() == entry_list.get_max_entries())
+			{
+				result["num_entries"] = entry_list.get_min_entries();
+			}
+			else // Set min_ and/or max_entries.
+			{
+				const bool min_is_default = min_entries == 0;
+				const bool max_is_default = max_entries == std::numeric_limits<int32_t>::max();
+				if (min_is_default && max_is_default)
+				{
+					result["min_entries"] = min_entries;
+					//result["max_entries"] = max_entries;
+				}
+				else if(min_is_default && !max_is_default)
+				{
+					//result["min_entries"] = min_entries;
+					result["max_entries"] = max_entries;
+				}
+				else if (!min_is_default && max_is_default)
+				{
+					result["min_entries"] = min_entries;
+					//result["max_entries"] = max_entries;
+				}
+				else if (!min_is_default && !max_is_default)
+				{
+					result["min_entries"] = min_entries;
+					result["max_entries"] = max_entries;
+				}
+				
+				
+			}
+			return result;
+		}
+
+		json to_json_internal(const descriptor::internal_descriptor::DescriptorBaseImpl& desc)
+		{
+			json result;
 			desc.write_to_json(result);
 			return result;
 		}

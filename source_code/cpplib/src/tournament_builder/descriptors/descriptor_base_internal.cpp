@@ -34,7 +34,7 @@ namespace tournament_builder::descriptor::internal_descriptor
 
 	DescriptorHandle DescriptorBaseImpl::parse_wrapper(const nlohmann::json& input) const
 	{
-		DescriptorHandle result = parse(input);
+		DescriptorHandle result = parse_impl(input);
 		result->add_tags_from_json(input);
 		return result;
 	}

@@ -8,6 +8,7 @@
       - [References](references.md)
       - [World object](world.md)
       - [Competition object](competition.md)
+      - [Entry List](entry_list.md)
       - [Competitor object](competitor.md)
       - [Competition Descriptor object](descriptors/readme.md)
 	    - [Competitor view](descriptors/competitor_view.md)

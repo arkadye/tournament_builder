@@ -1,1 +1,1 @@
-{"competition":{"entry_list":[{"name":"a"},{"name":"b"},{"name":"c"}],"name":"place_entry_not_on_list"}}
+{ "errors": [ "In file '../../examples/in/errors/ERROR_set_finishing_positions_place_element_not_on_entry_list.json': Executing event index=0 ('set_finishing_positions'): While executing event type 'set_finishing_positions': Could not find 'd' in entry list. All elements must be in the entry list." ] }
