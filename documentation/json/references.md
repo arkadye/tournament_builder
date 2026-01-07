@@ -209,19 +209,9 @@ This shorthand can also be used to chain variable numbers of `@ANY` references b
 
 The `@GLOB` tag acts similarly, but defaults to matching any number of elements. `GLOB` is equivalent to `@ANY:0:2147483647`. A single argument can be provided to set the maximum, so `@GLOB:10` is equivalent to `@ANY:0:10`. When there are two arguments `@GLOB` and `@ANY` are equivalent.
 
-#### `@STORE`
+#### `@TEMPLATE`
 
-The world has several areas set aside for storing generic objects. The `@STORE` tag will go and look in those places, just like a regular tag. For example, in this World object:
-
-```json
-{
-	"competition":{},
-	"competitor_archetypes": [],
-	"competition_archetypes": []
-}
-```
-
-The `@STORE` token is context-aware. In a context where a Competitor is expected it will look in `competitor_archetypes`; for Competitions it will look in `competition_archetypes`, and so on for any new types which are added.
+The world has an area called `templates`. This will instruct a reference to look at that part and find something in that structure. These are generally generic templates which can be re-used. These templates can be customized by using the `text_replace` field to specify replacements.
 
 The examples in the **Text Replace** section show examples of this, since that field is primarily for use with the store.
 
@@ -235,29 +225,31 @@ The optional `text_replace` field allows a find-and-replace to be performed on a
 		"name": "example",
 		"entry_list": [
 			{
-				"ref": "@STORE.ARCHETYPE_NAME",
+				"ref": "@STORE.competitors",
 				"text_replace": {
-					"ARCHETYPE_NAME": "entry_a",
-					"ARCHETYPE_IDENTIFIER": "id_foo"
+					"#ARCHETYPE_NAME": "entry_a",
+					"#ARCHETYPE_IDENTIFIER": "id_foo"
 				}
 			},
 			{
-				"ref": "@STORE.ARCHETYPE_NAME",
+				"ref": "@STORE.competitors",
 				"text_replace": {
-					"ARCHETYPE_NAME": "entry_b",
-					"ARCHETYPE_IDENTIFIER": "id_bar"
+					"#ARCHETYPE_NAME": "entry_b",
+					"#ARCHETYPE_IDENTIFIER": "id_bar"
 				}
 			}
 		]
 	},
-	"competitor_archetypes": [
-		{
+	"templates": {
+		"competitors": {
 			"name": "ARCHETYPE_NAME",
 			"tags": ["lots" , "of" , "tags", "which", "I" , "do" , "not", "want" , "to", "repeat", "every", "time", "ARCHETYPE_IDENTIFIER"]
 		}
-	]
+	}
 }
 ```
+
+(Note that the naming the field `competitors` is *not* required. This would work exactly the same if it were replaced with the identifier `flibbertigibbet`.)
 
 This is equivalent to:
 
@@ -289,47 +281,57 @@ The same principle is also applicable to sections of tournament. For example, po
 		"name": "example",
 		"phases": [
 			{
-				"ref": "@STORE.ROUND_ROBIN_GROUP",
+				"ref": "@TEMPLATE.competitions.1",
 				"text_replace"{
-					"ROUND_ROBIN_GROUP": "group_a",
-					"POOL_ID": "pool_a"
+					"#ROUND_ROBIN_GROUP": "group_a",
+					"#POOL_ID": "pool_a"
 				}
 			},
 			{
-				"ref": "@STORE.ROUND_ROBIN_GROUP",
+				"ref": "@TEMPLATE.competitions.1",
 				"text_replace"{
-					"ROUND_ROBIN_GROUP": "group_b",
-					"POOL_ID": "pool_b"
+					"#ROUND_ROBIN_GROUP": "group_b",
+					"#POOL_ID": "pool_b"
 				}
 			},
 			{
-				"ref": "@STORE.ROUND_ROBIN_GROUP",
+				"ref": "@TEMPLATE.competitions.1",
 				"text_replace"{
-					"ROUND_ROBIN_GROUP": "group_c",
-					"POOL_ID": "pool_c"
+					"#ROUND_ROBIN_GROUP": "group_c",
+					"#POOL_ID": "pool_c"
 				}
 			},
 			{
-				"ref": "@STORE.ROUND_ROBIN_GROUP",
+				"ref": "@TEMPLATE.competitions.1",
 				"text_replace"{
-					"ROUND_ROBIN_GROUP": "group_d",
-					"POOL_ID": "pool_d"
+					"#ROUND_ROBIN_GROUP": "group_d",
+					"#POOL_ID": "pool_d"
 				}
 			}
 		]
 	},
-	"competition_archetypes": [
-		{
-			"descriptor_type": "round_robin",
-			"name": "ROUND_ROBIN_GROUP",
-			"entry_list": [ "@OUTER.pool_tag.POOL_ID" ],
-			"num_times_to_play_each_opponent": 1,
-			"alternate_left_and_right": true,
-			"generate_byes": false
-		}
-	]
+	"templates": {
+		"competitions": [
+			{
+				"name": "#NAME",
+				"phases": []
+			},
+			{
+				"descriptor_type": "round_robin",
+				"name": "#ROUND_ROBIN_GROUP",
+				"entry_list": [ "@OUTER.pool_tag.#POOL_ID" ],
+				"num_times_to_play_each_opponent": 1,
+				"alternate_left_and_right": true,
+				"generate_byes": false
+			}
+		]
+	}
+
+
 }
 ```
+
+This example show how to look into an array. The round robin we want is at index 1, so the `1` bit of the reference finds it.
 
 This will create four pools, each with parameters copied from the archetype.
 
