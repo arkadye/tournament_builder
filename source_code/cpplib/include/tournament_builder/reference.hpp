@@ -51,6 +51,18 @@ namespace tournament_builder
 		};
 	}
 
+	class LocationPusher
+	{
+	private:
+		Location& location;
+#ifndef NDEBUG
+		Location original_location;
+#endif
+	public:
+		[[nodiscard]] LocationPusher(Location& loc, const Name& name);
+		~LocationPusher();
+	};
+
 	template <typename T>
 	class ReferenceResult : public internal_reference::ReferenceResultBase
 	{
@@ -80,6 +92,8 @@ namespace tournament_builder
 		friend class internal_reference::ReferenceBase;
 		std::vector<Token> m_elements;
 		ReferenceCopyOptions m_copy_opts;
+		int32_t m_min_results = 1;
+		int32_t m_max_results = 1;
 	public:
 		SoftReference() : SoftReference{ std::string_view{""} } {}
 		explicit SoftReference(std::string_view input);
@@ -90,6 +104,10 @@ namespace tournament_builder
 		std::string to_string() const;
 		const ReferenceCopyOptions& get_copy_opts() const { return m_copy_opts; }
 		static SoftReference parse(const nlohmann::json& input);
+		int32_t get_min_results() const noexcept { return m_min_results; }
+		int32_t get_max_results() const noexcept { return m_max_results; }
+		bool has_fixed_size() const noexcept { return get_min_results() == get_max_results(); }
+		bool has_single_item() const noexcept { return has_fixed_size() && get_min_results() == 1; }
 	private:
 		// This should only be accessed via a Reference
 		template <typename T>
@@ -117,6 +135,10 @@ namespace tournament_builder
 
 			bool is_reference() const noexcept { return std::holds_alternative<SoftReference>(m_data); }
 			bool is_resolved() const noexcept { return std::holds_alternative<std::shared_ptr<IReferencable>>(m_data); }
+			int32_t get_min_results() const noexcept;
+			int32_t get_max_results() const noexcept;
+			bool has_fixed_size() const noexcept;
+			bool has_single_item() const noexcept;
 
 			std::string to_string() const;
 
@@ -140,9 +162,6 @@ namespace tournament_builder
 		ReferenceResult<T> dereference_single(World& context, const Location& location) const;
 		T& get() const;
 
-		// Replace a soft reference, if there is one, with the actual T it points to.
-		// Returns true if a change was made. (So false if this was already resolved, or if it could not be resolved to a single item).
-		bool resolve(World& context, const Location& location);
 		static Reference parse(const nlohmann::json& input);
 
 	};
@@ -172,25 +191,6 @@ namespace tournament_builder
 	}
 
 	template <typename T>
-	inline bool Reference<T>::resolve(World& context, const Location& location)
-	{
-		if (is_reference())
-		{
-			ReferenceResult<T> candidate = dereference_single(context, location);
-			if (candidate.is_correct_type())
-			{
-				IReferencable* result = candidate.get();
-				if (result != nullptr)
-				{
-					m_data = result->copy_ref(get_copy_opts());
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	template <typename T>
 	inline ReferenceResult<T> Reference<T>::dereference_single(World& context, const Location& location) const
 	{
 		struct Impl
@@ -200,7 +200,7 @@ namespace tournament_builder
 			const Location& loc;
 			ReferenceResult<T> operator()(const SoftReference& sf)
 			{
-				const std::vector<ReferenceResult<T>> result = outer.dereference_multi(con, loc);
+				std::vector<ReferenceResult<T>> result = outer.dereference_multi(con, loc);
 				return result.size() == 1u ? std::move(result.front()) : ReferenceResult<T>{};
 			}
 			ReferenceResult<T> operator()(const std::shared_ptr<IReferencable>& data)
@@ -227,20 +227,6 @@ namespace tournament_builder
 			throw_invalid_dereference();
 		}
 		return *result;
-	}
-
-	inline std::string internal_reference::ReferenceBase::to_string() const
-	{
-		struct Impl
-		{
-			std::string operator()(const std::shared_ptr<IReferencable>& ir) const
-			{
-				return std::format("name='{}'", ir->get_reference_key());
-
-			}
-			std::string operator()(const SoftReference& sr) const { return std::format("{}", sr.to_string()); }
-		};
-		return std::visit(Impl{}, m_data);
 	}
 
 	template<typename T>

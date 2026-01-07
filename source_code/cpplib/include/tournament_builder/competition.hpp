@@ -35,7 +35,7 @@ namespace tournament_builder
 		bool has_finalized_entry_list() const;
 
 		// Returns true if it successfully resolves all the references.
-		bool resolve_all_references(World& context, std::vector<Name>& location);
+		bool resolve_all_references(World& context, Location& location);
 
 		static RealCompetition parse(const nlohmann::json& input);
 
@@ -53,7 +53,7 @@ namespace tournament_builder
 	private:
 		friend class Competition;
 		// Returns true if it makes any changes
-		bool resolve_all_references_impl(World& context, std::vector<Name>& location);
+		bool resolve_all_references_impl(World& context, Location& location);
 		std::vector<IReferencable*> get_next_locations_entry_tag(const Token& tag);
 		std::vector<IReferencable*> get_next_locations_pos_tags(const Token& tag);
 	};
@@ -74,7 +74,7 @@ namespace tournament_builder
 		// If working with a descriptor, tries to resolve the descriptor.
 		// If successful, or already a RealCompetition, resolves as many references as it can on the competition.
 		// Returns true if it successfully resolves all the references.
-		bool resolve_all_references(World& context, std::vector<Name>& location);
+		bool resolve_all_references(World& context, Location& location);
 
 		static Competition parse(const nlohmann::json& input);
 
@@ -98,6 +98,6 @@ namespace tournament_builder
 		std::variant<descriptor::DescriptorHandle, RealCompetition> m_data;
 
 		// Returns true if it makes any changes
-		bool resolve_all_references_impl(World& context, std::vector<Name>& location);
+		bool resolve_all_references_impl(World& context, Location& location);
 	};
 }

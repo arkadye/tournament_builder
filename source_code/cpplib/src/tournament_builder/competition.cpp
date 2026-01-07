@@ -20,42 +20,33 @@ namespace tournament_builder
 
 	bool RealCompetition::has_finalized_entry_list() const
 	{
-		return std::ranges::all_of(entry_list, &Reference<Competitor>::is_resolved);
+		return entry_list.is_resolved();
 	}
 
-	bool RealCompetition::resolve_all_references_impl(World& context, std::vector<Name>& location)
+	bool RealCompetition::resolve_all_references_impl(World& context, Location& location)
 	{
 		// In general, working outside-in will work better.
 		try
 		{
-#ifndef NDEBUG
-			auto location_copy = location;
-#endif
-			location.push_back(name);
+			auto loc_push = LocationPusher{ location, name };
 			bool result = false;
-			for (std::size_t i = 0u; i < entry_list.size(); ++i)
+			entry_list.unpack_entry_list(context, location, &result);
+			if (entry_list.is_resolved())
 			{
-				Reference<Competitor>& competitor_ref = entry_list[i];
-				if (competitor_ref.is_reference())
+				for (std::size_t i = 0u; i < entry_list.size(); ++i)
 				{
-					result = competitor_ref.resolve(context, location) || result; // We DO NOT want to short circuit this.
-					if (competitor_ref.is_resolved())
-					{
-						Competitor& competitor = competitor_ref.get();
-						competitor.add_tag(Tag{ std::format("$ENTRY:{}", i + 1), false });
-					}
+					Reference<Competitor>& competitor_ref = entry_list[i];
+					assert(competitor_ref.is_resolved());
+					Competitor& competitor = competitor_ref.get();
+					competitor.add_tag(Tag{ std::format("$ENTRY:{}",i + 1), false });
 				}
 			}
 
 			for (Competition& phase : phases)
 			{
-				result = phase.resolve_all_references_impl(context, location) || result;
+				const bool phase_result = phase.resolve_all_references_impl(context, location);
+				result = phase_result || result;
 			}
-
-			location.pop_back();
-#ifndef NDEBUG
-			assert(location_copy == location);
-#endif
 
 			return result;
 		}
@@ -66,7 +57,7 @@ namespace tournament_builder
 		}
 	}
 
-	bool RealCompetition::resolve_all_references(World& context, std::vector<Name>& location)
+	bool RealCompetition::resolve_all_references(World& context, Location& location)
 	{
 		// Keep trying until we fail to make a change
 		while (resolve_all_references_impl(context, location));
@@ -121,7 +112,7 @@ namespace tournament_builder
 		std::vector<IReferencable*> result;
 		result.reserve(entry_list.size() + phases.size());
 
-		std::ranges::transform(entry_list | std::views::filter(&Reference<Competitor>::is_resolved),
+		std::ranges::transform(entry_list.get_entries() | std::views::filter(&Reference<Competitor>::is_resolved),
 			std::back_inserter(result),
 			[](Reference<Competitor>& ref_comp) -> IReferencable*
 			{
@@ -136,7 +127,7 @@ namespace tournament_builder
 		std::vector<IReferencable*> result;
 
 		// If we still have unresolved references, skip this.
-		if (std::ranges::any_of(entry_list, [](const Reference<Competitor>& rc) { return rc.is_reference(); }))
+		if (std::ranges::any_of(entry_list.get_entries(), [](const Reference<Competitor>& rc) { return rc.is_reference(); }))
 		{
 			return result;
 		}
@@ -188,7 +179,7 @@ namespace tournament_builder
 	{
 		std::vector<IReferencable*> result;
 		// If we still have unresolved references, skip this.
-		if (std::ranges::any_of(entry_list, [](const Reference<Competitor>& rc) { return rc.is_reference(); }))
+		if (std::ranges::any_of(entry_list.get_entries(), [](const Reference<Competitor>& rc) { return rc.is_reference(); }))
 		{
 			return result;
 		}
@@ -205,7 +196,7 @@ namespace tournament_builder
 		arg_result.min = std::max(arg_result.min, -entry_list_size);
 		assert(arg_result.min <= arg_result.max);
 
-		for (Reference<Competitor>& entry : entry_list)
+		for (Reference<Competitor>& entry : entry_list.get_entries())
 		{
 			assert(entry.is_resolved());
 			Competitor& competitor = entry.get();
@@ -286,13 +277,13 @@ namespace tournament_builder
 		return false;
 	}
 
-	bool Competition::resolve_all_references(World& context, std::vector<Name>& location)
+	bool Competition::resolve_all_references(World& context, Location& location)
 	{
 		while (resolve_all_references_impl(context, location));
 		return has_resolved_all_references();
 	}
 
-	bool Competition::resolve_all_references_impl(World& context, std::vector<Name>& location)
+	bool Competition::resolve_all_references_impl(World& context, Location& location)
 	{
 		using descriptor::DescriptorHandle;
 		bool result = false;

@@ -13,10 +13,8 @@ namespace tournament_builder::descriptor
     {
         RealCompetition result{ name };
        
-        std::vector<Reference<Competitor>> competitors;
-        competitors.reserve(entry_list.size() + 1);
-
-        std::ranges::copy(entry_list, std::back_inserter(competitors));
+        std::vector<Reference<Competitor>> competitors = entry_list.get_entries();
+        add_outer_to_references(competitors);
 
         if (swap_left_and_right)
         {
@@ -59,12 +57,7 @@ namespace tournament_builder::descriptor
             const auto game_idx = result.phases.size();
             const std::string game_name_str = std::format("game_{}", result.phases.size() + 1u);
             RealCompetition game{ game_name_str };
-            game.entry_list.reserve(2);
-            game.entry_list.emplace_back(std::move(left));
-            game.entry_list.emplace_back(std::move(right));
-
-            // We've gone one level in with our stuff, so references need to be adjusted slightly.
-            add_outer_to_references(game.entry_list.entries);
+            game.entry_list.set({ left, right });
 
             result.phases.emplace_back(std::move(game));
         }
@@ -72,15 +65,12 @@ namespace tournament_builder::descriptor
         return result;
     }
 
-    DescriptorHandle RoundOfMatches::parse(const nlohmann::json& input) const
+    DescriptorHandle RoundOfMatches::parse(std::shared_ptr<RoundOfMatches> prototype, const nlohmann::json& input) const
     {
-        const Name name = Name::parse(input);
-        auto result = std::make_shared<RoundOfMatches>(name);
+        prototype->entry_list = EntryList::parse(input, "entry_list");
+        prototype->swap_left_and_right = json_helper::get_bool_or(input, "swap_left_and_right", false);
+        prototype->generate_explicit_byes = json_helper::get_bool_or(input, "generate_explicit_byes", true);
 
-        result->entry_list = EntryList::parse(input, "entry_list");
-        result->swap_left_and_right = json_helper::get_bool_or(input, "swap_left_and_right", false);
-        result->generate_explicit_byes = json_helper::get_bool_or(input, "generate_explicit_byes", true);
-
-        return result;
+        return prototype;
     }
 }

@@ -9,6 +9,12 @@ namespace tournament_builder::descriptor
 {
 	std::optional<RealCompetition> KnockoutBracket::generate() const
 	{
+		// Check that every reference refers to a single item only.
+		if (!std::ranges::all_of(entry_list.get_entries(), &Reference<Competitor>::has_single_item))
+		{
+			throw exception::InvalidArgument{ "knockout_bracket entry list may only have single-item references" };
+		}
+
 		// Check for a power of 2 number of entries
 		if (std::popcount(entry_list.size()) > 1u)
 		{
@@ -19,16 +25,16 @@ namespace tournament_builder::descriptor
 
 		RealCompetition result{ name };
 
-		auto next_round_entries = entry_list;
+		auto next_round_entries = entry_list.get_entries();
 
 		// We putting these into sub rounds
-		add_outer_to_references(next_round_entries.entries);
+		add_outer_to_references(next_round_entries);
 
 		while (next_round_entries.size() >= 2u)
 		{
 			RoundOfMatches round_desc{ std::format("round_{}", ++round_num) };
 			round_desc.generate_explicit_byes = false;
-			round_desc.entry_list = std::move(next_round_entries);
+			round_desc.entry_list.set(std::move(next_round_entries));
 
 			next_round_entries = decltype(next_round_entries){};
 			next_round_entries.reserve(round_desc.entry_list.size() / 2u);
@@ -75,12 +81,9 @@ namespace tournament_builder::descriptor
 		return result;
 	}
 
-	DescriptorHandle KnockoutBracket::parse(const nlohmann::json& input) const
+	DescriptorHandle KnockoutBracket::parse(std::shared_ptr<KnockoutBracket> prototype, const nlohmann::json& input) const
 	{
-		verify_input(input);
-		const Name name = Name::parse(input);
-		auto result = std::make_shared<KnockoutBracket>(name);
-		result->entry_list = EntryList::parse(input, "entry_list");
-		return  result;
+		prototype->entry_list = EntryList::parse(input, "entry_list");
+		return  prototype;
 	}
 }
