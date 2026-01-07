@@ -130,6 +130,7 @@ std::pair<int, int> run_testcases_on_examples(auto& args, const std::filesystem:
 			args[4] = outfile_data.data();
 			std::cout << std::format("Processing {} and {} {}.\n", filename.generic_string(), testing ? "checking the result against" : "writing the result to", std::filesystem::absolute(output_file).generic_string());
 			const bool success = (EXIT_SUCCESS == invoke_cli(static_cast<int>(args.size()), args.data()));
+			std::cout << '\n';
 			success ? ++successes : ++failures;
 		}
 	}

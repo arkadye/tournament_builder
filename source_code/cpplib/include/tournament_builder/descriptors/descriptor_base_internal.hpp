@@ -39,7 +39,7 @@ namespace tournament_builder::descriptor::internal_descriptor
 
 		Name get_reference_key() const override { return name; }
 
-		virtual void resolve_contained_references(World& world, std::vector<Name>& location) {}
+		virtual void resolve_contained_references(World& world, Location& location) {}
 	protected:
 		friend class DescriptorRegister;
 
@@ -67,7 +67,7 @@ namespace tournament_builder::descriptor::internal_descriptor
 		void add_name_and_descriptor_type_to_json(nlohmann::json& target) const;
 
 		DescriptorHandle parse_wrapper(const nlohmann::json& input) const;
-		virtual DescriptorHandle parse(const nlohmann::json& input) const = 0;
+		virtual DescriptorHandle parse_impl(const nlohmann::json& input) const = 0;
 	};
 
 	template <typename T>

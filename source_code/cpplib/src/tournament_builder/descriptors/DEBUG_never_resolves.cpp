@@ -8,9 +8,8 @@ namespace tournament_builder::descriptor
         target["comment"] = "This descriptor will *never* resolve. The output should be the same as the input (more or less).";
     }
 
-    DescriptorHandle DEBUG_NeverResolves::parse(const nlohmann::json& input) const
+    DescriptorHandle DEBUG_NeverResolves::parse(std::shared_ptr<DEBUG_NeverResolves> prototype, const nlohmann::json& input) const
     {
-        Name name = Name::parse(input);
-        return std::make_shared<DEBUG_NeverResolves>(name);
+        return prototype;
     }
 }

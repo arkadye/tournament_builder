@@ -131,6 +131,18 @@ namespace tournament_builder
                     return true;
                 }
 
+                if (!left_finished && is_wildcard(*left_current))
+                {
+                    const bool candidate = are_wildcard_tags_equal(left_context, left_start, left_current, left_finish, right_context, right_start, right_current, right_finish);
+                    if (candidate) return true;
+                }
+
+                if (!right_finished && is_wildcard(*right_current))
+                {
+                    const bool candidate = are_wildcard_tags_equal(right_context, right_start, right_current, right_finish, left_context, left_start, left_current, left_finish);
+                    if (candidate) return true;
+                }
+
                 if (left_finished || right_finished)
                 {
                     return false;
@@ -138,18 +150,6 @@ namespace tournament_builder
 
                 const Token left = *left_current;
                 const Token right = *right_current;
-
-                if (is_wildcard(left))
-                {
-                    const bool candidate = are_wildcard_tags_equal(left_context, left_start, left_current, left_finish, right_context, right_start, right_current, right_finish);
-                    if (candidate) return true;
-                }
-
-                if (is_wildcard(right))
-                {
-                    const bool candidate = are_wildcard_tags_equal(right_context, right_start, right_current, right_finish, left_context, left_start, left_current, left_finish);
-                    if (candidate) return true;
-                }
 
                 if (left != right)
                 {

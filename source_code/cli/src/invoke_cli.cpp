@@ -14,7 +14,6 @@ namespace tournament_builder::tournament_builder_internal
 {
 	int invoke_cli(int argc, char** argv)
 	{
-		[[maybe_unused]] constexpr bool FORCE_RUN_TESTS = true;
 
 		cxxopts::Options options_config{ "Tournament Builder (pre-alpha)", "A tool to convert JSON tournament descriptors to a JSON representing the actual tournament,\n\tor for resolving events at that tournament." };
 		options_config.add_options()

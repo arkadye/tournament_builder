@@ -1,1 +1,1 @@
-{"errors":["JSON parse exception: [json.exception.parse_error.101] parse error at line 14, column 4: syntax error while parsing object - unexpected end of input; expected '}'"]}
+{ "errors": [ "In file '../../examples/in/errors/ERROR_invalid_format.json': JSON parse exception: [json.exception.parse_error.101] parse error at line 14, column 4: syntax error while parsing object - unexpected end of input; expected '}'" ] }

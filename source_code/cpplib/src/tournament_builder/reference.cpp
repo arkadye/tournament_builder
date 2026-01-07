@@ -34,6 +34,60 @@ namespace tournament_builder
 		using TokenVector = std::vector<Token>;
 		using TokenIterator = TokenVector::const_iterator;
 
+		int32_t ReferenceBase::get_min_results() const noexcept
+		{
+			struct Impl
+			{
+				int32_t operator()(const SoftReference& sr) const { return sr.get_min_results(); }
+				int32_t operator()(const std::shared_ptr<IReferencable>& ir) const { return 1; }
+			};
+			return std::visit(Impl{}, m_data);
+		}
+
+		int32_t ReferenceBase::get_max_results() const noexcept
+		{
+			struct Impl
+			{
+				int32_t operator()(const SoftReference& sr) const { return sr.get_max_results(); }
+				int32_t operator()(const std::shared_ptr<IReferencable>& ir) const { return 1; }
+			};
+			return std::visit(Impl{}, m_data);
+		}
+
+		bool ReferenceBase::has_fixed_size() const noexcept
+		{
+			struct Impl
+			{
+				bool operator()(const SoftReference& sr) const { return sr.has_fixed_size(); }
+				bool operator()(const std::shared_ptr<IReferencable>& ir) const { return true; }
+			};
+			return std::visit(Impl{}, m_data);
+		}
+
+		bool ReferenceBase::has_single_item() const noexcept
+		{
+			struct Impl
+			{
+				bool operator()(const SoftReference& sr) const { return sr.has_single_item(); }
+				bool operator()(const std::shared_ptr<IReferencable>& ir) const { return true; }
+			};
+			return std::visit(Impl{}, m_data);
+		}
+
+		std::string ReferenceBase::to_string() const
+		{
+			struct Impl
+			{
+				std::string operator()(const std::shared_ptr<IReferencable>& ir) const
+				{
+					return std::format("name='{}'", ir->get_reference_key());
+
+				}
+				std::string operator()(const SoftReference& sr) const { return std::format("{}", sr.to_string()); }
+			};
+			return std::visit(Impl{}, m_data);
+		}
+
 		std::vector<IReferencable*> get_next_locations(IReferencable* target, const Token& token)
 		{
 			assert(target != nullptr);
@@ -321,6 +375,26 @@ namespace tournament_builder
 		}
 	}
 
+	LocationPusher::LocationPusher(Location& in_loc, const Name& name)
+		: location{ in_loc }
+#ifndef NDEBUG
+		, original_location{ in_loc }
+#endif
+	{
+		location.push_back(name);
+	}
+
+	LocationPusher::~LocationPusher()
+	{
+#ifndef NDEBUG
+		assert(!location.empty());
+#endif
+		location.pop_back();
+#ifndef NDEBUG
+		assert(original_location == location);
+#endif
+	}
+
 	SoftReference::SoftReference(std::string_view init)
 	{
 		utils::split_tokens<Token>(init, internal_reference::REF_DELIM, std::back_inserter(m_elements), { {'[',']'} });
@@ -367,7 +441,28 @@ namespace tournament_builder
 		}
 		if (std::optional<std::string> data = json_helper::get_optional_string(input, "ref"))
 		{
-			return SoftReference{ data.value() };
+			SoftReference result{ data.value() };
+			auto expected_results_opt = json_helper::get_optional_int(input, "num_results");
+			auto min_results_opt = json_helper::get_optional_int(input, "min_results");
+			auto max_results_opt = json_helper::get_optional_int(input, "min_results");
+			if (expected_results_opt.has_value())
+			{
+				if (min_results_opt.has_value() || max_results_opt.has_value())
+				{
+					throw exception::ReferenceParseException{ "If `num_results` is set, 'min_results' and 'max_results' must both be left off." };
+				}
+				result.m_min_results = result.m_max_results = expected_results_opt.value();
+			}
+			else if(min_results_opt.has_value() || max_results_opt.has_value())
+			{
+				result.m_min_results = min_results_opt.value_or(1);
+				result.m_max_results = max_results_opt.value_or(std::numeric_limits<decltype(result.m_max_results)>::max());
+				if (result.m_min_results > result.m_max_results)
+				{
+					throw exception::ReferenceParseException{ std::format("'min_results' ({}) must not be greater than max results ({})", result.m_min_results, result.m_max_results) };
+				}
+			}
+			return result;
 		}
 		return std::nullopt;
 	}
