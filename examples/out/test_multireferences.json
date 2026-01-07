@@ -72,14 +72,18 @@
       },
       {
         "descriptor_type": "competitor_view",
-        "entry_list": [ "@OUTER.quadruple_tag" ],
-        "expected_num_entries": 3,
+        "entry_list": {
+          "entries": [ "@OUTER.quadruple_tag" ],
+          "num_entries": 3
+        },
         "name": "get_exact_number_too_many"
       },
       {
         "descriptor_type": "competitor_view",
-        "entry_list": [ "@OUTER.quadruple_tag" ],
-        "expected_num_entries": 5,
+        "entry_list": {
+          "entries": [ "@OUTER.quadruple_tag" ],
+          "num_entries": 5
+        },
         "name": "get_exact_number_too_few"
       },
       {

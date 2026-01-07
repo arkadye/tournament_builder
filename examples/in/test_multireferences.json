@@ -43,26 +43,34 @@
       {
         "descriptor_type": "competitor_view",
         "name": "get_exact_number_correct",
-        "entry_list": [ "@OUTER.quadruple_tag" ],
-        "expected_num_entries": 4
+        "entry_list": {
+          "entries": [ "@OUTER.quadruple_tag" ],
+          "num_entries": 4
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "get_exact_number_too_many",
-        "entry_list": [ "@OUTER.quadruple_tag" ],
-        "expected_num_entries": 3
+        "entry_list": {
+          "entries": [ "@OUTER.quadruple_tag" ],
+          "num_entries": 3
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "get_exact_number_too_few",
-        "entry_list": [ "@OUTER.quadruple_tag" ],
-        "expected_num_entries": 5
+        "entry_list": {
+          "entries": [ "@OUTER.quadruple_tag" ],
+          "num_entries": 5
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "combine_tags",
-        "entry_list": [ "@OUTER.single_tag", "@OUTER.treble_tag" ],
-        "expected_num_entries": 3
+        "entry_list": {
+          "entries": [ "@OUTER.single_tag", "@OUTER.treble_tag" ],
+          "num_entries": 3
+        }
       },
       {
         "descriptor_type": "competitor_view",
@@ -72,56 +80,68 @@
       {
         "descriptor_type": "competitor_view",
         "name": "single_position",
-        "entry_list": [ "@OUTER.$POS:1" ],
-        "max_entries": 5
+        "entry_list": {
+          "entries": [ "@OUTER.$POS:1" ],
+          "max_entries": 5
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "multiple_positions",
-        "entry_list": [ "@OUTER.$POS:1:2" ],
-        "max_entries": 5
+        "entry_list": {
+          "entries": [ "@OUTER.$POS:1:2" ],
+          "max_entries": 5
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "tied_positions_a",
-        "entry_list": [ "@OUTER.$POS:3" ],
-        "max_entries": 5
+        "entry_list": {
+          "entries": [ "@OUTER.$POS:3" ],
+          "num_entries": 2
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "tied_positions_b",
-        "entry_list": [ "@OUTER.$POS:4" ],
-        "max_entries": 5
-      },
+        "entry_list": {
+          "entries": [ "@OUTER.$POS:4" ],
+          "num_entries":  2
+        }
+        },
       {
         "descriptor_type": "competitor_view",
         "name": "multiple_and_tie",
-        "entry_list": [ "@OUTER.$POS:4:5" ],
-        "max_entries": 5
+        "entry_list": {
+          "entries": [ "@OUTER.$POS:4:5" ],
+          "num_entries": 3
+        }
       },
       {
         "descriptor_type": "competitor_view",
         "name": "negative_position_single",
-        "entry_list": [ "@OUTER.$POS:-1" ],
-        "max_entries": 1
+        "entry_list": [ "@OUTER.$POS:-1" ]
       },
       {
         "descriptor_type": "competitor_view",
         "name": "negative_position_multiple",
-        "entry_list": [ "@OUTER.$POS:-2:-1" ],
-        "max_entries": 3
-      },
+        "entry_list": {
+          "entries": [ "@OUTER.$POS:-2:-1" ],
+          "num_entries": 3
+        }
+        },
       {
         "descriptor_type": "competitor_view",
         "name": "negative_entry_single",
-        "entry_list": [ "@OUTER.$ENTRY:-1" ],
-        "max_entries": 1
+        "entry_list": [ "@OUTER.$ENTRY:-1" ]
       },
       {
         "descriptor_type": "competitor_view",
         "name": "negative_entry_multiple",
-        "entry_list": [ "@OUTER.$ENTRY:-4:-2" ],
-        "max_entries": 3
+        "entry_list": {
+          "entries": [ "@OUTER.$ENTRY:-4:-2" ],
+          "num_entries": 3
+        }
       }
     ]
   }
