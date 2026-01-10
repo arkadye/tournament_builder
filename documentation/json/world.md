@@ -24,31 +24,31 @@ There are no hard rules about the structure here. Consider:
 
 ```json
 {
-    competition: {
-        "name": "example",
-        "templates": {
-            "foo": {
-                "bar": {
-                    "baz": {
-                        "name": "#GENERIC_COMPETITOR",
-                        "tags": ["lorem", "ipsum"]
-                    },
-                    "bop": { "name": "#GENERIC_COMPETITOR"_}
-                },
-                "final_match": {
-                    "name": "#FINAL_NAME",
-                    "entry_list": ["@OUTER.#SEMIS_NAME.match_0.$POS:1","@OUTER.SEMIS_NAME.match_1.$POS:1"]
+    "competition": {
+        "name": "example"
+    },
+    "templates": {
+        "foo": {
+            "bar": {
+                "baz": {
+                    "name": "#GENERIC_COMPETITOR",
+                    "tags": ["lorem", "ipsum"]
                 }
             },
-            "flip": [
-                {"name": "steve"},
-                {"name": "david"},
-                {"name": "nicko"},
-                {"name": "jannick"},
-                {"name": "bruce"},
-                {"name": "adrian"}
-            ]
-        }
+            "bop": { "name": "#GENERIC_COMPETITOR" }
+        },
+        "final_match": {
+            "name": "#FINAL_NAME",
+            "entry_list": ["@OUTER.#SEMIS_NAME.match_0.$POS:1","@OUTER.SEMIS_NAME.match_1.$POS:1"]
+        },
+        "flip": [
+            {"name": "steve"},
+            {"name": "david"},
+            {"name": "nicko"},
+            {"name": "jannick"},
+            {"name": "bruce"},
+            {"name": "adrian"}
+        ]
     }
 }
 ```
