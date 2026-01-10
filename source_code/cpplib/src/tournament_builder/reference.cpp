@@ -27,6 +27,7 @@ namespace tournament_builder
 		constexpr char SPECIAL_REF_INDICATOR = '@';
 		constexpr std::string_view HERE{ "@HERE" };
 		constexpr std::string_view ROOT{ "@ROOT" };
+		constexpr std::string_view TEMPLATE_STORE{ "@TEMPLATE" };
 		constexpr std::string_view ANY_PREFIX { "@ANY" };
 		constexpr std::string_view GLOB_PREFIX { "@GLOB" };
 		constexpr std::string_view OUTER_PREFIX{ "@OUTER" };
@@ -100,6 +101,7 @@ namespace tournament_builder
 			normal,
 			here,
 			root,
+			template_store,
 			any_prefix,
 			glob_prefix,
 			outer_prefix,
@@ -114,6 +116,7 @@ namespace tournament_builder
 			if (s[0] != internal_reference::SPECIAL_REF_INDICATOR) return normal;
 			if (s == HERE) return here;
 			if (s == ROOT) return root;
+			if (s == TEMPLATE_STORE) return template_store;
 			if (s.starts_with(ANY_PREFIX)) return any_prefix;
 			if (s.starts_with(GLOB_PREFIX)) return glob_prefix;
 			if (s.starts_with(OUTER_PREFIX)) return outer_prefix;
@@ -442,27 +445,57 @@ namespace tournament_builder
 		if (std::optional<std::string> data = json_helper::get_optional_string(input, "ref"))
 		{
 			SoftReference result{ data.value() };
-			auto expected_results_opt = json_helper::get_optional_int(input, "num_results");
-			auto min_results_opt = json_helper::get_optional_int(input, "min_results");
-			auto max_results_opt = json_helper::get_optional_int(input, "min_results");
-			if (expected_results_opt.has_value())
-			{
-				if (min_results_opt.has_value() || max_results_opt.has_value())
+			try {
+				if (!result.m_elements.empty() && result.m_elements.front() == internal_reference::TEMPLATE_STORE)
 				{
-					throw exception::ReferenceParseException{ "If `num_results` is set, 'min_results' and 'max_results' must both be left off." };
+					if (auto replacements_opt = json_helper::get_optional_object(input, "text_replace"))
+					{
+						nlohmann::json replacements = std::move(replacements_opt).value();
+						result.m_replacements.reserve(replacements.size());
+						for (const auto& elem : replacements.items())
+						{
+							std::string key = elem.key();
+							const nlohmann::json& value_json = replacements[key];
+							if (!value_json.is_string())
+							{
+								throw exception::TournamentBuilderException{ std::format("In JSON object '{}': In reference to '{}': field 'text_replace': entry '{}' must be a string.",
+									input, data.value(), key) };
+							}
+							std::string value = value_json;
+							result.m_replacements.emplace_back(std::string(key), std::move(value));
+						}
+					}
+					return result;
 				}
-				result.m_min_results = result.m_max_results = expected_results_opt.value();
-			}
-			else if(min_results_opt.has_value() || max_results_opt.has_value())
-			{
-				result.m_min_results = min_results_opt.value_or(1);
-				result.m_max_results = max_results_opt.value_or(std::numeric_limits<decltype(result.m_max_results)>::max());
-				if (result.m_min_results > result.m_max_results)
+
+				auto expected_results_opt = json_helper::get_optional_int(input, "num_results");
+				auto min_results_opt = json_helper::get_optional_int(input, "min_results");
+				auto max_results_opt = json_helper::get_optional_int(input, "min_results");
+				if (expected_results_opt.has_value())
 				{
-					throw exception::ReferenceParseException{ std::format("'min_results' ({}) must not be greater than max results ({})", result.m_min_results, result.m_max_results) };
+					if (min_results_opt.has_value() || max_results_opt.has_value())
+					{
+						throw exception::ReferenceParseException{ "If `num_results` is set, 'min_results' and 'max_results' must both be left off." };
+					}
+					result.m_min_results = result.m_max_results = expected_results_opt.value();
 				}
+				else if (min_results_opt.has_value() || max_results_opt.has_value())
+				{
+					result.m_min_results = min_results_opt.value_or(1);
+					result.m_max_results = max_results_opt.value_or(std::numeric_limits<decltype(result.m_max_results)>::max());
+					if (result.m_min_results > result.m_max_results)
+					{
+						throw exception::ReferenceParseException{ std::format("'min_results' ({}) must not be greater than max results ({})", result.m_min_results, result.m_max_results) };
+					}
+				}
+
+				return result;
 			}
-			return result;
+			catch (exception::TournamentBuilderException& ex)
+			{
+				ex.add_context(std::format("While parsing reference to '{}'", data.value()));
+				throw ex;
+			}
 		}
 		return std::nullopt;
 	}
