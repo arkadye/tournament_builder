@@ -50,6 +50,11 @@ namespace tournament_builder
             }
         }
 
+        if (auto opt_templates = json_helper::get_optional_object(input, "templates"))
+        {
+            result.templates = std::make_unique<nlohmann::json>(std::move(opt_templates).value());
+        }
+
         return result;
     }
 

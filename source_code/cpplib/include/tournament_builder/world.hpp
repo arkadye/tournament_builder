@@ -20,6 +20,7 @@ namespace tournament_builder
 		World(Competition comp) : competition{ std::move(comp) } {}
 		Competition competition;
 		std::vector<event::EventHandle> events;
+		std::unique_ptr<nlohmann::json> templates;
 		
 		std::vector<std::string> error_messages;
 		static World parse(const nlohmann::json& input);
