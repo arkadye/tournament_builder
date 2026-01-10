@@ -88,12 +88,14 @@ namespace tournament_builder
 
 	class SoftReference
 	{
+		using Replacement = std::pair<std::string, std::string>;
 		template <typename T> friend class Reference;
 		friend class internal_reference::ReferenceBase;
 		std::vector<Token> m_elements;
-		ReferenceCopyOptions m_copy_opts;
+		std::vector<Replacement> m_replacements;
 		int32_t m_min_results = 1;
 		int32_t m_max_results = 1;
+		ReferenceCopyOptions m_copy_opts;
 	public:
 		SoftReference() : SoftReference{ std::string_view{""} } {}
 		explicit SoftReference(std::string_view input);
