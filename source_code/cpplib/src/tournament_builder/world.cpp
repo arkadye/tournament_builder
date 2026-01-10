@@ -32,6 +32,36 @@ namespace tournament_builder
         }
     }
 
+    World::World(const World& other)
+        : competition{ other.competition }
+        , events{ other.events }
+        , template_store{}
+        , preserve_templates{ other.preserve_templates }
+        , error_messages{ other.error_messages }
+    {
+        if (other.template_store)
+        {
+            template_store = std::make_unique<nlohmann::json>(*other.template_store);
+        }
+    }
+
+    World& World::operator=(const World& other)
+    {
+        competition = other.competition;
+        events = other.events;
+        if (other.template_store)
+        {
+            template_store = std::make_unique<nlohmann::json>(*other.template_store);
+        }
+        else
+        {
+            template_store.reset();
+        }
+        preserve_templates = other.preserve_templates;
+        error_messages = other.error_messages;
+        return *this;
+    }
+
     World World::parse(const nlohmann::json& input)
     {
         Competition competition = Competition::parse(json_helper::get_object(input,"competition"));
@@ -52,8 +82,10 @@ namespace tournament_builder
 
         if (auto opt_templates = json_helper::get_optional_object(input, "templates"))
         {
-            result.templates = std::make_unique<nlohmann::json>(std::move(opt_templates).value());
+            result.template_store = std::make_unique<nlohmann::json>(std::move(opt_templates).value());
         }
+
+        result.preserve_templates = json_helper::get_bool_or(input, "preserve_templates", true);
 
         return result;
     }
