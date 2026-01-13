@@ -24,28 +24,37 @@ namespace tournament_builder
 
 		class ReferenceResultBase
 		{
-			Location location;
+			Location m_location;
 		protected:
-			IReferencable* result = nullptr;
+			std::variant<std::shared_ptr<IReferencable>,IReferencable*> m_result = nullptr;
+			IReferencable* get_ptr() const noexcept;
 		public:
 			ReferenceResultBase() = default;
-			ReferenceResultBase(IReferencable* a_result, Location a_location)
-				: location(std::move(a_location)), result{ a_result }
+			ReferenceResultBase(const ReferenceResultBase& other) = default;
+			ReferenceResultBase(ReferenceResultBase&&) noexcept = default;
+			ReferenceResultBase& operator=(const ReferenceResultBase&) = default;
+			ReferenceResultBase& operator=(ReferenceResultBase&&) = default;
+			ReferenceResultBase(IReferencable* result, Location location)
+				: m_location(std::move(location)), m_result{ result }
+			{
+			}
+			ReferenceResultBase(std::shared_ptr<IReferencable> result, Location location)
+				: m_location(std::move(location)), m_result{ std::move(result) }
 			{
 			}
 
-			const Location& get_location() const { return location; }
-			Location& get_location() { return location; }
+			const Location& get_location() const { return m_location; }
+			Location& get_location() { return m_location; }
 
-			operator bool() const noexcept { return result != nullptr; }
+			operator bool() const noexcept { return get_ptr() != nullptr; }
 
 			auto operator<=>(const ReferenceResultBase& other) const noexcept
 			{
-				return this->result <=> other.result;
+				return this->get_ptr() <=> other.get_ptr();
 			}
 			bool operator==(const ReferenceResultBase& other) const noexcept
 			{
-				return this->result == other.result;
+				return this->get_ptr() == other.get_ptr();
 			}
 			std::string to_string() const;
 		};
@@ -68,19 +77,29 @@ namespace tournament_builder
 	{
 		static_assert(std::is_base_of_v<IReferencable, T>);
 	public:
-		using internal_reference::ReferenceResultBase::ReferenceResultBase;
+		ReferenceResult() = default;
+		ReferenceResult(const ReferenceResult& other) = default;
+		ReferenceResult(ReferenceResult&&) noexcept = default;
 		ReferenceResult(const ReferenceResultBase& other) : ReferenceResultBase{ other } {}
+		ReferenceResult(ReferenceResultBase&& other) : ReferenceResultBase{ std::move(other) } {}
+		ReferenceResult& operator=(const ReferenceResult&) = default;
+		ReferenceResult& operator=(ReferenceResult&&) = default;
+		ReferenceResult(IReferencable* result, Location location) : ReferenceResultBase{ result, std::move(location) } {}
+		ReferenceResult(std::shared_ptr<IReferencable> result, Location location) : ReferenceResultBase{ std::move(result), std::move(location) } {}
 		T* get() const
 		{
-			if (result == nullptr) return nullptr;
-			return result->get_as<T>();
+			if (IReferencable* ptr = get_ptr())
+			{
+				return ptr->get_as<T>();
+			}
+			return nullptr;
 		}
 
 		bool is_correct_type() const
 		{
-			if (result != nullptr)
+			if (IReferencable* ptr = get_ptr())
 			{
-				return result->is_a<T>();
+				return ptr->is_a<T>();
 			}
 			return false;
 		}
@@ -88,7 +107,9 @@ namespace tournament_builder
 
 	class SoftReference
 	{
+	public:
 		using Replacement = std::pair<std::string, std::string>;
+	private:
 		template <typename T> friend class Reference;
 		friend class internal_reference::ReferenceBase;
 		std::vector<Token> m_elements;
@@ -117,6 +138,8 @@ namespace tournament_builder
 		std::vector<internal_reference::ReferenceResultBase> dereference_to_impl(World& context, const Location& location) const;
 		static std::optional<SoftReference> try_parse(const nlohmann::json& input);
 		[[noreturn]] void throw_invalid_dereference() const;
+		bool uses_deferred_resolve() const noexcept;
+		std::unique_ptr<nlohmann::json> get_deferred_json(const World& context) const;
 	};
 
 	namespace internal_reference
@@ -126,9 +149,9 @@ namespace tournament_builder
 		protected:
 			mutable std::variant<SoftReference, std::shared_ptr<IReferencable>> m_data;
 		public:
-			explicit ReferenceBase(SoftReference input) : m_data{ std::move(input) } {}
-			explicit ReferenceBase(std::shared_ptr<IReferencable> input) : m_data{ std::move(input) } {}
-			explicit ReferenceBase(std::string_view input) : ReferenceBase{ SoftReference{input} } {}
+			ReferenceBase(SoftReference input) : m_data{ std::move(input) } {}
+			ReferenceBase(std::shared_ptr<IReferencable> input) : m_data{ std::move(input) } {}
+			ReferenceBase(std::string_view input) : ReferenceBase{ SoftReference{input} } {}
 
 			ReferenceBase(const ReferenceBase&) = default;
 			ReferenceBase(ReferenceBase&&) noexcept = default;
@@ -186,7 +209,7 @@ namespace tournament_builder
 			}
 			std::vector<ReferenceResult<T>> operator()(const std::shared_ptr<IReferencable>& data)
 			{
-				return { { data.get(), loc } };
+				return std::vector<ReferenceResult<T>>{ ReferenceResult<T>{ data.get(), loc } };
 			}
 		};
 		return std::visit(Impl{ context, location }, m_data);
@@ -248,11 +271,28 @@ namespace tournament_builder
 	template<typename T>
 	inline std::vector<ReferenceResult<T>> SoftReference::dereference_to(World& context, const Location& location) const
 	{
-		const std::vector<internal_reference::ReferenceResultBase> base_result = dereference_to_impl(context, location);
-		std::vector<ReferenceResult<T>> result;
-		result.reserve(base_result.size());
-		std::ranges::copy(base_result, std::back_inserter(result));
-		return result;
+		try
+		{
+			std::vector<ReferenceResult<T>> result;
+			if (uses_deferred_resolve())
+			{
+				std::shared_ptr<nlohmann::json> deferred_json = get_deferred_json(context);
+				assert(deferred_json);
+				result.emplace_back(std::make_shared<T>(T::parse(*deferred_json)), location);
+			}
+			else
+			{
+				const std::vector<internal_reference::ReferenceResultBase> base_result = dereference_to_impl(context, location);
+				result.reserve(base_result.size());
+				std::ranges::copy(base_result, std::back_inserter(result));
+			}
+			return result;
+		}
+		catch (exception::TournamentBuilderException& ex)
+		{
+			ex.add_context(std::format("While dereferencing '{}'", *this));
+			throw ex;
+		}
 	}
 }
 

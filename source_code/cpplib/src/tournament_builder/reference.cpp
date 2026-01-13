@@ -263,6 +263,127 @@ namespace tournament_builder
 				}
 
 			}
+
+			nlohmann::json make_text_replacements(nlohmann::json object, const std::vector<SoftReference::Replacement>& replacements);
+
+			nlohmann::json make_text_replacements_iterable(nlohmann::json object, const std::vector<SoftReference::Replacement>& replacements)
+			{
+				assert(object.is_object() || object.is_array());
+				for (auto& elem : object)
+				{
+					elem = make_text_replacements(elem, replacements);
+				}
+				return object;
+			}
+
+			nlohmann::json make_text_replacements_str(nlohmann::json object, const std::vector<SoftReference::Replacement>& replacements)
+			{
+				assert(object.is_string());
+				std::ostringstream oss;
+				bool found_replacement = false;
+				std::string data = object;
+				std::size_t search_start = 0u;
+
+				while (true)
+				{
+					// Can I do this with ranges or an algorithm? Probably. How? I don't know.
+					auto find_pos = std::string::npos;
+					auto find_it = end(replacements);
+					for (auto it = begin(replacements); it != end(replacements); ++it)
+					{
+						const auto pos = data.find(it->first, search_start);
+						if (pos < find_pos)
+						{
+							find_pos = pos;
+							find_it = it;
+						}
+						if (pos == 0u)
+						{
+							break;
+						}
+					}
+
+					if (find_it == end(replacements))
+					{
+						break;
+					}
+
+					data.replace(find_pos, find_it->first.size(), find_it->second);
+					search_start = find_pos + find_it->second.size();
+					found_replacement = true;
+				}
+
+				if (found_replacement)
+				{
+					object = data;
+				}
+				return object;
+			}
+
+			nlohmann::json make_text_replacements(nlohmann::json object, const std::vector<SoftReference::Replacement>& replacements)
+			{
+				if (object.is_object() || object.is_array())
+				{
+					return make_text_replacements_iterable(std::move(object), replacements);
+				}
+				else if (object.is_string())
+				{
+					return make_text_replacements_str(std::move(object), replacements);
+				}
+				return object;
+			}
+
+			nlohmann::json get_deferred_json_impl(const nlohmann::json& store, TokenIterator start, TokenIterator current, TokenIterator last, const std::vector<SoftReference::Replacement>& replacements)
+			{
+				json_helper::validate_type(store, { nlohmann::json::value_t::array, nlohmann::json::value_t::object });
+				if (current == last)
+				{
+					if (replacements.empty())
+					{
+						return store;
+					}
+					else
+					{
+						return make_text_replacements(store, replacements);
+					}
+				}
+				nlohmann::json next = [token = current->to_string(), &store]()
+					{
+						if (store.is_object())
+						{
+							return json_helper::get_any(store, token);
+						}
+						else if (store.is_array())
+						{
+							uint64_t val{};
+							const char* data_start = token.data();
+							const char* data_end = data_start + token.size();
+							const std::from_chars_result result = std::from_chars(data_start, data_end + token.size(), val);
+							if (result.ec != std::errc{} || result.ptr != data_end)
+							{
+								throw exception::InvalidArgument(std::format("Expected array index (i.e. positive integer) but instead got {}", token));
+							}
+
+							if (val >= store.size())
+							{
+								throw exception::InvalidArgument(std::format("Cannot access item {} of an array with {} elements", val, store.size()));
+							}
+							return store[val];
+						}
+						assert(false);
+						return store;
+					}();
+
+				try
+				{
+					return get_deferred_json_impl(next, start, current + 1, last, replacements);
+				}
+				catch (exception::TournamentBuilderException& ex)
+				{
+					ex.add_context(std::format("In part '{}'", *current));
+					throw ex;
+				}
+			}
 		}
 
 		std::vector<ReferenceResultBase> dereference_to(const SoftReference& context, TokenIterator start, TokenIterator current, TokenIterator last, std::vector<IReferencable*>& current_working_location)
@@ -275,20 +396,15 @@ namespace tournament_builder
 					return {};
 				}
 
-				const ReferenceResultBase result = [&current_working_location]()
-					{
-						IReferencable* r = current_working_location.back();
-						Location l;
-						if (current_working_location.size() >= 2u)
-						{
-							const std::size_t location_size = current_working_location.size() - 2; // Drop the current location and the world at the beginning.
-							l.reserve(location_size);
-							std::ranges::transform(current_working_location | std::views::drop(1) | std::views::take(location_size), std::back_inserter(l), [](IReferencable* ref) {return ref->get_reference_key(); });
-						}
-						return ReferenceResultBase{ r, std::move(l) };
-					}();
-
-				return { result };
+				IReferencable* r = current_working_location.back();
+				Location l;
+				if (current_working_location.size() >= 2u)
+				{
+					const std::size_t location_size = current_working_location.size() - 2; // Drop the current location and the world at the beginning.
+					l.reserve(location_size);
+					std::ranges::transform(current_working_location | std::views::drop(1) | std::views::take(location_size), std::back_inserter(l), [](IReferencable* ref) {return ref->get_reference_key(); });
+				}
+				return { ReferenceResultBase{ r, std::move(l) } };
 			}
 
 			// Process current token.
@@ -306,6 +422,7 @@ namespace tournament_builder
 			case SpecialRefType::here:
 			case SpecialRefType::root:
 			case SpecialRefType::invalid:
+			case SpecialRefType::template_store:
 				// We should have filtered for these already.
 				assert(false);
 				break;
@@ -347,12 +464,28 @@ namespace tournament_builder
 			return dereference_to(reference, begin(elements), start_it, end(elements), working_location);
 		}
 
+		IReferencable* ReferenceResultBase::get_ptr() const noexcept
+		{
+			struct Impl
+			{
+				IReferencable* operator()(IReferencable* in) const noexcept
+				{
+					return in;
+				}
+				IReferencable* operator()(const std::shared_ptr<IReferencable>& in) const noexcept
+				{
+					return in.get();
+				}
+			};
+			return std::visit(Impl{}, m_result);
+		}
+
 		std::string ReferenceResultBase::to_string() const
 		{
 			std::ostringstream oss;
 			oss << "[";
 			bool first_iteration = true;
-			for (const Name& n : location)
+			for (const Name& n : m_location)
 			{
 				if (first_iteration)
 				{
@@ -364,7 +497,7 @@ namespace tournament_builder
 				}
 				oss << n.to_string();
 			}
-			oss << ']' << (result != nullptr ? result->get_reference_key().to_string() : std::string{"!NULL!"});
+			oss << ']' << (get_ptr() != nullptr ? get_ptr()->get_reference_key().to_string() : std::string_view{"!NULL!"});
 			return oss.str();
 		}
 
@@ -376,6 +509,18 @@ namespace tournament_builder
 			}
 			return ReferenceCopyOptions{};
 		}
+	}
+
+	std::unique_ptr<nlohmann::json> SoftReference::get_deferred_json(const World& context) const
+	{
+		assert(!m_elements.empty());
+		if (!context.template_store)
+		{
+			exception::InvalidDereference ex(*this);
+			ex.add_context("Tried to derefence @TEMPLATE reference, but no 'templates' field exists on the top level object.");
+			throw ex;
+		}
+		return std::make_unique<nlohmann::json>(internal_reference::tag_processing::get_deferred_json_impl(*context.template_store.get(), begin(m_elements), begin(m_elements) + 1, end(m_elements), m_replacements));
 	}
 
 	LocationPusher::LocationPusher(Location& in_loc, const Name& name)
@@ -429,6 +574,21 @@ namespace tournament_builder
 			throw exception::ReferenceParseException{ oss.str() };
 		}
 		return result.value();
+	}
+
+	bool SoftReference::uses_deferred_resolve() const noexcept
+	{
+		using enum internal_reference::SpecialRefType;
+		if (m_elements.empty()) return false;
+		const auto type = internal_reference::get_type(m_elements.front());
+		switch (type)
+		{
+		case template_store:
+			return true;
+		default:
+			break;
+		}
+		return false;
 	}
 
 	std::vector<internal_reference::ReferenceResultBase> SoftReference::dereference_to_impl(World& context, const Location& location) const
