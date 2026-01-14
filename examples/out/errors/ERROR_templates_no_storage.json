@@ -1,0 +1,1 @@
+{"errors":["In the world's resolve_all_references step: In 'example': While dereferencing '@TEMPLATE.foo.bar.baz': Tried to derefence @TEMPLATE reference, but no 'templates' field exists on the top level object: Reference error: Cannot use get() on reference @TEMPLATE.foo.bar.baz because it is an indirect reference. Use dereference_single() instead."]}
