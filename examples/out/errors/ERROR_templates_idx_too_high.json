@@ -1,1 +1,1 @@
-{"errors":["In the world's resolve_all_references step: In 'example': While dereferencing '@TEMPLATE.guys.42': In template store at 'templates': In part 'guys': Invalid argument: Cannot access item 42 of an array with 6 elements"]}
+{"errors":["In file '../../examples/in/errors/ERROR_templates_idx_too_high.json': In the world's resolve_all_references step: In 'example': While dereferencing '@TEMPLATE.guys.42': In template store at 'templates': In part 'guys': Invalid argument: Cannot access item 42 of an array with 6 elements"]}
