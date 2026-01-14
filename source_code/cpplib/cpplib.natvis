@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="tournament_builder::Token">
+    <DisplayString Condition="true">{m_data}</DisplayString>
+  </Type>
+  <Type Name="tournament_builder::NamedElement">
+    <DisplayString>{name}</DisplayString>
+  </Type>
+  <Type Name="tournament_builder::Tag">
+    <DisplayString>{to_string()}</DisplayString>
+  </Type>
+  <Type Name="tournament_builder::SoftReference">
+    <DisplayString>{to_string()}</DisplayString>
+  </Type>
+  <Type Name="tournament_builder::internal_reference::ReferenceBase">
+    <DisplayString>{to_string()}</DisplayString>
+  </Type>
+  <Type Name="tournament_builder::Competitor">
+    <DisplayString Condition="std::holds_alternative&lt;tournament_builder::RealCompetitor&gt;(m_data)">{std::get&lt;tournament_builder::RealCompetitor&gt;(m_data)}</DisplayString>
+    <DisplayString Condition="std::holds_alternative&lt;Bye&gt;(m_data)">[Bye]</DisplayString>
+  </Type>
+  <Type Name="tournament_builder::Competition">
+    <DisplayString Condition="std::holds_alternative&lt;tournament_builder::RealCompetition&gt;(m_data)">{std::get&lt;tournament_builder::RealCompetition&gt;(m_data)}</DisplayString>
+    <DisplayString Condition="std::holds_alternative&lt;tournament_builder::descriptor::DescriptorHandle&gt;(m_data)">{std::get&lt;tournament_builder::descriptor::DescriptorHandle&gt;(m_data)}</DisplayString>
+  </Type>
+</AutoVisualizer>

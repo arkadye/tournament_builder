@@ -134,6 +134,7 @@ target_sources(${CPPLIB} PUBLIC ${HEADER_FILES})
 if(EXISTS ${NLOHMANN_NATVIS})
 target_sources(${CPPLIB} PRIVATE ${NLOHMANN_NATVIS})
 endif()
+target_sources(${CPPLIB} PRIVATE "cpplib.natvis")
 target_include_directories(${CPPLIB} PRIVATE "include" "../thirdparty/nlohmann/json/single_include")
 
 set(CPPLIB tournament_builder_cpplib PARENT_SCOPE)
