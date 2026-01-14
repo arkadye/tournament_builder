@@ -1,0 +1,32 @@
+{
+  "competition": {
+    "name": "example",
+    "entry_list": [
+      {
+        "ref": "@TEMPLATE.foo.bar.baz",
+        "text_replace": {
+          "#GENERIC_COMPETITOR": "example_team_1"
+        }
+      },
+      "@TEMPLATE.guys.0",
+      "@TEMPLATE.guys.1",
+      "@TEMPLATE.guys.5"
+    ],
+    "phases": [
+      {
+        "ref": "@TEMPLATE.final_match",
+        "text_replace": {
+          "#FINAL_NAME": "grand_final",
+          "#SEMIS_NAME": "semi_finals"
+        }
+      },
+      {
+        "name": "gets_from_template",
+        "entry_list": {
+          "entries": [ "@OUTER.guitar" ],
+          "min_entries": 1
+        }
+      }
+    ]
+  }
+}

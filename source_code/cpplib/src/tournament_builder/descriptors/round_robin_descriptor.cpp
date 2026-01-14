@@ -70,7 +70,7 @@ namespace tournament_builder
 			{
 				auto round_opt = round.generate_wrapper();
 				assert(round_opt.has_value());
-				result.phases.emplace_back(std::move(round_opt.value()));
+				result.phases.emplace_back(Competition{ std::move(round_opt.value()) });
 				if (i < rounds_per_repetition - 1) [[likely]]
 				{
 					// Advance data to next round.
@@ -88,15 +88,18 @@ namespace tournament_builder
 			const bool invert_left_and_right = alternate_left_and_right && (rep % 2);
 			for (std::size_t idx = 0u; idx < rounds_per_repetition; ++idx)
 			{
-				Competition comp_round = result.phases[idx];
+				assert(result.phases[idx].is_resolved());
+				Competition comp_round = result.phases[idx].get();
 				RealCompetition* p_round = comp_round.get_real_competition();
 				assert(p_round != nullptr);
 				RealCompetition& round = *p_round;
 				round.name = Name{ std::format("round_{}", result.phases.size() + 1) };
 				if (invert_left_and_right) [[unlikely]]
 				{
-					for (Competition& comp_match : round.phases)
+					for (Reference<Competition>& comp_match_ref : round.phases)
 					{
+						assert(comp_match_ref.is_resolved());
+						Competition& comp_match = comp_match_ref.get();
 						RealCompetition* p_match = comp_match.get_real_competition();
 						assert(p_match != nullptr);
 						RealCompetition& match = *p_match;
@@ -107,7 +110,7 @@ namespace tournament_builder
 						}
 					}
 				}
-				result.phases.emplace_back(std::move(round));
+				result.phases.emplace_back(Competition{ std::move(round) });
 			}
 		}
 

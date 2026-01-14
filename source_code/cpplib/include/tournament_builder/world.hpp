@@ -17,9 +17,13 @@ namespace tournament_builder
 	class World : public IReferencable
 	{
 	public:
-		World(Competition comp) : competition{ std::move(comp) } {}
+		explicit World(Competition comp) : competition{ std::move(comp) } {}
+		World(const World& other);
+		World(World&&) noexcept = default;
 		Competition competition;
 		std::vector<event::EventHandle> events;
+		std::unique_ptr<nlohmann::json> template_store;
+		bool preserve_templates = true;
 		
 		std::vector<std::string> error_messages;
 		static World parse(const nlohmann::json& input);
@@ -35,6 +39,9 @@ namespace tournament_builder
 		std::shared_ptr<IReferencable> copy_ref(const ReferenceCopyOptions&) const final;
 		std::vector<IReferencable*> get_all_next_locations() final;
 		bool matches_token(const Token&) const final;
+
+		World& operator=(const World& other);
+		World& operator=(World&& other) noexcept = default;
 	};
 
 	template <typename T>

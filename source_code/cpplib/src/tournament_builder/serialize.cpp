@@ -182,13 +182,18 @@ namespace tournament_builder
 
 		nlohmann::json to_json_internal(const World& world)
 		{
-			nlohmann::json result;
+			json result;
 			if (!world.error_messages.empty()) [[unlikely]]
 			{
 				result["errors"] = world.error_messages;
 				return result;
 			}
 			result["competition"] = to_json(world.competition);
+			if (world.preserve_templates && world.template_store)
+			{
+				json& template_store = *world.template_store.get();
+				result["template_store"] = std::move(template_store);
+			}
 			return result;
 		}
 

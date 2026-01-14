@@ -15,9 +15,13 @@ namespace tournament_builder
             RealCompetition* p_rc = competition.get_real_competition();
             if (p_rc == nullptr) return;
             RealCompetition& rc = *p_rc;
-            for (Competition& phase : rc.phases)
+            for (Reference<Competition>& phase : rc.phases)
             {
-                set_entry_tags(phase);
+                if (phase.is_resolved())
+                {
+                    Competition& subphase = phase.get();
+                    set_entry_tags(subphase);
+                }
             }
 
             for (std::size_t i=0u;i<rc.entry_list.size();++i)
@@ -30,6 +34,36 @@ namespace tournament_builder
                 }
             }
         }
+    }
+
+    World::World(const World& other)
+        : competition{ other.competition }
+        , events{ other.events }
+        , template_store{}
+        , preserve_templates{ other.preserve_templates }
+        , error_messages{ other.error_messages }
+    {
+        if (other.template_store)
+        {
+            template_store = std::make_unique<nlohmann::json>(*other.template_store);
+        }
+    }
+
+    World& World::operator=(const World& other)
+    {
+        competition = other.competition;
+        events = other.events;
+        if (other.template_store)
+        {
+            template_store = std::make_unique<nlohmann::json>(*other.template_store);
+        }
+        else
+        {
+            template_store.reset();
+        }
+        preserve_templates = other.preserve_templates;
+        error_messages = other.error_messages;
+        return *this;
     }
 
     World World::parse(const nlohmann::json& input)
@@ -49,6 +83,13 @@ namespace tournament_builder
                 throw ex;
             }
         }
+
+        if (auto opt_templates = json_helper::get_optional_object(input, "templates"))
+        {
+            result.template_store = std::make_unique<nlohmann::json>(std::move(opt_templates).value());
+        }
+
+        result.preserve_templates = json_helper::get_bool_or(input, "preserve_templates", true);
 
         return result;
     }

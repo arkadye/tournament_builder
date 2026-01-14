@@ -14,7 +14,9 @@ namespace tournament_builder
 	using nlohmann::json;
 	bool RealCompetition::has_resolved_all_references() const
 	{
-		const bool contents_result = std::ranges::all_of(phases, [](const Competition& inner) {return inner.has_resolved_all_references(); });
+		const bool contents_result = std::ranges::all_of(phases,
+			[](const Competition& inner) {return inner.has_resolved_all_references();},
+			[](const Reference<Competition>& ref) { assert(ref.is_resolved()); return ref.get(); });
 		return contents_result && has_finalized_entry_list();
 	}
 
@@ -42,10 +44,23 @@ namespace tournament_builder
 				}
 			}
 
-			for (Competition& phase : phases)
+			for (Reference<Competition>& phase : phases)
 			{
-				const bool phase_result = phase.resolve_all_references_impl(context, location);
-				result = phase_result || result;
+				if (phase.is_reference())
+				{
+					ReferenceResult<Competition> deref_result = phase.dereference_single(context, location);
+					Competition* comp = deref_result.get();
+					if (comp == nullptr) continue;
+					result = true;
+					const Name name = comp->get_reference_key();
+					const ReferenceCopyOptions opts = phase.get_copy_opts();
+					phase = comp->copy_ref(opts);
+				}
+				if (phase.is_resolved())
+				{
+					const bool phase_result = phase.get().resolve_all_references_impl(context, location);
+					result = phase_result || result;
+				}
 			}
 
 			return result;
@@ -78,7 +93,19 @@ namespace tournament_builder
 			{
 				try
 				{
-					result.phases = json_helper::get_array(input["phases"], &Competition::parse);
+					result.phases = json_helper::get_array(input["phases"], &Reference<Competition>::parse);
+					for (Reference<Competition>& phase : result.phases)
+					{
+						if (phase.is_resolved()) continue;
+						if (phase.get_min_results() != 1)
+						{
+							throw exception::ReferenceException{ std::format("Reference {} has min_results set to {}. This must be set to 1", result.to_string(), phase.get_min_results())};
+						}
+						if (phase.get_max_results() != 1)
+						{
+							throw exception::ReferenceException{ std::format("Reference {} has max_results set to {}. This must be set to 1", result.to_string(), phase.get_max_results())};
+						}
+					}
 				}
 				catch (tournament_builder::exception::TournamentBuilderException& ex)
 				{
@@ -116,9 +143,16 @@ namespace tournament_builder
 			std::back_inserter(result),
 			[](Reference<Competitor>& ref_comp) -> IReferencable*
 			{
+				assert(ref_comp.is_resolved());
 				return &ref_comp.get();
 			});
-		std::ranges::transform(phases, std::back_inserter(result), [](Competition& comp) {return &comp; });
+		std::ranges::transform(phases | std::views::filter(&Reference<Competition>::is_resolved),
+			std::back_inserter(result),
+			[](Reference<Competition>& ref_comp)
+			{
+				assert(ref_comp.is_resolved());
+				return &(ref_comp.get());
+			});
 		return result;
 	}
 
