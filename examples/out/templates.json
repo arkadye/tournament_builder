@@ -1,0 +1,83 @@
+{
+  "competition": {
+    "entry_list": [
+      {
+        "name": "example_team_1",
+        "tags": [ "lorem", "ipsum" ]
+      },
+      {
+        "name": "steve",
+        "tags": [ "bass" ]
+      },
+      {
+        "name": "dave",
+        "tags": [ "guitar" ]
+      },
+      {
+        "name": "adrian",
+        "tags": [ "guitar" ]
+      }
+    ],
+    "name": "example",
+    "phases": [
+      {
+        "entry_list": [ "@OUTER.semi_finals.match_0.$POS:1", "@OUTER.semi_finals.match_1.$POS:1" ],
+        "name": "grand_final"
+      },
+      {
+        "entry_list": [
+          {
+            "name": "dave",
+            "tags": [ "guitar" ]
+          },
+          {
+            "name": "adrian",
+            "tags": [ "guitar" ]
+          }
+        ],
+        "name": "gets_from_template"
+      }
+    ]
+  },
+  "template_store": {
+    "final_match": {
+      "entry_list": [ "@OUTER.#SEMIS_NAME.match_0.$POS:1", "@OUTER.#SEMIS_NAME.match_1.$POS:1" ],
+      "name": "#FINAL_NAME"
+    },
+    "foo": {
+      "bar": {
+        "baz": {
+          "name": "#GENERIC_COMPETITOR",
+          "tags": [ "lorem", "ipsum" ]
+        }
+      },
+      "bop": { "name": "#GENERIC_COMPETITOR" }
+    },
+    "guys": [
+      {
+        "name": "steve",
+        "tags": "bass"
+      },
+      {
+        "name": "dave",
+        "tags": "guitar"
+      },
+      {
+        "name": "nicko",
+        "tags": "drums"
+      },
+      {
+        "name": "jannick",
+        "tags": "guitar"
+      },
+      {
+        "name": "bruce",
+        "tags": "vocals"
+      },
+      {
+        "name": "adrian",
+        "tags": "guitar"
+      }
+    ]
+  }
+}
