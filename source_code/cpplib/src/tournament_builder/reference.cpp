@@ -361,7 +361,7 @@ namespace tournament_builder
 							const std::from_chars_result result = std::from_chars(data_start, data_end + token.size(), val);
 							if (result.ec != std::errc{} || result.ptr != data_end)
 							{
-								throw exception::InvalidArgument(std::format("Expected array index (i.e. positive integer) but instead got {}", token));
+								throw exception::InvalidArgument(std::format("Expected array index (i.e. positive integer) but instead got '{}'", token));
 							}
 
 							if (val >= store.size())
@@ -517,10 +517,18 @@ namespace tournament_builder
 		if (!context.template_store)
 		{
 			exception::InvalidDereference ex(*this);
-			ex.add_context("Tried to derefence @TEMPLATE reference, but no 'templates' field exists on the top level object.");
+			ex.add_context("Tried to derefence @TEMPLATE reference, but no 'templates' field exists on the top level object");
 			throw ex;
 		}
-		return std::make_unique<nlohmann::json>(internal_reference::tag_processing::get_deferred_json_impl(*context.template_store.get(), begin(m_elements), begin(m_elements) + 1, end(m_elements), m_replacements));
+		try
+		{
+			return std::make_unique<nlohmann::json>(internal_reference::tag_processing::get_deferred_json_impl(*context.template_store.get(), begin(m_elements), begin(m_elements) + 1, end(m_elements), m_replacements));
+		}
+		catch (exception::TournamentBuilderException& ex)
+		{
+			ex.add_context("In template store at 'templates'");
+			throw ex;
+		}
 	}
 
 	LocationPusher::LocationPusher(Location& in_loc, const Name& name)
