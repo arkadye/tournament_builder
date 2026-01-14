@@ -150,9 +150,17 @@ namespace tournament_builder::json_helper::internal_json_helper
 			std::optional<T> result = get_optional(object, field);
 			if (!result.has_value())
 			{
-				tournament_builder::exception::JsonParseInvalidType exception(object, { static_cast<std::uint8_t>(AllowedTypes)...});
-				exception.add_context(std::format("Field '{}' was not found or had the wrong type", field));
-				throw exception;
+				if (object.contains(field))
+				{
+					tournament_builder::exception::JsonParseInvalidType exception(object, { static_cast<std::uint8_t>(AllowedTypes)... });
+					exception.add_context(std::format("Field '{}' has the wrong type", field));
+					throw exception;
+				}
+				else
+				{
+					tournament_builder::exception::JsonParseException exception(object,std::format("Expected field '{}' does not exist.",field));
+					throw exception;
+				}
 			}
 			return result.value();
 		}
