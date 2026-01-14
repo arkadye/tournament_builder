@@ -31,9 +31,10 @@ namespace tournament_builder
 
     void TaggableMixin::add_tags_from_json(const nlohmann::json& input)
     {
-        if (input.contains("tags"))
+        constexpr std::string_view TAGS = "tags";
+        if (input.contains(TAGS))
         {
-            m_tags = json_helper::get_array(input["tags"], &Tag::parse_default_copy);
+            m_tags = json_helper::get_array_maybe_from_single_item(input, TAGS, &Tag::parse_default_copy);
         }
     }
 }
