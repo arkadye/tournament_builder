@@ -15,9 +15,13 @@ namespace tournament_builder
             RealCompetition* p_rc = competition.get_real_competition();
             if (p_rc == nullptr) return;
             RealCompetition& rc = *p_rc;
-            for (Competition& phase : rc.phases)
+            for (Reference<Competition>& phase : rc.phases)
             {
-                set_entry_tags(phase);
+                if (phase.is_resolved())
+                {
+                    Competition& subphase = phase.get();
+                    set_entry_tags(subphase);
+                }
             }
 
             for (std::size_t i=0u;i<rc.entry_list.size();++i)

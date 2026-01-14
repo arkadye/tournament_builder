@@ -59,7 +59,7 @@ namespace tournament_builder::descriptor
             RealCompetition game{ game_name_str };
             game.entry_list.set({ left, right });
 
-            result.phases.emplace_back(std::move(game));
+            result.phases.emplace_back(Competition{ std::move(game) });
         }
 
         return result;

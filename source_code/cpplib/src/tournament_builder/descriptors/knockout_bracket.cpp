@@ -55,7 +55,7 @@ namespace tournament_builder::descriptor
 				if (!a_bye && !b_bye) // Use an actual match result. It *should* be the match pointed to by round_it.
 				{
 					assert(round_it != end(round.phases));
-					next_round_entries.emplace_back(std::format("@OUTER.{}.{}.$POS:1", round_name, round_it->get_reference_key()));
+					next_round_entries.emplace_back(std::format("@OUTER.{}.{}.$POS:1", round_name, round_it->get().get_reference_key()));
 					++round_it;
 				}
 				else if (a_bye != b_bye)
@@ -76,7 +76,7 @@ namespace tournament_builder::descriptor
 			// We should have used all the matches.
 			assert(round_it == end(round.phases));
 
-			result.phases.emplace_back(std::move(round));
+			result.phases.emplace_back(Competition{ std::move(round) });
 		}
 		return result;
 	}
