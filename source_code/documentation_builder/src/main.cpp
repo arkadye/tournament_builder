@@ -30,7 +30,7 @@ public:
 	std::string_view get_title() const noexcept { return title; }
 	const stf::path& get_filename() const noexcept {return filename; }
 	bool is_readme() const;
-	int transfer_file(const Folder& top_folder, stf::path from, stf::path to, bool for_real) const;
+	int transfer_file(const Folder& top_folder, stf::path from, stf::path to, bool for_real, bool force) const;
 	bool check_can_transfer(const stf::path& destination) const;
 	auto operator<=>(const File& other) const noexcept = default;
 };
@@ -42,13 +42,13 @@ class Folder
 	std::set<Folder> subfolders;
 	std::set<File> files;
 	void make_navigation_impl(std::vector<std::string>& result, stf::path path_here, const stf::path& target, std::string_view indent) const;
-	int transfer_folder_impl(const Folder& top_folder, const stf::path& from, const stf::path& to, bool for_real) const;
+	int transfer_folder_impl(const Folder& top_folder, const stf::path& from, const stf::path& to, bool for_real, bool force) const;
 public:
 	explicit Folder(const stf::path& path) : title{ path.stem().string() }, path_fragment{ path.stem() } {}
 	std::string_view get_title() const noexcept { return title; }
 	const stf::path& get_path_fragment() const { return path_fragment; }
 	static Folder make(const stf::path& path);
-	int transfer_folder(const stf::path& from, const stf::path& to, bool for_real) const;
+	int transfer_folder(const stf::path& from, const stf::path& to, bool for_real, bool force) const;
 	bool check_can_transfer(const stf::path& destination) const;
 	std::string make_navigation(const stf::path& target) const;
 	auto operator<=>(const Folder& other) const noexcept { return std::tuple{ title,path_fragment } <=> std::tuple{ other.title, other.path_fragment }; };
@@ -60,7 +60,8 @@ int main(int argc, char** argv)
 	options_config.add_options()
 		("i,input", "Input path - the top level path of documentation to read from.", cxxopts::value<stf::path>())
 		("o,output", "Output path - the location to write the documentation to", cxxopts::value<stf::path>())
-		("r,real", "Real - set this argument to actually write things. Otherwise it will report which files will be updated only.", cxxopts::value<bool>())
+		("r,real", "Real - set this argument to actually write things. Otherwise it will report which files will be updated only.")
+		("f,force", "Force - overwrite files even if the destination is newer than the source.")
 		("h,help", "Display help");
 
 	auto options = options_config.parse(argc, argv);
@@ -90,15 +91,15 @@ int main(int argc, char** argv)
 	{
 		return EXIT_FAILURE;
 	}
-	return folder_structure.transfer_folder(source, destination, options.contains("real"));
+	return folder_structure.transfer_folder(source, destination, options.contains("real"), options.contains("force"));
 }
 
-int Folder::transfer_folder(const stf::path& from, const stf::path& to, bool for_real) const
+int Folder::transfer_folder(const stf::path& from, const stf::path& to, bool for_real, bool force) const
 {
-	return transfer_folder_impl(*this, from, to, for_real);
+	return transfer_folder_impl(*this, from, to, for_real, force);
 }
 
-int Folder::transfer_folder_impl(const Folder& top_folder, const stf::path& from, const stf::path& to, bool for_real) const
+int Folder::transfer_folder_impl(const Folder& top_folder, const stf::path& from, const stf::path& to, bool for_real, bool force) const
 {
 	if (for_real && !stf::exists(to))
 	{
@@ -106,7 +107,7 @@ int Folder::transfer_folder_impl(const Folder& top_folder, const stf::path& from
 	}
 	for (const File& file : files)
 	{
-		if (EXIT_SUCCESS != file.transfer_file(top_folder, from, to, for_real))
+		if (EXIT_SUCCESS != file.transfer_file(top_folder, from, to, for_real, force))
 		{
 			return EXIT_FAILURE;
 		}
@@ -114,17 +115,17 @@ int Folder::transfer_folder_impl(const Folder& top_folder, const stf::path& from
 
 	for (const Folder& subfolder : subfolders)
 	{	
-		subfolder.transfer_folder_impl(top_folder, from / subfolder.get_path_fragment(), to / subfolder.get_path_fragment(), for_real);
+		subfolder.transfer_folder_impl(top_folder, from / subfolder.get_path_fragment(), to / subfolder.get_path_fragment(), for_real, force);
 	}
 	return EXIT_SUCCESS;
 }
 
-int File::transfer_file(const Folder& top_folder, stf::path from, stf::path to, bool for_real) const
+int File::transfer_file(const Folder& top_folder, stf::path from, stf::path to, bool for_real, bool force) const
 {
 	from /= filename;
 	to /= filename;
 	std::optional<std::string> nav_map;
-	if (!stf::exists(to) || stf::last_write_time(from) > stf::last_write_time(to))
+	if (force || !stf::exists(to) || stf::last_write_time(from) > stf::last_write_time(to))
 	{
 		std::cout << std::format("Transferring file '{}' from '{}' to '{}'\n", title, from.string(), to.string());
 		if (!for_real) return EXIT_SUCCESS;
@@ -207,7 +208,9 @@ File File::make(const stf::path& path)
 bool is_readme(const stf::path& target) noexcept
 {
 	auto tu = [](char c) {return static_cast<char>(std::toupper(c)); };
-	return std::ranges::equal(target.string() | std::views::transform(tu), README);
+	const stf::path stem = target.filename();
+	const std::string stem_str = stem.string();
+	return std::ranges::equal(stem_str | std::views::transform(tu), README);
 }
 
 bool File::is_readme() const
@@ -245,7 +248,7 @@ bool File::check_can_transfer(const stf::path& path) const
 	const bool result = !stf::exists(filepath) || !stf::is_directory(filepath);
 	if (!result)
 	{
-		std::cout << std::format("Cannot transfer file to '{}': target already exists and is not a file.", path.string());
+		std::cout << std::format("Cannot transfer file to '{}': target already exists and is not a file.", stf::canonical(path).string());
 	}
 	return result;
 }
@@ -254,13 +257,13 @@ bool Folder::check_can_transfer(const stf::path& path) const
 {
 	if (std::ranges::none_of(files, &File::is_readme))
 	{
-		std::cerr << std::format("Cannot transfer: source directory for '{}' does not have a readme.md", path.string());
+		std::cerr << std::format("Cannot transfer: source directory for '{}' does not have a readme.md", stf::canonical(path).string());
 		return false;
 	}
 	if (!stf::exists(path)) return true;
 	if (!stf::is_directory(path))
 	{
-		std::cerr << std::format("Cannot transfer: target directory '{}' exists but is not a directory.", path.string());
+		std::cerr << std::format("Cannot transfer: target directory '{}' exists but is not a directory.", stf::canonical(path).string());
 		return false;
 	}
 	if (!std::ranges::all_of(files, [&path](const File& f) {return f.check_can_transfer(path); })) return false;
@@ -301,10 +304,20 @@ void Folder::make_navigation_impl(std::vector<std::string>& result, stf::path pa
 	assert(readme_it != end(files));
 	result.emplace_back(std::format("{}{}", indent, make_entry(*readme_it)));
 
-	if (!target.string().starts_with(path_here.string()))
 	{
-		return;
+		const std::string target_string = target.string();
+		const std::string here_string = path_here.string();
+		const bool here_is_on_route_to_target = target_string.starts_with(here_string);
+
+		const bool target_is_readme = is_readme(target);
+		const std::string target_folder_string = target.parent_path().string();
+		const bool target_is_parent_of_here = target_is_readme && here_string.starts_with(target_folder_string);
+		if (!here_is_on_route_to_target && !target_is_parent_of_here)
+		{
+			return;
+		}
 	}
+	
 
 	auto file_it = begin(files);
 	auto folder_it = begin(subfolders);
