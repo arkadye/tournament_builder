@@ -1,18 +1,6 @@
 ### Navigation
 
-- [Tournament Maker](..\..\README.md)
-  - [Tournament Builder Documentation](..\readme.md)
-    - [Input and Output JSON](readme.md)
-      - [Competition](competition.md)
-      - [Competition Descriptors](descriptors\readme.md)
-      - [Competitor](competitor.md)
-      - [Entry List](entry_list.md)
-      - **Error messages** (You are here)
-      - [Events](events\readme.md)
-      - [Names](naming_rules.md)
-      - [References](references.md)
-      - [Tags](tags.md)
-      - [World object](world.md)
+___NAV-MAP___
 
 # Error messages
 

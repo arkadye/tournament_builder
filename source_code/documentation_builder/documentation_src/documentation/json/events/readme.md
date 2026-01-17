@@ -1,22 +1,6 @@
 ### Navigation
 
-- [Tournament Maker](..\..\..\README.md)
-  - [Tournament Builder Documentation](..\..\readme.md)
-    - [Input and Output JSON](..\readme.md)
-      - [Competition](..\competition.md)
-      - [Competition Descriptors](..\descriptors\readme.md)
-      - [Competitor](..\competitor.md)
-      - [Entry List](..\entry_list.md)
-      - [Error messages](..\error_messages.md)
-      - **Events** (You are here)
-        - [Add tags](add_tags.md)
-        - [Resolve all references](resolve_all_references.md)
-        - [Resolve reference](resolve_reference.md)
-        - [Set finishing positions](set_finishing_positions.md)
-      - [Names](..\naming_rules.md)
-      - [References](..\references.md)
-      - [Tags](..\tags.md)
-      - [World object](..\world.md)
+___NAV-MAP___
 
 # Events
 

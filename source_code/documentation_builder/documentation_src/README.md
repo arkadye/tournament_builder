@@ -129,25 +129,4 @@ Furthermore, while I acknowledge there is no requirement to do this (and I will 
 
 Use these links to navigate all the documentation:
 
-- **Tournament Maker** (You are here)
-  - [Tournament Builder Documentation](documentation\readme.md)
-    - [Input and Output JSON](documentation\json\readme.md)
-      - [Competition](documentation\json\competition.md)
-      - [Competition Descriptors](documentation\json\descriptors\readme.md)
-        - [Competitor View](documentation\json\descriptors\competitor_view.md)
-        - [DEBUG: Never resolves](documentation\json\descriptors\DEBUG_never_resolves.md)
-        - [Knockout-bracket](documentation\json\descriptors\knockout_bracket.md)
-        - [Round Robin](documentation\json\descriptors\round_robin.md)
-        - [Round of Matches](documentation\json\descriptors\round_of_matches.md)
-      - [Competitor](documentation\json\competitor.md)
-      - [Entry List](documentation\json\entry_list.md)
-      - [Error messages](documentation\json\error_messages.md)
-      - [Events](documentation\json\events\readme.md)
-        - [Add tags](documentation\json\events\add_tags.md)
-        - [Resolve all references](documentation\json\events\resolve_all_references.md)
-        - [Resolve reference](documentation\json\events\resolve_reference.md)
-        - [Set finishing positions](documentation\json\events\set_finishing_positions.md)
-      - [Names](documentation\json\naming_rules.md)
-      - [References](documentation\json\references.md)
-      - [Tags](documentation\json\tags.md)
-      - [World object](documentation\json\world.md)
+___NAV-MAP___
