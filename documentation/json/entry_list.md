@@ -1,7 +1,18 @@
-- [Back to top](../../readme.md)
-  - [Documentation home](../readme.md)
-    - [Input and output JSON](readme.md)
-      - Entry list
+### Navigation
+
+- [Tournament Maker](..\..\README.md)
+  - [Tournament Builder Documentation](..\readme.md)
+    - [Input and Output JSON](readme.md)
+      - [Competition](competition.md)
+      - [Competition Descriptors](descriptors\readme.md)
+      - [Competitor](competitor.md)
+      - **Entry List** (You are here)
+      - [Error messages](error_messages.md)
+      - [Events](events\readme.md)
+      - [Names](naming_rules.md)
+      - [References](references.md)
+      - [Tags](tags.md)
+      - [World object](world.md)
 
 # Entry List
 

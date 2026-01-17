@@ -1,14 +1,23 @@
 ### Navigation
 
-- [Back to top](../../../readme.md)
-  - [Documentation home](../../readme.md)
-    - [Input and output JSON](../readme.md)
-      - [Competition Descriptor object](readme.md)
-	    - [Competitor view](competitor_view.md)
-        - [Round of matches](round_of_matches.md)
-        - [Round-robin](round_robin.md)
-        - [Knockout bracket](knockout_bracket.md)
+- [Tournament Maker](..\..\..\README.md)
+  - [Tournament Builder Documentation](..\..\readme.md)
+    - [Input and Output JSON](..\readme.md)
+      - [Competition](..\competition.md)
+      - **Competition Descriptors** (You are here)
+        - [Competitor View](competitor_view.md)
         - [DEBUG: Never resolves](DEBUG_never_resolves.md)
+        - [Knockout-bracket](knockout_bracket.md)
+        - [Round Robin](round_robin.md)
+        - [Round of Matches](round_of_matches.md)
+      - [Competitor](..\competitor.md)
+      - [Entry List](..\entry_list.md)
+      - [Error messages](..\error_messages.md)
+      - [Events](..\events\readme.md)
+      - [Names](..\naming_rules.md)
+      - [References](..\references.md)
+      - [Tags](..\tags.md)
+      - [World object](..\world.md)
 
 # Competition Descriptors
 
