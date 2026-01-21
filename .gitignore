@@ -55,3 +55,4 @@ cpp/x64
 DartConfiguration.tcl
 source_code/clib/include/tournament_builder/clib_export.h
 source_code/documentation_builder/document_builder.args.json
+*.slnx
