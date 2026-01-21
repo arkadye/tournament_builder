@@ -1,5 +1,6 @@
 #include "tournament_builder.hpp"
 #include "tournament_builder_json_obj.hpp"
+#include "tournament_builder/world.hpp"
 
 #include "nlohmann/json.hpp"
 
