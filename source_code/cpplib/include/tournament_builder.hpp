@@ -31,10 +31,10 @@ namespace tournament_builder
 	std::string make_tournament_str(const std::filesystem::path& input);
 
 	/*
-	Params:
-		input: An input stream containing JSON
-	Return: The processed JSON as a std::string
-*/
+		Params:
+			input: An input stream containing JSON
+		Return: The processed JSON as a std::string
+	*/
 	std::string make_tournament_str(std::istream& input);
 
 	/*
