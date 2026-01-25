@@ -12,7 +12,7 @@
 
 namespace tournament_builder
 {
-    tournament_builder::World make_tournament_world(std::string_view input)
+    World make_tournament_world(std::string_view input)
     {
         if (input.ends_with(".json"))
         {
@@ -24,25 +24,25 @@ namespace tournament_builder
         return make_tournament_world(in_stream);
     }
 
-    tournament_builder::World make_tournament_world(const std::filesystem::path& input)
+    World make_tournament_world(const std::filesystem::path& input)
     {
         std::ifstream infile{ input };
         if (!infile.is_open())
         {
-            throw tournament_builder::exception::TournamentBuilderException{ std::format("Could not open input file '{}'", input.string()) };
+            throw exception::TournamentBuilderException{ std::format("Could not open input file '{}'", input.string()) };
         }
         try
         {
             return make_tournament_world(infile);
         }
-        catch (tournament_builder::exception::TournamentBuilderException& ex)
+        catch (exception::TournamentBuilderException& ex)
         {
             ex.add_context(std::format("In file '{}'", input.string()));
             throw ex;
         }
     }
 
-    tournament_builder::World make_tournament_world(std::istream& input)
+    World make_tournament_world(std::istream& input)
     {
         nlohmann::json in_json;
         try
@@ -51,19 +51,19 @@ namespace tournament_builder
         }
         catch (const nlohmann::json::exception& ex)
         {
-            throw tournament_builder::exception::TournamentBuilderException{ std::format("JSON parse exception: {}", ex.what()) };
+            throw exception::TournamentBuilderException{ std::format("JSON parse exception: {}", ex.what()) };
         }
         return make_tournament_world(in_json);
     }
 
-    tournament_builder::World make_tournament_world(const nlohmann::json& input)
+    World make_tournament_world(const nlohmann::json& input)
     {
         using tournament_builder::World;
         const World parsed = World::parse(input);
         return make_tournament_world(parsed);
     }
 
-    tournament_builder::World make_tournament_world(const tournament_builder::World& input)
+    World make_tournament_world(const World& input)
     {
         auto result = input;
         result.execute_all_events();

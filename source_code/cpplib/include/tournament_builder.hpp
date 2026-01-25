@@ -49,7 +49,7 @@ namespace tournament_builder
 			input: A tournament_builder::World object describing a tourmanent.
 		Return: A JSON object as a std::string
 	*/
-	std::string make_tournament_str(const tournament_builder::World& input);
+	std::string make_tournament_str(const World& input);
 
 	/*
 		Params:
@@ -84,7 +84,7 @@ namespace tournament_builder
 			input: A tournament_builder::World object describing a tourmanent.
 			output: A path where the result will be written.
 	*/
-	void make_tournament_path(const tournament_builder::World& input, const std::filesystem::path& output);
+	void make_tournament_path(const World& input, const std::filesystem::path& output);
 
 	/*
 		Params:
@@ -119,7 +119,7 @@ namespace tournament_builder
 			input: A tournament_builder::World object describing a tourmanent.
 			output: An output stream where the result will be written.
 	*/
-	void make_tournament_ostream(const tournament_builder::World& input, std::ostream& output);
+	void make_tournament_ostream(const World& input, std::ostream& output);
 
 	/*
 	*	Params:

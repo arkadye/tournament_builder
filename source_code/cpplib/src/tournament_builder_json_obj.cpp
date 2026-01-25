@@ -14,10 +14,10 @@ namespace tournament_builder
 			nlohmann::json result;
 			try
 			{
-				const tournament_builder::World world = make_tournament_world(std::forward<T>(arg));
-				result = tournament_builder::to_json(world);
+				const World world = make_tournament_world(std::forward<T>(arg));
+				result = to_json(world);
 			}
-			catch (const tournament_builder::exception::TournamentBuilderException& ex)
+			catch (const exception::TournamentBuilderException& ex)
 			{
 				result["errors"] = { ex.what() };
 			}
