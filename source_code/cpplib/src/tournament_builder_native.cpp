@@ -33,7 +33,16 @@ namespace tournament_builder
         }
         try
         {
-            return make_tournament_world(infile, extra_args);
+            if (!extra_args.path.has_value())
+            {
+                ExtraArgs args = extra_args;
+                args.path = input;
+                return make_tournament_world(infile, args);
+            }
+            else
+            {
+                return make_tournament_world(infile, extra_args);
+            }
         }
         catch (exception::TournamentBuilderException& ex)
         {
