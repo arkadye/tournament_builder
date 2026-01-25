@@ -3,6 +3,7 @@
 #include "tournament_builder/competition.hpp"
 #include "tournament_builder/reference.hpp"
 #include "tournament_builder/events/event_base.hpp"
+#include "tournament_builder/extra_args.hpp"
 
 #include "nlohmann/json_fwd.hpp"
 
@@ -42,6 +43,8 @@ namespace tournament_builder
 
 		World& operator=(const World& other);
 		World& operator=(World&& other) noexcept = default;
+
+		void apply_extra_args(const ExtraArgs& args);
 	};
 
 	template <typename T>

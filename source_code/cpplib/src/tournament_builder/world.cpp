@@ -66,6 +66,10 @@ namespace tournament_builder
         return *this;
     }
 
+    void World::apply_extra_args(const ExtraArgs& args)
+    {
+    }
+
     World World::parse(const nlohmann::json& input)
     {
         Competition competition = Competition::parse(json_helper::get_object(input,"competition"));
