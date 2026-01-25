@@ -20,7 +20,11 @@ namespace tournament_builder
 	public:
 		explicit World(Competition comp) : competition{ std::move(comp) } {}
 		World(const World& other);
+		World& operator=(const World& other);
+
 		World(World&&) noexcept = default;
+		World& operator=(World&& other) noexcept = default;
+
 		Competition competition;
 		std::vector<event::EventHandle> events;
 		std::unique_ptr<nlohmann::json> template_store;
@@ -41,10 +45,33 @@ namespace tournament_builder
 		std::vector<IReferencable*> get_all_next_locations() final;
 		bool matches_token(const Token&) const final;
 
-		World& operator=(const World& other);
-		World& operator=(World&& other) noexcept = default;
-
 		void apply_extra_args(const ExtraArgs& args);
+
+		void push_current_file(std::filesystem::path new_file) { m_current_file.emplace_back(std::move(new_file)); }
+		const std::filesystem::path& peek_current_file() const;
+		void pop_current_file() { m_current_file.pop_back(); }
+
+		class CurrentFileManager
+		{
+			friend class World;
+			World* m_owner;
+#ifndef NDEBUG
+			std::filesystem::path m_expected_top_on_destruction;
+#endif
+			[[nodiscard]] CurrentFileManager(World& owner, std::filesystem::path path);
+		public:
+			CurrentFileManager(const CurrentFileManager&) = delete;
+			~CurrentFileManager();
+		};
+
+		[[nodiscard]] CurrentFileManager add_temp_current_file(std::filesystem::path path);
+
+	private:
+		std::vector<std::filesystem::path> m_current_file;
+#ifndef NDEBUG
+		friend class CurrentFileManager;
+		int m_num_current_file_managers = 0;
+#endif
 	};
 
 	template <typename T>

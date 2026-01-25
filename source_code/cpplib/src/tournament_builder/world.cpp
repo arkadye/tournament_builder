@@ -68,6 +68,10 @@ namespace tournament_builder
 
     void World::apply_extra_args(const ExtraArgs& args)
     {
+        if (args.path.has_value())
+        {
+            push_current_file(args.path.value());
+        }
     }
 
     World World::parse(const nlohmann::json& input)
@@ -158,5 +162,40 @@ namespace tournament_builder
     {
         assert(false && "We should never be asking the world if it matches with a token.");
         return false;
+    }
+
+    const std::filesystem::path& World::peek_current_file() const
+    {
+        static std::filesystem::path empty_path;
+        return m_current_file.empty() ? empty_path : m_current_file.back();
+    }
+
+    World::CurrentFileManager::CurrentFileManager(World& owner, std::filesystem::path path)
+        : m_owner{ &owner }
+#ifndef NDEBUG
+        , m_expected_top_on_destruction{path}
+#endif
+    {
+#ifndef NDEBUG
+        assert(m_owner->m_num_current_file_managers >= 0);
+        ++m_owner->m_num_current_file_managers;
+#endif
+        m_owner->push_current_file(std::move(path));
+    }
+
+    World::CurrentFileManager::~CurrentFileManager()
+    {
+        assert(m_owner);
+#ifndef NDEBUG
+        assert(m_owner->peek_current_file() == m_expected_top_on_destruction);
+        assert(m_owner->m_num_current_file_managers > 0);
+        --m_owner->m_num_current_file_managers;
+#endif
+        m_owner->pop_current_file();
+    }
+
+    World::CurrentFileManager World::add_temp_current_file(std::filesystem::path new_file)
+    {
+        return CurrentFileManager{ *this, std::move(new_file) };
     }
 }
