@@ -164,10 +164,9 @@ namespace tournament_builder
         return false;
     }
 
-    const std::filesystem::path& World::peek_current_file() const
+    std::filesystem::path World::peek_current_file() const
     {
-        static std::filesystem::path empty_path;
-        return m_current_file.empty() ? empty_path : m_current_file.back();
+        return m_current_file.empty() ? std::filesystem::current_path() : m_current_file.back();
     }
 
     World::CurrentFileManager::CurrentFileManager(World& owner, std::filesystem::path path)

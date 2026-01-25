@@ -12,6 +12,6 @@ namespace tournament_builder
 	class ExtraArgs
 	{
 	public:
-		std::optional<std::filesystem::path> path;
+		std::optional<std::filesystem::path> path = {};
 	};
 }
