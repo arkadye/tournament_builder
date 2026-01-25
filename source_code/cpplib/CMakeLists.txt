@@ -57,11 +57,13 @@ set(HELPER_HEADERS
 	"include/tournament_builder/generic_utils.hpp"
 	"include/tournament_builder/tag_and_reference_helpers.hpp"
 	"include/tournament_builder/random.hpp"
+	"include/tournament_builder/extra_args.hpp"
 )
 
 set(HELPER_SOURCES
 	"src/tournament_builder/tag_and_reference_helpers.cpp"
 	"src/tournament_builder/random.cpp"
+	"src/tournament_builder/extra_args.cpp"
 )
 
 set(HELPERS ${HELPER_HEADERS} ${HELPER_SOURCES})
