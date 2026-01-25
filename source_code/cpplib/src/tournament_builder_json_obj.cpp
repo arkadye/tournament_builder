@@ -9,12 +9,12 @@ namespace tournament_builder
 	namespace internal_tournament_builder_native
 	{
 		template <typename T>
-		nlohmann::json wrap(T&& arg)
+		nlohmann::json wrap(T&& arg, const ExtraArgs& extra_args)
 		{
 			nlohmann::json result;
 			try
 			{
-				const World world = make_tournament_world(std::forward<T>(arg));
+				const World world = make_tournament_world(std::forward<T>(arg), extra_args);
 				result = to_json(world);
 			}
 			catch (const exception::TournamentBuilderException& ex)
@@ -25,9 +25,9 @@ namespace tournament_builder
 		}
 	}
 
-	nlohmann::json make_tournament_json(std::string_view input) { return internal_tournament_builder_native::wrap(input); }
-	nlohmann::json make_tournament_json(const std::filesystem::path& input) { return internal_tournament_builder_native::wrap(input); }
-	nlohmann::json make_tournament_json(std::istream& input) { return internal_tournament_builder_native::wrap(input); }
-	nlohmann::json make_tournament_json(const nlohmann::json& input) { return internal_tournament_builder_native::wrap(input); }
-	nlohmann::json make_tournament_json(const tournament_builder::World& input) { return internal_tournament_builder_native::wrap(input); }
+	nlohmann::json make_tournament_json(std::string_view input, const ExtraArgs& extra_args) { return internal_tournament_builder_native::wrap(input, extra_args); }
+	nlohmann::json make_tournament_json(const std::filesystem::path& input, const ExtraArgs& extra_args) { return internal_tournament_builder_native::wrap(input, extra_args); }
+	nlohmann::json make_tournament_json(std::istream& input, const ExtraArgs& extra_args) { return internal_tournament_builder_native::wrap(input, extra_args); }
+	nlohmann::json make_tournament_json(const nlohmann::json& input, const ExtraArgs& extra_args) { return internal_tournament_builder_native::wrap(input, extra_args); }
+	nlohmann::json make_tournament_json(const tournament_builder::World& input, const ExtraArgs& extra_args) { return internal_tournament_builder_native::wrap(input, extra_args); }
 }
