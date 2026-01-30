@@ -61,9 +61,9 @@ namespace tournament_builder
 		// Returns true if the name matches this one.
 		bool matches_name(Name name) const;
 
-		static Competitor parse(const nlohmann::json& input);
-		static std::vector<Reference<Competitor>> parse_entry_list(const nlohmann::json& input);
-		static std::vector<Reference<Competitor>> parse_entry_list(const nlohmann::json& input, std::string_view field_name);
+		static Competitor parse(const nlohmann::json& input, World& context);
+		static std::vector<Reference<Competitor>> parse_entry_list(const nlohmann::json& input, World& context);
+		static std::vector<Reference<Competitor>> parse_entry_list(const nlohmann::json& input, std::string_view field_name, World& context);
 
 		// IReferencable
 		Name get_reference_key() const override;

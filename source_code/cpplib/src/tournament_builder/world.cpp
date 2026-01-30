@@ -76,9 +76,16 @@ namespace tournament_builder
 
     World World::parse(const nlohmann::json& input)
     {
-        Competition competition = Competition::parse(json_helper::get_object(input,"competition"));
+        World result;
+
+        if (auto opt_templates = json_helper::get_optional_object(input, "templates"))
+        {
+            result.template_store = std::make_unique<nlohmann::json>(std::move(opt_templates).value());
+        }
+
+        Competition competition = Competition::parse(json_helper::get_object(input,"competition"), result);
         internal_world::set_entry_tags(competition);
-        World result{ std::move(competition) };
+        result.competition = std::move(competition);
         if (const auto& event_array_opt = json_helper::get_optional_array_object(input, "events"))
         {
             try
@@ -92,10 +99,7 @@ namespace tournament_builder
             }
         }
 
-        if (auto opt_templates = json_helper::get_optional_object(input, "templates"))
-        {
-            result.template_store = std::make_unique<nlohmann::json>(std::move(opt_templates).value());
-        }
+        
 
         result.preserve_templates = json_helper::get_bool_or(input, "preserve_templates", true);
 
@@ -169,32 +173,8 @@ namespace tournament_builder
         return m_current_file.empty() ? std::filesystem::current_path() : m_current_file.back();
     }
 
-    World::CurrentFileManager::CurrentFileManager(World& owner, std::filesystem::path path)
-        : m_owner{ &owner }
-#ifndef NDEBUG
-        , m_expected_top_on_destruction{path}
-#endif
+    WorldPathManager World::add_temp_current_file(std::filesystem::path new_file)
     {
-#ifndef NDEBUG
-        assert(m_owner->m_num_current_file_managers >= 0);
-        ++m_owner->m_num_current_file_managers;
-#endif
-        m_owner->push_current_file(std::move(path));
-    }
-
-    World::CurrentFileManager::~CurrentFileManager()
-    {
-        assert(m_owner);
-#ifndef NDEBUG
-        assert(m_owner->peek_current_file() == m_expected_top_on_destruction);
-        assert(m_owner->m_num_current_file_managers > 0);
-        --m_owner->m_num_current_file_managers;
-#endif
-        m_owner->pop_current_file();
-    }
-
-    World::CurrentFileManager World::add_temp_current_file(std::filesystem::path new_file)
-    {
-        return CurrentFileManager{ *this, std::move(new_file) };
+        return WorldPathManager{ *this, std::move(new_file) };
     }
 }

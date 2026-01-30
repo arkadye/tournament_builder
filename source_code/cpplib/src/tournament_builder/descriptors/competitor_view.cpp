@@ -8,9 +8,9 @@
 
 namespace tournament_builder::descriptor
 {
-    DescriptorHandle CompetitorView::parse(std::shared_ptr<CompetitorView> prototype, const nlohmann::json& input) const
+    DescriptorHandle CompetitorView::parse(std::shared_ptr<CompetitorView> prototype, const nlohmann::json& input, World& context) const
     {
-        prototype->entry_list = EntryList::parse(input, "entry_list");
+        prototype->entry_list = EntryList::parse(input, "entry_list", context);
         return prototype;
     }
 

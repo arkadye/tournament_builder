@@ -117,9 +117,9 @@ namespace tournament_builder
 		return result;
 	}
 
-	descriptor::DescriptorHandle descriptor::RoundRobin::parse(std::shared_ptr<RoundRobin> prototype, const nlohmann::json& input) const
+	descriptor::DescriptorHandle descriptor::RoundRobin::parse(std::shared_ptr<RoundRobin> prototype, const nlohmann::json& input, World& context) const
 	{
-		prototype->entry_list = EntryList::parse(input, "entry_list");
+		prototype->entry_list = EntryList::parse(input, "entry_list", context);
 		prototype->num_times_to_play_each_opponent = json_helper::get_int_or(input, "num_times_to_play_each_opponent", 1);
 		prototype->alternate_left_and_right = json_helper::get_bool_or(input, "alternate_left_and_right", false);
 		prototype->generate_byes = json_helper::get_bool_or(input, "generate_byes", false);

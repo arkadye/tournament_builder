@@ -13,6 +13,6 @@ namespace tournament_builder::descriptor
 		void write_to_json(nlohmann::json& target) const override;
 	private:
 		std::optional<RealCompetition> generate() const override { return std::nullopt; }
-		DescriptorHandle parse(std::shared_ptr<DEBUG_NeverResolves> prototype, const nlohmann::json& input) const override;
+		DescriptorHandle parse(std::shared_ptr<DEBUG_NeverResolves> prototype, const nlohmann::json& input, World& context) const override;
 	};
 }

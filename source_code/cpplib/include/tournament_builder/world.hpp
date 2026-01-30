@@ -4,6 +4,7 @@
 #include "tournament_builder/reference.hpp"
 #include "tournament_builder/events/event_base.hpp"
 #include "tournament_builder/extra_args.hpp"
+#include "tournament_builder/world_path_manager.hpp"
 
 #include "nlohmann/json_fwd.hpp"
 
@@ -18,7 +19,7 @@ namespace tournament_builder
 	class World : public IReferencable
 	{
 	public:
-		explicit World(Competition comp) : competition{ std::move(comp) } {}
+		World() = default;
 		World(const World& other);
 		World& operator=(const World& other);
 
@@ -48,28 +49,15 @@ namespace tournament_builder
 		void apply_extra_args(const ExtraArgs& args);
 
 		void push_current_file(std::filesystem::path new_file) { m_current_file.emplace_back(std::move(new_file)); }
-		const std::filesystem::path& peek_current_file() const;
+		std::filesystem::path peek_current_file() const;
 		void pop_current_file() { m_current_file.pop_back(); }
 
-		class CurrentFileManager
-		{
-			friend class World;
-			World* m_owner;
-#ifndef NDEBUG
-			std::filesystem::path m_expected_top_on_destruction;
-#endif
-			[[nodiscard]] CurrentFileManager(World& owner, std::filesystem::path path);
-		public:
-			CurrentFileManager(const CurrentFileManager&) = delete;
-			~CurrentFileManager();
-		};
-
-		[[nodiscard]] CurrentFileManager add_temp_current_file(std::filesystem::path path);
+		[[nodiscard]] WorldPathManager add_temp_current_file(std::filesystem::path path);
 
 	private:
 		std::vector<std::filesystem::path> m_current_file;
 #ifndef NDEBUG
-		friend class CurrentFileManager;
+		friend class WorldPathManager;
 		int m_num_current_file_managers = 0;
 #endif
 	};

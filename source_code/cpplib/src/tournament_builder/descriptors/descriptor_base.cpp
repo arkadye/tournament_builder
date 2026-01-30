@@ -2,8 +2,8 @@
 
 namespace tournament_builder::descriptor
 {
-    DescriptorHandle parse_descriptor(const nlohmann::json& input)
+    DescriptorHandle parse_descriptor(const nlohmann::json& input, World& context)
     {
-        return internal_descriptor::DescriptorBaseImpl::parse_descriptor(input);
+        return internal_descriptor::DescriptorBaseImpl::parse_descriptor(input, context);
     }
 }

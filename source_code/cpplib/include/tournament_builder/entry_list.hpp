@@ -40,10 +40,10 @@ namespace tournament_builder
 		
 		bool empty() const noexcept { return m_entries.empty(); }
 
-		static EntryList parse(const nlohmann::json& input);
-		static EntryList parse(const nlohmann::json& input, std::string_view field_name);
+		static EntryList parse(const nlohmann::json& input, World& context);
+		static EntryList parse(const nlohmann::json& input, std::string_view field_name, World& context);
 	private:
-		static EntryList parse_array(const nlohmann::json& input);
-		static EntryList parse_object(const nlohmann::json& input);
+		static EntryList parse_array(const nlohmann::json& input, World& context);
+		static EntryList parse_object(const nlohmann::json& input, World& context);
 	};
 }

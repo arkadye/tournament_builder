@@ -14,7 +14,7 @@ namespace tournament_builder::descriptor
 	{
 		using DescriptorBase::DescriptorBase;
 		Name get_descriptor_uid() const override { return Name{ "competitor_view" }; }
-		DescriptorHandle parse(std::shared_ptr<CompetitorView> prototype, const nlohmann::json& input) const override;
+		DescriptorHandle parse(std::shared_ptr<CompetitorView> prototype, const nlohmann::json& input, World& context) const override;
 		void write_to_json(nlohmann::json& target) const override;
 		void resolve_contained_references(World& world, Location& location) override;
 

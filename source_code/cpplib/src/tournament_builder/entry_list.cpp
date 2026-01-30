@@ -7,20 +7,24 @@
 namespace tournament_builder
 {
 	using nlohmann::json;
-	EntryList EntryList::parse_array(const json& input)
+	EntryList EntryList::parse_array(const json& input, World& context)
 	{
         json_helper::validate_type(input, json::value_t::array);
 		EntryList result;
-		auto data = json_helper::get_array(input, Reference<Competitor>::parse);
+        auto parse_competitor = [&context](const json& competitor)
+            {
+                return Reference<Competitor>::parse(competitor, context);
+            };
+		auto data = json_helper::get_array(input, parse_competitor);
         result.set(std::move(data));
 		return result;
 	}
 
-    EntryList EntryList::parse_object(const json& input)
+    EntryList EntryList::parse_object(const json& input, World& context)
     {
         json_helper::validate_type(input, json::value_t::object);
         json entries_field = json_helper::get_array_object(input, "entries");
-        EntryList result = parse_array(entries_field);
+        EntryList result = parse_array(entries_field, context);
         auto num_entries_field = json_helper::get_optional_int(input, "num_entries");
         auto min_entries_field = json_helper::get_optional_int(input, "min_entries");
         auto max_entries_field = json_helper::get_optional_int(input, "max_entries");
@@ -46,16 +50,16 @@ namespace tournament_builder
         return result;
     }
 
-    EntryList EntryList::parse(const json& input)
+    EntryList EntryList::parse(const json& input, World& context)
     {
         json_helper::validate_type(input, { json::value_t::array , json::value_t::object });
         if (input.is_array())
         {
-            return parse_array(input);
+            return parse_array(input, context);
         }
         else if (input.is_object())
         {
-            return parse_object(input);
+            return parse_object(input, context);
         }
         else
         {
@@ -64,12 +68,12 @@ namespace tournament_builder
         return {};
     }
 
-    EntryList EntryList::parse(const json& input, std::string_view field_name)
+    EntryList EntryList::parse(const json& input, std::string_view field_name, World& context)
     {
 		try
 		{
 			json field_view = json_helper::get_any(input, field_name);
-			return parse(field_view);
+			return parse(field_view, context);
 		}
 		catch (exception::TournamentBuilderException& ex)
 		{

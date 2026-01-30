@@ -37,7 +37,7 @@ namespace tournament_builder
 		// Returns true if it successfully resolves all the references.
 		bool resolve_all_references(World& context, Location& location);
 
-		static RealCompetition parse(const nlohmann::json& input);
+		static RealCompetition parse(const nlohmann::json& input, World& context);
 
 		// IReferencable
 		// This should return the reference key for this element. Normally the same as get_name().
@@ -61,6 +61,7 @@ namespace tournament_builder
 	class Competition : public IReferencable , public ITaggable
 	{
 	public:
+		Competition() = default;
 		explicit Competition(descriptor::DescriptorHandle desc) : m_data{ std::move(desc) } {}
 		explicit Competition(RealCompetition competition) : m_data{ std::move(competition) } {}
 		virtual ~Competition() = default;
@@ -76,7 +77,7 @@ namespace tournament_builder
 		// Returns true if it successfully resolves all the references.
 		bool resolve_all_references(World& context, Location& location);
 
-		static Competition parse(const nlohmann::json& input);
+		static Competition parse(const nlohmann::json& input, World& context);
 
 		// IReferencable
 		Name get_reference_key() const override;

@@ -79,7 +79,7 @@ namespace tournament_builder
 		return has_resolved_all_references();
 	}
 
-	RealCompetition RealCompetition::parse(const json& input)
+	RealCompetition RealCompetition::parse(const json& input, World& context)
 	{
 		using namespace descriptor;
 		json_helper::validate_type(input, json::value_t::object);
@@ -93,7 +93,11 @@ namespace tournament_builder
 			{
 				try
 				{
-					result.phases = json_helper::get_array(input["phases"], &Reference<Competition>::parse);
+					auto parse_reference = [&context](const json& phase_json)
+						{
+							return Reference<Competition>::parse(phase_json, context);
+						};
+					result.phases = json_helper::get_array(input["phases"], parse_reference);
 					for (Reference<Competition>& phase : result.phases)
 					{
 						if (phase.is_resolved()) continue;
@@ -115,7 +119,7 @@ namespace tournament_builder
 			}
 			if (input.contains("entry_list"))
 			{
-				result.entry_list = EntryList::parse(input, "entry_list");
+				result.entry_list = EntryList::parse(input, "entry_list", context);
 			}
 			result.add_tags_from_json(input);
 			return result;
@@ -341,13 +345,13 @@ namespace tournament_builder
 		return result;
 	}
 
-	Competition Competition::parse(const nlohmann::json& input)
+	Competition Competition::parse(const nlohmann::json& input, World& context)
 	{
-		if (descriptor::DescriptorHandle descriptor_result = descriptor::parse_descriptor(input))
+		if (descriptor::DescriptorHandle descriptor_result = descriptor::parse_descriptor(input, context))
 		{
 			return Competition(std::move(descriptor_result));
 		}
-		RealCompetition rc = RealCompetition::parse(input);
+		RealCompetition rc = RealCompetition::parse(input, context);
 		return Competition{ std::move(rc) };
 	}
 

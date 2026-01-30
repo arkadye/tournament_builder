@@ -130,7 +130,7 @@ namespace tournament_builder
 		return std::visit(Impl{ name }, m_data);
 	}
 
-	Competitor Competitor::parse(const json& input)
+	Competitor Competitor::parse(const json& input, World& context)
 	{
 		json_helper::validate_type(input, { json::value_t::object , json::value_t::null });
 		if (input.is_null())
