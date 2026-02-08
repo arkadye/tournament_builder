@@ -46,7 +46,7 @@ namespace tournament_builder
         }
         catch (exception::TournamentBuilderException& ex)
         {
-            ex.add_context(std::format("In file '{}'", input.string()));
+            ex.add_context(std::format("In file '{}'", input.lexically_normal().generic_string()));
             throw ex;
         }
     }
@@ -68,8 +68,8 @@ namespace tournament_builder
     World make_tournament_world(const nlohmann::json& input, const ExtraArgs& extra_args)
     {
         using tournament_builder::World;
-        const World parsed = World::parse(input);
-        return make_tournament_world(parsed, extra_args);
+        const World parsed = World::parse(input, extra_args);
+        return make_tournament_world(parsed, {});
     }
 
     World make_tournament_world(const World& input, const ExtraArgs& extra_args)
