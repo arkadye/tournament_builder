@@ -12,6 +12,7 @@ del *.vcxproj.*
 del *.vsproj
 del *.vsproj.*
 del *.sln
+del *.slnx
 del cmake_install.cmake
 del CMakeCache.txt
 del *.cmake
