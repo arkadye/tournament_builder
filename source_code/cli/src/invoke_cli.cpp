@@ -22,6 +22,7 @@ namespace tournament_builder::tournament_builder_internal
 		options_config.add_options()
 			("i,input", "Input file - JSON tournament descriptor. If not set, read from stdin.", cxxopts::value<Path>())
 			("o,output", "Output file - JSON tournament OR an error. If not set, write to stdout.", cxxopts::value<Path>())
+			("f,format", "Format - Set the indenting the JSON output should use. Set negative (default) to write in the most compact form possible", cxxopts::value<int>())
 			("t,test-reference", "Test reference - if set the output is not written. Instead it is compared to this file and reports whether or not they are equivalent.", cxxopts::value<Path>())
 			("r,random-seed", "Any random elements use this specific random seed. This overrides a random seed set in data.", cxxopts::value<uint64_t>())
 			("h,help", "Display help");
@@ -69,6 +70,11 @@ namespace tournament_builder::tournament_builder_internal
 		}
 
 		ExtraArgs extras; // Populate this as needed from the command line.
+
+		if (const auto format_opt = options["format"].as_optional<int>())
+		{
+			extras.json_indent = format_opt.value();
+		}
 
 		// This method makes the compiler check that I remembered all combinations.
 		struct Picker
