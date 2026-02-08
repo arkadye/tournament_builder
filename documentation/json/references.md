@@ -1,14 +1,14 @@
 ### Navigation
 
-- [Tournament Maker](..\..\README.md)
-  - [Tournament Builder Documentation](..\readme.md)
+- [Tournament Maker](../../README.md)
+  - [Tournament Builder Documentation](../readme.md)
     - [Input and Output JSON](readme.md)
       - [Competition](competition.md)
-      - [Competition Descriptors](descriptors\readme.md)
+      - [Competition Descriptors](descriptors/readme.md)
       - [Competitor](competitor.md)
       - [Entry List](entry_list.md)
       - [Error messages](error_messages.md)
-      - [Events](events\readme.md)
+      - [Events](events/readme.md)
       - [Names](naming_rules.md)
       - **References** (You are here)
       - [Tags](tags.md)
@@ -220,9 +220,27 @@ The `@GLOB` tag acts similarly, but defaults to matching any number of elements.
 
 #### `@TEMPLATE`
 
-The world has an area called `templates`. This will instruct a reference to look at that part and find something in that structure. These are generally generic templates which can be re-used. These templates can be customized by using the `text_replace` field to specify replacements.
+The world has an area called `templates`. This will instruct a reference to look at that part and find something in that structure. These are generally generic templates which can be re-used. These templates can be customized by using the `text_replace` field to specify replacements. The `@TEMPLATE` tag *must* be the first part of the reference.
+
+The template tag can be used with multiple tags, like any other reference. These will find subobjects in the store. Numbers are used to index into arrays, and names are used for fields in the subobject. If the `template` section is a JSON object, `@TEMPLATE.foo` will find a field named `foo`, perform the text replacements, and parse that as if it were copy-and-pasted into the structure. `@TEMPLATE.foo.3.bar` will: get the JSON object at `template`; find the field `"foo"` on that object; if that object is an array it will get the element at index `3` (which is the 4th element, because arrays are zero-indexed); from that element it will get field `"bar"`. Then it will do text replacement and return that object.
 
 The examples in the **Text Replace** section show examples of this, since that field is primarily for use with the store.
+
+
+#### `@FILE`
+
+The `@FILE` tag works very similarly to the `@TEMPLATE` tag. The only difference is that instead of going into the store it will load a file. The file is given as the argument, e.g. `@FILE:[../generics/foo.json]`. It is is not strictly necessary to wrap the argument in `[` square brackets `]`, but if you do not it will interpret it as a tag. For example: `@FILE:generics/foo.json` would load the file `generics/foo` (note the there is no file type extension) and probably fail to open the file, which does not exist. If the folder `generics` does also have a file named `foo` (with no file type extension) which can be parsed as JSON, it will then look for an object with the field name `json`.
+
+As with templates this may also search into the file: `@FILE:[../generics/foo.json].bar.3.baz`, for example.
+
+If the file is an absolute path (e.g. `C:\TournamentBuilder\examples.json`) the path is used as is. If it is a relative path the base path will be:
+
+- If a `@FILE` tag is found within another `@FILE` tag, the inner one will use the file opened by the outer one as its base.
+- If a base path was set in the top-level arguments, relative to that location. (See the various language API documentation for how to do that.)
+- If the input was opened from a file, use that file's path. Beware, passing raw JSON in, that this will not be known.
+- Otherwise, use the current working directory.
+
+As with the `@TEMPLATE` section, the examples in the **Text Replace** section show examples of this, since that field is primarily for use with the store.
 
 ## Text Replace
 
