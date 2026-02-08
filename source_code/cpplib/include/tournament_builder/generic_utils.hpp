@@ -49,19 +49,41 @@ namespace tournament_builder::utils
 		auto get_split_point = [delim, &brackets](std::string_view data)
 			{
 				assert(!data.empty());
-				for (const auto [open, close] : brackets)
+				std::vector<std::pair<char,char>> open_brackets;
+				for (std::size_t i = 0u; i < data.size(); ++i)
 				{
-					if (data.front() != open) continue;
-					const std::size_t result = data.find(close);
-					if (result >= data.size())
+					const char datum = data[i];
+
+					// Check if we found a delimiter
+					if (open_brackets.empty() && datum == delim)
 					{
-						// Unorthodox, but I'm going to immediately catch and rethrow within the same scope, pretty much.
-						// So don't panic.
-						throw std::format("Found open bracket '{}' with no matching '{}' to close", open, close);
+						return i;
 					}
-					return result + 1;
+
+					// Check if we found a close bracket
+					if (!open_brackets.empty() && datum == open_brackets.back().second)
+					{
+						// We found a close bracket.
+						open_brackets.pop_back();
+						continue;
+					}
+					
+					// Check if we found an open bracket
+					const auto open_bracket_it = std::ranges::find(brackets, datum, &std::pair<char, char>::first);
+					if (open_bracket_it != end(brackets))
+					{
+						open_brackets.push_back(*open_bracket_it);
+					}
 				}
-				return data.find(delim);
+
+				// Unorthodox, but I'm going to immediately catch and rethrow within the same scope, pretty much.
+				// So don't panic.
+				if (!open_brackets.empty())
+				{
+					const auto [open, close] = open_brackets.back();
+					throw std::format("Found open bracket '{}' with no matching '{}' to close", open, close);
+				}
+				return data.npos;
 			};
 
 		auto get_next_element = [&data_view, &get_split_point, &brackets]()
