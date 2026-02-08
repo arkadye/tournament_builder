@@ -13,5 +13,6 @@ namespace tournament_builder
 	{
 	public:
 		std::optional<std::filesystem::path> path = {};
+		int json_indent = -1;
 	};
 }
