@@ -5,34 +5,30 @@ namespace tournament_builder
 {
     WorldPathManager::WorldPathManager(World& owner, std::filesystem::path path)
         : m_owner{ &owner }
-#ifndef NDEBUG
-        , m_expected_top_on_destruction{ path }
-#endif
+        , m_path_to_restore{ owner.m_current_file }
     {
+        assert(!path.empty());
 #ifndef NDEBUG
         assert(m_owner->m_num_current_file_managers >= 0);
         ++m_owner->m_num_current_file_managers;
 #endif
-        m_owner->push_current_file(std::move(path));
+        owner.m_current_file = std::move(path);
     }
 
     WorldPathManager::WorldPathManager(WorldPathManager&& other) noexcept
+        : m_owner{ other.m_owner }
+        , m_path_to_restore{ std::move(other.m_path_to_restore) }
     {
-        m_owner = other.m_owner;
         other.m_owner = nullptr;
-#ifndef NDEBUG
-        m_expected_top_on_destruction = std::move(other.m_expected_top_on_destruction);
-#endif
     }
 
     WorldPathManager::~WorldPathManager()
     {
         if(m_owner == nullptr) return;
 #ifndef NDEBUG
-        assert(m_owner->peek_current_file() == m_expected_top_on_destruction);
         assert(m_owner->m_num_current_file_managers > 0);
         --m_owner->m_num_current_file_managers;
 #endif
-        m_owner->pop_current_file();
+        m_owner->m_current_file = std::move(m_path_to_restore);
     }
 }
