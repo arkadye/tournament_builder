@@ -4,7 +4,7 @@ if [%1] neq [] set TARGET=%1
 
 pushd .
 
-cd %~dp0
+cd %~dp0/..
 
 cmake -D DEV_MODE=On .
 cmake --build . --config %TARGET%
