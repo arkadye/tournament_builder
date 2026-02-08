@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	constexpr int num_args = 7;
+	constexpr int num_args = 9;
 	std::array<char*, num_args> args{};
 
 	auto input_arg = make_c_str_vec("--input");
@@ -53,11 +53,18 @@ int main(int argc, char** argv)
 	auto seed_arg = make_c_str_vec("--random-seed");
 	auto seed_val = make_c_str_vec("42");
 
+	auto format_arg = make_c_str_vec("--format");
+	auto format_val = make_c_str_vec("2");
+
 	args[0] = argv[0];
 	args[1] = input_arg.data();
+	//args[2] = set in run_testcases_on_examples()
 	args[3] = output_arg.data();
+	//args[4] = set in run_testcases_on_examples()
 	args[5] = seed_arg.data();
 	args[6] = seed_val.data();
+	args[7] = format_arg.data();
+	args[8] = format_val.data();
 
 
 	const std::filesystem::path input_directory = target / "in";
