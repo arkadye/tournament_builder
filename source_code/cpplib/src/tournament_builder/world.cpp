@@ -70,13 +70,15 @@ namespace tournament_builder
     {
         if (args.path.has_value())
         {
-            push_current_file(args.path.value());
+            m_base_file = args.path.value();
         }
     }
 
-    World World::parse(const nlohmann::json& input)
+    World World::parse(const nlohmann::json& input, const ExtraArgs& extra_args)
     {
         World result;
+
+        result.apply_extra_args(extra_args);
 
         if (auto opt_templates = json_helper::get_optional_object(input, "templates"))
         {
@@ -168,9 +170,9 @@ namespace tournament_builder
         return false;
     }
 
-    std::filesystem::path World::peek_current_file() const
+    const std::filesystem::path& World::get_current_file() const
     {
-        return m_current_file.empty() ? std::filesystem::current_path() : m_current_file.back();
+        return m_current_file.empty() ? get_base_file() : m_current_file;
     }
 
     WorldPathManager World::add_temp_current_file(std::filesystem::path new_file)

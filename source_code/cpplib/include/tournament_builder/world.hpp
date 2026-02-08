@@ -32,7 +32,7 @@ namespace tournament_builder
 		bool preserve_templates = true;
 		
 		std::vector<std::string> error_messages;
-		static World parse(const nlohmann::json& input);
+		static World parse(const nlohmann::json& input, const ExtraArgs& extra_args);
 
 		void resolve_all_references();
 		void execute_all_events();
@@ -48,16 +48,16 @@ namespace tournament_builder
 
 		void apply_extra_args(const ExtraArgs& args);
 
-		void push_current_file(std::filesystem::path new_file) { m_current_file.emplace_back(std::move(new_file)); }
-		std::filesystem::path peek_current_file() const;
-		void pop_current_file() { m_current_file.pop_back(); }
+		const std::filesystem::path& get_base_file() const { return m_base_file; }
+		const std::filesystem::path& get_current_file() const;
 
 		[[nodiscard]] WorldPathManager add_temp_current_file(std::filesystem::path path);
 
 	private:
-		std::vector<std::filesystem::path> m_current_file;
-#ifndef NDEBUG
 		friend class WorldPathManager;
+		std::filesystem::path m_current_file{};
+		std::filesystem::path m_base_file{};
+#ifndef NDEBUG
 		int m_num_current_file_managers = 0;
 #endif
 	};

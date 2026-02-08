@@ -8,9 +8,7 @@ namespace tournament_builder
 	{
 		friend class World;
 		World* m_owner = nullptr;
-#ifndef NDEBUG
-		std::filesystem::path m_expected_top_on_destruction;
-#endif
+		std::filesystem::path m_path_to_restore;
 		[[nodiscard]] WorldPathManager(World& owner, std::filesystem::path path);
 	public:
 		WorldPathManager() = default;
