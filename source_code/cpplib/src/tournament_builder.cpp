@@ -12,18 +12,19 @@ namespace tournament_builder
 	namespace internal_tournament_builder_lightweight
 	{
 		template <typename T>
-		void wrap_ostream(T&& arg, std::ostream& output, const ExtraArgs& extra_args)
+		std::string wrap_str(T&& arg, const ExtraArgs& extra_args)
 		{
+			// See https://json.nlohmann.me/api/basic_json/dump/ for how dump works
+			constexpr int COMPACT_JSON_REPRESENTATION = -1;
 			nlohmann::json result = make_tournament_json(std::forward<T>(arg), extra_args);
-			output << result;
+			const int indent = std::max(extra_args.json_indent, COMPACT_JSON_REPRESENTATION);
+			return result.dump(indent);
 		}
 
 		template <typename T>
-		std::string wrap_str(T&& arg, const ExtraArgs& extra_args)
+		void wrap_ostream(T&& arg, std::ostream& output, const ExtraArgs& extra_args)
 		{
-			std::ostringstream out_stream;
-			wrap_ostream(std::forward<T>(arg), out_stream, extra_args);
-			return out_stream.str();
+			output << wrap_str(std::forward<T>(arg), extra_args);
 		}
 
 		template <typename T>
