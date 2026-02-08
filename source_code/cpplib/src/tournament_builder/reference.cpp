@@ -25,6 +25,9 @@ namespace tournament_builder
 	{
 		constexpr char REF_DELIM = '.';
 		constexpr char ARGUMENT_DIVIDER = ':';
+		constexpr char OPEN_BRACKET = '[';
+		constexpr char CLOSE_BRACKET = ']';
+		constexpr std::pair<char, char> BRACKET_PAIR{ OPEN_BRACKET,CLOSE_BRACKET };
 		constexpr char SPECIAL_REF_INDICATOR = '@';
 		constexpr std::string_view HERE{ "@HERE" };
 		constexpr std::string_view ROOT{ "@ROOT" };
@@ -339,7 +342,6 @@ namespace tournament_builder
 
 			nlohmann::json get_deferred_json_impl(const nlohmann::json& context, TokenIterator start, TokenIterator current, TokenIterator last, const std::vector<SoftReference::Replacement>& replacements)
 			{
-				json_helper::validate_type(context, { nlohmann::json::value_t::array, nlohmann::json::value_t::object });
 				if (current == last)
 				{
 					if (replacements.empty())
@@ -351,6 +353,7 @@ namespace tournament_builder
 						return make_text_replacements(context, replacements);
 					}
 				}
+				json_helper::validate_type(context, { nlohmann::json::value_t::array, nlohmann::json::value_t::object });
 				nlohmann::json next = [token = current->to_string(), &context]()
 					{
 						if (context.is_object())
@@ -550,14 +553,22 @@ namespace tournament_builder
 		struct GetAsPath
 		{
 			std::filesystem::path operator()(int64_t val) const { return std::to_string(val); }
-			std::filesystem::path operator()(std::string_view val) const { return val; }
+			std::filesystem::path operator()(std::string_view val) const
+			{
+				if (!val.empty() && val.front() == OPEN_BRACKET && val.back() == CLOSE_BRACKET)
+				{
+					val.remove_prefix(1);
+					val.remove_suffix(1);
+				}
+				return val;
+			}
 		};
 		const std::filesystem::path path_arg = std::visit(GetAsPath{}, args.front());
-		const std::filesystem::path path = path_arg.is_absolute() ? path_arg : context.peek_current_file() / path_arg;
+		const std::filesystem::path path = path_arg.is_absolute() ? path_arg : context.get_current_file().parent_path() / path_arg;
 		std::ifstream external_file{ path };
 		if (!external_file.is_open())
 		{
-			throw exception::InvalidReferenceToken{ to_string(),file_token.to_string(), 0u, std::format("@FILE token could not open file at '{0}'", path.generic_string()) };
+			throw exception::InvalidReferenceToken{ to_string(),file_token.to_string(), 0u, std::format("@FILE token could not open file at '{0}'", path.lexically_normal().generic_string())};
 		}
 		try
 		{
@@ -576,28 +587,36 @@ namespace tournament_builder
 		}
 		catch (exception::TournamentBuilderException& ex)
 		{
-			ex.add_context(std::format("While reading file '{0}'", path.generic_string()));
+			ex.add_context(std::format("While reading file '{0}'", path.lexically_normal().generic_string()));
 			throw ex;
 		}
 	}
 
 	std::pair<std::unique_ptr<nlohmann::json>, WorldPathManager> SoftReference::get_external_json(World& context) const
 	{
-		using namespace internal_reference;
-		assert(!m_elements.empty());
-		const SpecialRefType type = get_type(m_elements.front());
-		
-		switch (type)
+		try
 		{
-		default:
-			break;
-		case SpecialRefType::template_store:
-			return std::make_pair(get_external_json_template(context), WorldPathManager{});
-		case SpecialRefType::file_prefix:
-			return get_external_json_from_file(context);
+			using namespace internal_reference;
+			assert(!m_elements.empty());
+			const SpecialRefType type = get_type(m_elements.front());
+
+			switch (type)
+			{
+			default:
+				break;
+			case SpecialRefType::template_store:
+				return std::make_pair(get_external_json_template(context), WorldPathManager{});
+			case SpecialRefType::file_prefix:
+				return get_external_json_from_file(context);
+			}
+			assert(false && "In 'get_deferred_json' SpecialRefType was not implemented!");
+			return {};
 		}
-		assert(false && "In 'get_deferred_json' SpecialRefType was not implemented!");
-		return {};
+		catch (exception::TournamentBuilderException& ex)
+		{
+			ex.add_context(std::format("In reference '{}'", *this));
+			throw ex;
+		}
 	}
 
 	LocationPusher::LocationPusher(Location& in_loc, const Name& name)
@@ -622,7 +641,7 @@ namespace tournament_builder
 
 	SoftReference::SoftReference(std::string_view init)
 	{
-		utils::split_tokens<Token>(init, internal_reference::REF_DELIM, std::back_inserter(m_elements), { {'[',']'} });
+		utils::split_tokens<Token>(init, internal_reference::REF_DELIM, std::back_inserter(m_elements), { internal_reference::BRACKET_PAIR });
 
 		for (std::size_t idx=0u;idx<m_elements.size();++idx)
 		{
