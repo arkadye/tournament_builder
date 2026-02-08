@@ -14,6 +14,13 @@ namespace tournament_builder
 	}
 }
 
+TournamentBuilderExtraArgs tournament_builder_make_extra_args()
+{
+	TournamentBuilderExtraArgs result;
+	result.json_indent = -1;
+	return result;
+}
+
 void tournament_builder_make_tournament_to_file(const char* input, const char* output_filename) { tournament_builder_make_tournament_to_file_ext(input, output_filename, nullptr); }
 void tournament_builder_make_tournament_to_file_ext(const char* input, const char* output_filename, const TournamentBuilderExtraArgs* extra_args)
 {

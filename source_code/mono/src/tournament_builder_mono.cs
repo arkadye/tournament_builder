@@ -6,11 +6,23 @@ namespace TournamentBuilder
 {
 	public static class TourmanentBuilder
 	{
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct ExtraArgs
         {
-
+            public int? JsonIndent;
         };
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        private struct ExtraArgsImpl
+        {
+            public ExtraArgsImpl(ExtraArgs args) : this(args.JsonIndent)
+            {}
+
+            ExtraArgsImpl(int? initialIndent)
+            {
+                JsonIndent = initialIndent.GetValueOrDefault(-1);
+            }
+            public int JsonIndent;
+        }
 
         private static IntPtr GetMarshalledArgs(ExtraArgs? args)
         {
@@ -18,8 +30,9 @@ namespace TournamentBuilder
             {
                 return IntPtr.Zero;
             }
-            IntPtr result = Marshal.AllocCoTaskMem(Marshal.SizeOf(args.Value));
-            Marshal.StructureToPtr(args.Value, result, false);
+            ExtraArgsImpl argsImpl = new ExtraArgsImpl(args.Value);
+            IntPtr result = Marshal.AllocCoTaskMem(Marshal.SizeOf(argsImpl));
+            Marshal.StructureToPtr(argsImpl, result, false);
             return result;
         }
 
@@ -50,7 +63,9 @@ namespace TournamentBuilder
 	*/
         public static string MakeTournament(string input, ExtraArgs? extra_args = null)
         {
-            IntPtr makeResult = tournament_builder_make_tournament_ext(input, GetMarshalledArgs(extra_args));
+            IntPtr extraArgsPtr = GetMarshalledArgs(extra_args);
+            IntPtr makeResult = tournament_builder_make_tournament_ext(input, extraArgsPtr);
+            Marshal.FreeCoTaskMem(extraArgsPtr);
             string retResult = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(makeResult);
             return retResult;
         }
@@ -62,7 +77,9 @@ namespace TournamentBuilder
 	    */
         public static void MakeTournamentToFile(string input, string output_filename, ExtraArgs? extra_args = null)
         {
-            tournament_builder_make_tournament_to_file_ext(input, output_filename, GetMarshalledArgs(extra_args));
+            IntPtr extraArgsPtr = GetMarshalledArgs(extra_args);
+            tournament_builder_make_tournament_to_file_ext(input, output_filename, extraArgsPtr);
+            Marshal.FreeCoTaskMem(extraArgsPtr);
         }
     }
 }

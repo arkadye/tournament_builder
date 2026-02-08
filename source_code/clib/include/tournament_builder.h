@@ -15,9 +15,10 @@
 
 typedef struct
 {
-
+	int json_indent;
 } TournamentBuilderExtraArgs;
 
+EXTERN_C_DECL TournamentBuilderExtraArgs tournament_builder_make_extra_args();
 
 /*
 	Params:
