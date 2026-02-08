@@ -1,1 +1,5 @@
-{"errors":["In file '../../examples/in/errors/ERROR_reference_any_too_many_args.json': In the world's resolve_all_references step: In 'reference_any_too_many_args': While dereferencing '@ANY:2:3:4': Reference error: In '@ANY:2:3:4': invalid '@ANY:2:3:4' found at position 0: Error parsing args in token '@ANY:2:3:4': Token has 3 arguments after the ':'. Can only have 0, 1, or 2 arguments."]}
+{
+  "errors": [
+    "In file '../../examples/in/errors/ERROR_reference_any_too_many_args.json': In the world's resolve_all_references step: In 'reference_any_too_many_args': While dereferencing '@ANY:2:3:4': Reference error: In '@ANY:2:3:4': invalid '@ANY:2:3:4' found at position 0: Error parsing args in token '@ANY:2:3:4': Token has 3 arguments after the ':'. Can only have 0, 1, or 2 arguments."
+  ]
+}

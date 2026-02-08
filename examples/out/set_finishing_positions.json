@@ -9,11 +9,17 @@
             "entry_list": [
               {
                 "name": "netherlands",
-                "tags": [ "$ENTRY:1", "$POS:2" ]
+                "tags": [
+                  "$ENTRY:1",
+                  "$POS:2"
+                ]
               },
               {
                 "name": "spain",
-                "tags": [ "$ENTRY:2", "$POS:1" ]
+                "tags": [
+                  "$ENTRY:2",
+                  "$POS:1"
+                ]
               }
             ],
             "name": "game_0"
@@ -22,11 +28,17 @@
             "entry_list": [
               {
                 "name": "croatia",
-                "tags": [ "$ENTRY:1", "$POS:2" ]
+                "tags": [
+                  "$ENTRY:1",
+                  "$POS:2"
+                ]
               },
               {
                 "name": "france",
-                "tags": [ "$ENTRY:2", "$POS:1" ]
+                "tags": [
+                  "$ENTRY:2",
+                  "$POS:1"
+                ]
               }
             ],
             "name": "game_1"
@@ -35,11 +47,17 @@
             "entry_list": [
               {
                 "name": "denmark",
-                "tags": [ "$ENTRY:1", "$POS:2" ]
+                "tags": [
+                  "$ENTRY:1",
+                  "$POS:2"
+                ]
               },
               {
                 "name": "portugal",
-                "tags": [ "$ENTRY:2", "$POS:1" ]
+                "tags": [
+                  "$ENTRY:2",
+                  "$POS:1"
+                ]
               }
             ],
             "name": "game_2"
@@ -48,11 +66,17 @@
             "entry_list": [
               {
                 "name": "italy",
-                "tags": [ "$ENTRY:1", "$POS:2" ]
+                "tags": [
+                  "$ENTRY:1",
+                  "$POS:2"
+                ]
               },
               {
                 "name": "germany",
-                "tags": [ "$ENTRY:2", "$POS:1" ]
+                "tags": [
+                  "$ENTRY:2",
+                  "$POS:1"
+                ]
               }
             ],
             "name": "game_3"
@@ -64,15 +88,23 @@
         "phases": [
           {
             "entry_list": [
-              { "name": "spain" },
-              { "name": "france" }
+              {
+                "name": "spain"
+              },
+              {
+                "name": "france"
+              }
             ],
             "name": "game_0"
           },
           {
             "entry_list": [
-              { "name": "portugal" },
-              { "name": "germany" }
+              {
+                "name": "portugal"
+              },
+              {
+                "name": "germany"
+              }
             ],
             "name": "game_1"
           }
@@ -82,7 +114,10 @@
         "name": "round_2",
         "phases": [
           {
-            "entry_list": [ "@OUTER.@OUTER.round_1.game_0.$POS:1", "@OUTER.@OUTER.round_1.game_1.$POS:1" ],
+            "entry_list": [
+              "@OUTER.@OUTER.round_1.game_0.$POS:1",
+              "@OUTER.@OUTER.round_1.game_1.$POS:1"
+            ],
             "name": "game_0"
           }
         ]

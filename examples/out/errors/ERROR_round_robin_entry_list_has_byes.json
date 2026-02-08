@@ -1,1 +1,5 @@
-{"errors":["In file '../../examples/in/errors/ERROR_round_robin_entry_list_has_byes.json': In the world's resolve_all_references step: In 'entry_list_has_byes': Invalid argument: Round-robin entry list must not contain byes ('null' values). Bye found at position 3"]}
+{
+  "errors": [
+    "In file '../../examples/in/errors/ERROR_round_robin_entry_list_has_byes.json': In the world's resolve_all_references step: In 'entry_list_has_byes': Invalid argument: Round-robin entry list must not contain byes ('null' values). Bye found at position 3"
+  ]
+}

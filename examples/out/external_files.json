@@ -3,32 +3,46 @@
     "entry_list": [
       {
         "name": "example_team_1",
-        "tags": [ "lorem", "ipsum" ]
+        "tags": [
+          "lorem",
+          "ipsum"
+        ]
       },
       {
         "name": "steve",
-        "tags": [ "bass" ]
+        "tags": [
+          "bass"
+        ]
       },
       {
         "name": "dave",
-        "tags": [ "guitar" ]
+        "tags": [
+          "guitar"
+        ]
       },
       {
         "name": "blaze",
-        "tags": [ "vocals" ]
+        "tags": [
+          "vocals"
+        ]
       }
     ],
     "name": "example",
     "phases": [
       {
-        "entry_list": [ "@OUTER.semi_finals.match_0.$POS:1", "@OUTER.semi_finals.match_1.$POS:1" ],
+        "entry_list": [
+          "@OUTER.semi_finals.match_0.$POS:1",
+          "@OUTER.semi_finals.match_1.$POS:1"
+        ],
         "name": "grand_final"
       },
       {
         "entry_list": [
           {
             "name": "dave",
-            "tags": [ "guitar" ]
+            "tags": [
+              "guitar"
+            ]
           }
         ],
         "name": "gets_from_external_file"
@@ -37,17 +51,25 @@
   },
   "template_store": {
     "final_match": {
-      "entry_list": [ "@OUTER.#SEMIS_NAME.match_0.$POS:1", "@OUTER.#SEMIS_NAME.match_1.$POS:1" ],
+      "entry_list": [
+        "@OUTER.#SEMIS_NAME.match_0.$POS:1",
+        "@OUTER.#SEMIS_NAME.match_1.$POS:1"
+      ],
       "name": "#FINAL_NAME"
     },
     "foo": {
       "bar": {
         "baz": {
           "name": "#GENERIC_COMPETITOR",
-          "tags": [ "lorem", "ipsum" ]
+          "tags": [
+            "lorem",
+            "ipsum"
+          ]
         }
       },
-      "bop": { "name": "#GENERIC_COMPETITOR" }
+      "bop": {
+        "name": "#GENERIC_COMPETITOR"
+      }
     },
     "guys": [
       {

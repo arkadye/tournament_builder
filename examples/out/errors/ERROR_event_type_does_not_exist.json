@@ -1,1 +1,5 @@
-{"errors":["In file '../../examples/in/errors/ERROR_event_type_does_not_exist.json': While parsing events: At array elem [0]: Error in JSON '{\"event_type\":\"this_event_type_does_not_exist_please_do_not_use_this_event_type_for_anything_or_you_will_break_this_testcase\"}': Field 'event_type' is 'this_event_type_does_not_exist_please_do_not_use_this_event_type_for_anything_or_you_will_break_this_testcase', which is not a valid event."]}
+{
+  "errors": [
+    "In file '../../examples/in/errors/ERROR_event_type_does_not_exist.json': While parsing events: At array elem [0]: Error in JSON '{\"event_type\":\"this_event_type_does_not_exist_please_do_not_use_this_event_type_for_anything_or_you_will_break_this_testcase\"}': Field 'event_type' is 'this_event_type_does_not_exist_please_do_not_use_this_event_type_for_anything_or_you_will_break_this_testcase', which is not a valid event."
+  ]
+}

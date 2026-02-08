@@ -7,29 +7,45 @@
         "phases": [
           {
             "entry_list": [
-              { "name": "goldfish" },
-              { "name": "sparrow" }
+              {
+                "name": "goldfish"
+              },
+              {
+                "name": "sparrow"
+              }
             ],
             "name": "game_1"
           },
           {
             "entry_list": [
-              { "name": "cow" },
-              { "name": "snake" }
+              {
+                "name": "cow"
+              },
+              {
+                "name": "snake"
+              }
             ],
             "name": "game_2"
           },
           {
             "entry_list": [
-              { "name": "pigeon" },
-              { "name": "dog" }
+              {
+                "name": "pigeon"
+              },
+              {
+                "name": "dog"
+              }
             ],
             "name": "game_3"
           },
           {
             "entry_list": [
-              { "name": "rat" },
-              { "name": "cat" }
+              {
+                "name": "rat"
+              },
+              {
+                "name": "cat"
+              }
             ],
             "name": "game_4"
           }
@@ -39,19 +55,26 @@
         "name": "round_2",
         "phases": [
           {
-            "entry_list": [ "@OUTER.@OUTER.round_1.game_1.$POS:1", "@OUTER.@OUTER.round_1.game_2.$POS:1" ],
+            "entry_list": [
+              "@OUTER.@OUTER.round_1.game_1.$POS:1",
+              "@OUTER.@OUTER.round_1.game_2.$POS:1"
+            ],
             "name": "game_1"
           },
           {
             "entry_list": [
-              { "name": "lion" },
+              {
+                "name": "lion"
+              },
               "@OUTER.@OUTER.round_1.game_3.$POS:1"
             ],
             "name": "game_2"
           },
           {
             "entry_list": [
-              { "name": "tiger" },
+              {
+                "name": "tiger"
+              },
               "@OUTER.@OUTER.round_1.game_4.$POS:1"
             ],
             "name": "game_3"
@@ -63,13 +86,18 @@
         "phases": [
           {
             "entry_list": [
-              { "name": "penguin" },
+              {
+                "name": "penguin"
+              },
               "@OUTER.@OUTER.round_2.game_1.$POS:1"
             ],
             "name": "game_1"
           },
           {
-            "entry_list": [ "@OUTER.@OUTER.round_2.game_2.$POS:1", "@OUTER.@OUTER.round_2.game_3.$POS:1" ],
+            "entry_list": [
+              "@OUTER.@OUTER.round_2.game_2.$POS:1",
+              "@OUTER.@OUTER.round_2.game_3.$POS:1"
+            ],
             "name": "game_2"
           }
         ]
@@ -78,7 +106,10 @@
         "name": "round_4",
         "phases": [
           {
-            "entry_list": [ "@OUTER.@OUTER.round_3.game_1.$POS:1", "@OUTER.@OUTER.round_3.game_2.$POS:1" ],
+            "entry_list": [
+              "@OUTER.@OUTER.round_3.game_1.$POS:1",
+              "@OUTER.@OUTER.round_3.game_2.$POS:1"
+            ],
             "name": "game_1"
           }
         ]

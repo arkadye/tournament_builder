@@ -1,1 +1,5 @@
-{"errors":["In file '../../examples/in/errors/ERROR_knockout_bracket_wrong_entry_list_size.json': In the world's resolve_all_references step: Invalid argument: knockout_bracket must have a power-of-two number of entries (i.e. 2, 4, 8, 16, ...)"]}
+{
+  "errors": [
+    "In file '../../examples/in/errors/ERROR_knockout_bracket_wrong_entry_list_size.json': In the world's resolve_all_references step: Invalid argument: knockout_bracket must have a power-of-two number of entries (i.e. 2, 4, 8, 16, ...)"
+  ]
+}

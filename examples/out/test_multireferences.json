@@ -3,23 +3,48 @@
     "entry_list": [
       {
         "name": "entry_a",
-        "tags": [ "$ENTRY:1", "$POS:1", "single_tag", "treble_tag" ]
+        "tags": [
+          "$ENTRY:1",
+          "$POS:1",
+          "single_tag",
+          "treble_tag"
+        ]
       },
       {
         "name": "entry_b",
-        "tags": [ "$ENTRY:2", "$POS:2", "double_tag", "quadruple_tag" ]
+        "tags": [
+          "$ENTRY:2",
+          "$POS:2",
+          "double_tag",
+          "quadruple_tag"
+        ]
       },
       {
         "name": "entry_c",
-        "tags": [ "$ENTRY:3", "$POS:3:4", "double_tag", "quadruple_tag" ]
+        "tags": [
+          "$ENTRY:3",
+          "$POS:3:4",
+          "double_tag",
+          "quadruple_tag"
+        ]
       },
       {
         "name": "entry_d",
-        "tags": [ "$ENTRY:4", "$POS:3:4", "quadruple_tag", "treble_tag" ]
+        "tags": [
+          "$ENTRY:4",
+          "$POS:3:4",
+          "quadruple_tag",
+          "treble_tag"
+        ]
       },
       {
         "name": "entry_e",
-        "tags": [ "$ENTRY:5", "$POS:5", "quadruple_tag", "treble_tag" ]
+        "tags": [
+          "$ENTRY:5",
+          "$POS:5",
+          "quadruple_tag",
+          "treble_tag"
+        ]
       }
     ],
     "name": "multireference_test",
@@ -28,23 +53,38 @@
         "entry_list": [
           {
             "name": "entry_a",
-            "tags": [ "single_tag", "treble_tag" ]
+            "tags": [
+              "single_tag",
+              "treble_tag"
+            ]
           },
           {
             "name": "entry_b",
-            "tags": [ "double_tag", "quadruple_tag" ]
+            "tags": [
+              "double_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_c",
-            "tags": [ "double_tag", "quadruple_tag" ]
+            "tags": [
+              "double_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_d",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_e",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           }
         ],
         "name": "capture_by_name"
@@ -53,19 +93,31 @@
         "entry_list": [
           {
             "name": "entry_b",
-            "tags": [ "double_tag", "quadruple_tag" ]
+            "tags": [
+              "double_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_c",
-            "tags": [ "double_tag", "quadruple_tag" ]
+            "tags": [
+              "double_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_d",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_e",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           }
         ],
         "name": "get_exact_number_correct"
@@ -73,7 +125,9 @@
       {
         "descriptor_type": "competitor_view",
         "entry_list": {
-          "entries": [ "@OUTER.quadruple_tag" ],
+          "entries": [
+            "@OUTER.quadruple_tag"
+          ],
           "num_entries": 3
         },
         "name": "get_exact_number_too_many"
@@ -81,7 +135,9 @@
       {
         "descriptor_type": "competitor_view",
         "entry_list": {
-          "entries": [ "@OUTER.quadruple_tag" ],
+          "entries": [
+            "@OUTER.quadruple_tag"
+          ],
           "num_entries": 5
         },
         "name": "get_exact_number_too_few"
@@ -90,29 +146,43 @@
         "entry_list": [
           {
             "name": "entry_a",
-            "tags": [ "single_tag", "treble_tag" ]
+            "tags": [
+              "single_tag",
+              "treble_tag"
+            ]
           },
           {
             "name": "entry_d",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_e",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           }
         ],
         "name": "combine_tags"
       },
       {
         "descriptor_type": "competitor_view",
-        "entry_list": [ "@OUTER.nonexistent" ],
+        "entry_list": [
+          "@OUTER.nonexistent"
+        ],
         "name": "impossible_resolve"
       },
       {
         "entry_list": [
           {
             "name": "entry_a",
-            "tags": [ "single_tag", "treble_tag" ]
+            "tags": [
+              "single_tag",
+              "treble_tag"
+            ]
           }
         ],
         "name": "single_position"
@@ -121,11 +191,17 @@
         "entry_list": [
           {
             "name": "entry_a",
-            "tags": [ "single_tag", "treble_tag" ]
+            "tags": [
+              "single_tag",
+              "treble_tag"
+            ]
           },
           {
             "name": "entry_b",
-            "tags": [ "double_tag", "quadruple_tag" ]
+            "tags": [
+              "double_tag",
+              "quadruple_tag"
+            ]
           }
         ],
         "name": "multiple_positions"
@@ -134,11 +210,17 @@
         "entry_list": [
           {
             "name": "entry_c",
-            "tags": [ "double_tag", "quadruple_tag" ]
+            "tags": [
+              "double_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_d",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           }
         ],
         "name": "tied_positions_a"
@@ -147,11 +229,17 @@
         "entry_list": [
           {
             "name": "entry_c",
-            "tags": [ "double_tag", "quadruple_tag" ]
+            "tags": [
+              "double_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_d",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           }
         ],
         "name": "tied_positions_b"
@@ -160,15 +248,24 @@
         "entry_list": [
           {
             "name": "entry_c",
-            "tags": [ "double_tag", "quadruple_tag" ]
+            "tags": [
+              "double_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_d",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_e",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           }
         ],
         "name": "multiple_and_tie"
@@ -177,7 +274,10 @@
         "entry_list": [
           {
             "name": "entry_e",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           }
         ],
         "name": "negative_position_single"
@@ -186,15 +286,24 @@
         "entry_list": [
           {
             "name": "entry_c",
-            "tags": [ "double_tag", "quadruple_tag" ]
+            "tags": [
+              "double_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_d",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_e",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           }
         ],
         "name": "negative_position_multiple"
@@ -203,7 +312,10 @@
         "entry_list": [
           {
             "name": "entry_e",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           }
         ],
         "name": "negative_entry_single"
@@ -212,15 +324,24 @@
         "entry_list": [
           {
             "name": "entry_b",
-            "tags": [ "double_tag", "quadruple_tag" ]
+            "tags": [
+              "double_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_c",
-            "tags": [ "double_tag", "quadruple_tag" ]
+            "tags": [
+              "double_tag",
+              "quadruple_tag"
+            ]
           },
           {
             "name": "entry_d",
-            "tags": [ "treble_tag", "quadruple_tag" ]
+            "tags": [
+              "treble_tag",
+              "quadruple_tag"
+            ]
           }
         ],
         "name": "negative_entry_multiple"

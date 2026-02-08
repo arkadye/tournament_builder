@@ -1,1 +1,5 @@
-{"errors":["In file '../../examples/in/errors/ERROR_invalid_competitor_view_2.json': Parsing descriptor type 'competitor_view:': In 'mix_expected_and_max_entries': In field 'entry_list': Invalid argument: Entry list cannot have 'num_entries' set when either 'min_entries' or 'max_entries' are set."]}
+{
+  "errors": [
+    "In file '../../examples/in/errors/ERROR_invalid_competitor_view_2.json': Parsing descriptor type 'competitor_view:': In 'mix_expected_and_max_entries': In field 'entry_list': Invalid argument: Entry list cannot have 'num_entries' set when either 'min_entries' or 'max_entries' are set."
+  ]
+}

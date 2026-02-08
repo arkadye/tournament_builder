@@ -1,1 +1,5 @@
-{"errors":["In file '../../examples/in/errors/ERROR_mismatches_brackets.json': Parsing descriptor type 'competitor_view:': In 'mismatched_brackets': In field 'entry_list': At array elem [0]: Error at token 1 while tokenizing 'prefix.[oops.forgot.to.close.this.bracket': Found open bracket '[' with no matching ']' to close"]}
+{
+  "errors": [
+    "In file '../../examples/in/errors/ERROR_mismatches_brackets.json': Parsing descriptor type 'competitor_view:': In 'mismatched_brackets': In field 'entry_list': At array elem [0]: Error at token 1 while tokenizing 'prefix.[oops.forgot.to.close.this.bracket': Found open bracket '[' with no matching ']' to close"
+  ]
+}

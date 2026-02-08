@@ -1,1 +1,5 @@
-{"errors":["In file '../../examples/in/errors/ERROR_missing_fields.json': Error in JSON '{\"entry_list\":[\"a\",\"b\"]}': Expected field 'name' does not exist."]}
+{
+  "errors": [
+    "In file '../../examples/in/errors/ERROR_missing_fields.json': Error in JSON '{\"entry_list\":[\"a\",\"b\"]}': Expected field 'name' does not exist."
+  ]
+}

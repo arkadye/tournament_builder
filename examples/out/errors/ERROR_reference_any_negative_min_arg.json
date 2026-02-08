@@ -1,1 +1,5 @@
-{"errors":["In file '../../examples/in/errors/ERROR_reference_any_negative_min_arg.json': In the world's resolve_all_references step: In 'reference_any_negative_min': While dereferencing '@ANY:-1': Reference error: In '@ANY:-1': invalid '@ANY:-1' found at position 0: Error parsing args in token '@ANY:-1': Min argument to '@ANY' must not be a negative number. Got '-1', which is less than 0"]}
+{
+  "errors": [
+    "In file '../../examples/in/errors/ERROR_reference_any_negative_min_arg.json': In the world's resolve_all_references step: In 'reference_any_negative_min': While dereferencing '@ANY:-1': Reference error: In '@ANY:-1': invalid '@ANY:-1' found at position 0: Error parsing args in token '@ANY:-1': Min argument to '@ANY' must not be a negative number. Got '-1', which is less than 0"
+  ]
+}

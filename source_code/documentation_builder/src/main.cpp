@@ -311,7 +311,7 @@ void Folder::make_navigation_impl(std::vector<std::string>& result, stf::path pa
 	assert(readme_it != end(files));
 	result.emplace_back(std::format("{}{}", indent, make_entry(*readme_it)));
 
-	{
+	{ 
 		const std::string target_string = target.string();
 		const std::string here_string = path_here.string();
 		const bool here_is_on_route_to_target = target_string.starts_with(here_string);

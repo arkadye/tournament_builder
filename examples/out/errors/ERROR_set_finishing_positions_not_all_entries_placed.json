@@ -1,1 +1,5 @@
-{"errors":["In file '../../examples/in/errors/ERROR_set_finishing_positions_not_all_entries_placed.json': Executing event index=0 ('set_finishing_positions'): While executing event type 'set_finishing_positions': Entry 'c' was not placed. All entries which are not byes must be given a finishing position."]}
+{
+  "errors": [
+    "In file '../../examples/in/errors/ERROR_set_finishing_positions_not_all_entries_placed.json': Executing event index=0 ('set_finishing_positions'): While executing event type 'set_finishing_positions': Entry 'c' was not placed. All entries which are not byes must be given a finishing position."
+  ]
+}

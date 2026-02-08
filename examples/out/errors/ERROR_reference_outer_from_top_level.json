@@ -1,1 +1,5 @@
-{"errors":["In file '../../examples/in/errors/ERROR_reference_outer_from_top_level.json': In the world's resolve_all_references step: In 'reference_outer_from_top_level': While dereferencing '@OUTER:2': Reference error: In '@OUTER:2': invalid '@OUTER:2' found at position 0: @OUTER:2 element in reference would try to get outside the World object."]}
+{
+  "errors": [
+    "In file '../../examples/in/errors/ERROR_reference_outer_from_top_level.json': In the world's resolve_all_references step: In 'reference_outer_from_top_level': While dereferencing '@OUTER:2': Reference error: In '@OUTER:2': invalid '@OUTER:2' found at position 0: @OUTER:2 element in reference would try to get outside the World object."
+  ]
+}

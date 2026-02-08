@@ -23,7 +23,9 @@
             true,
             false,
             null,
-            { "user": "data" }
+            {
+              "user": "data"
+            }
           ]
         }
       }
@@ -32,7 +34,9 @@
     "phases": [
       {
         "entry_list": [
-          { "name": "level_1_target" },
+          {
+            "name": "level_1_target"
+          },
           "@ROOT.base.root_test_target",
           "@OUTER.root_test_target",
           "@OUTER.COPY_THIS_TAG",
@@ -43,7 +47,12 @@
         "name": "level_1_tests",
         "phases": [
           {
-            "entry_list": [ "@ROOT.base.root_test_target", "@ROOT.base.level_1_tests.level_1_target", "@OUTER.@OUTER.root_test_target", "@OUTER:2.root_test_target" ],
+            "entry_list": [
+              "@ROOT.base.root_test_target",
+              "@ROOT.base.level_1_tests.level_1_target",
+              "@OUTER.@OUTER.root_test_target",
+              "@OUTER:2.root_test_target"
+            ],
             "name": "level_2_tests"
           }
         ]

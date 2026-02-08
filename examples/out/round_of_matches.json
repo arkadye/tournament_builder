@@ -4,28 +4,40 @@
     "phases": [
       {
         "entry_list": [
-          { "name": "apples" },
-          { "name": "oranges" }
+          {
+            "name": "apples"
+          },
+          {
+            "name": "oranges"
+          }
         ],
         "name": "game_1"
       },
       {
         "entry_list": [
-          { "name": "cabbages" },
+          {
+            "name": "cabbages"
+          },
           null
         ],
         "name": "game_2"
       },
       {
         "entry_list": [
-          { "name": "lemons" },
-          { "name": "pears" }
+          {
+            "name": "lemons"
+          },
+          {
+            "name": "pears"
+          }
         ],
         "name": "game_3"
       },
       {
         "entry_list": [
-          { "name": "tomatoes" },
+          {
+            "name": "tomatoes"
+          },
           null
         ],
         "name": "game_4"
