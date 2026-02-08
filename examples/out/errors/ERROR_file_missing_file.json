@@ -1,0 +1,1 @@
+{"errors":["In file '../../examples/in/errors/ERROR_file_missing_file.json': In 'example': In field 'entry_list': At array elem [0]: In reference '@FILE:[no_such_file.json]': Reference error: In '@FILE:[no_such_file.json]': invalid '@FILE:[no_such_file.json]' found at position 0: @FILE token could not open file at '../../examples/in/errors/no_such_file.json'"]}

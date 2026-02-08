@@ -1,0 +1,6 @@
+{
+  "competition": {
+    "name": "example",
+    "entry_list": [ "@FILE:[../../../example_templates/not_json_format.json]" ]
+  }
+}
