@@ -56,7 +56,13 @@ public:
 
 int main(int argc, char** argv)
 {
-	cxxopts::Options options_config{ "This simple tool moves Markdown files through a folder structure. It can add navigation maps with the macro ___NAV-MAP___." };
+	std::cout << "Args:\n";
+	for (int i = 0; i < argc; ++i)
+	{
+		std::cout << std::format("  {}\n", argv[i]);
+	}
+
+	cxxopts::Options options_config{ std::format("This simple tool moves Markdown files through a folder structure. It can add navigation maps with the macro {}.", NAV_MAP )};
 	options_config.add_options()
 		("i,input", "Input path - the top level path of documentation to read from.", cxxopts::value<stf::path>())
 		("o,output", "Output path - the location to write the documentation to", cxxopts::value<stf::path>())
@@ -80,7 +86,7 @@ int main(int argc, char** argv)
 
 	if (!options.contains("output"))
 	{
-		std::cerr << "No 'input' argument was specified.";
+		std::cerr << "No 'output' argument was specified.";
 		return EXIT_FAILURE;
 	}
 
@@ -295,7 +301,8 @@ void Folder::make_navigation_impl(std::vector<std::string>& result, stf::path pa
 			else
 			{
 				const stf::path to_target = stf::relative(filepath, target.parent_path());
-				return std::format("- [{}]({})\n", file.get_title(), to_target.generic_string());
+				const std::string to_target_str = to_target.generic_string();
+				return std::format("- [{}]({})\n", file.get_title(), to_target_str);
 			}
 		};
 
