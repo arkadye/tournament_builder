@@ -65,9 +65,9 @@ namespace tournament_builder::descriptor
         return result;
     }
 
-    DescriptorHandle RoundOfMatches::parse(std::shared_ptr<RoundOfMatches> prototype, const nlohmann::json& input) const
+    DescriptorHandle RoundOfMatches::parse(std::shared_ptr<RoundOfMatches> prototype, const nlohmann::json& input, World& context) const
     {
-        prototype->entry_list = EntryList::parse(input, "entry_list");
+        prototype->entry_list = EntryList::parse(input, "entry_list", context);
         prototype->swap_left_and_right = json_helper::get_bool_or(input, "swap_left_and_right", false);
         prototype->generate_explicit_byes = json_helper::get_bool_or(input, "generate_explicit_byes", true);
 

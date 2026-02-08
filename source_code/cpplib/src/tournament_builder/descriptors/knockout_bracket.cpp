@@ -81,9 +81,9 @@ namespace tournament_builder::descriptor
 		return result;
 	}
 
-	DescriptorHandle KnockoutBracket::parse(std::shared_ptr<KnockoutBracket> prototype, const nlohmann::json& input) const
+	DescriptorHandle KnockoutBracket::parse(std::shared_ptr<KnockoutBracket> prototype, const nlohmann::json& input, World& context) const
 	{
-		prototype->entry_list = EntryList::parse(input, "entry_list");
+		prototype->entry_list = EntryList::parse(input, "entry_list", context);
 		return  prototype;
 	}
 }

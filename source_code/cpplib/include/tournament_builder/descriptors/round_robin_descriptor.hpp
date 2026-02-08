@@ -25,6 +25,6 @@ namespace tournament_builder::descriptor
 
 		std::optional<RealCompetition> generate() const override;
 	private:
-		DescriptorHandle parse(std::shared_ptr<RoundRobin> prototype, const nlohmann::json& input) const override;
+		DescriptorHandle parse(std::shared_ptr<RoundRobin> prototype, const nlohmann::json& input, World& context) const override;
 	};
 }

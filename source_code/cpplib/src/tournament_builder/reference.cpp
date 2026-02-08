@@ -17,6 +17,7 @@
 #include <ranges>
 #include <optional>
 #include <variant>
+#include <fstream>
 
 namespace tournament_builder
 {
@@ -24,10 +25,14 @@ namespace tournament_builder
 	{
 		constexpr char REF_DELIM = '.';
 		constexpr char ARGUMENT_DIVIDER = ':';
+		constexpr char OPEN_BRACKET = '[';
+		constexpr char CLOSE_BRACKET = ']';
+		constexpr std::pair<char, char> BRACKET_PAIR{ OPEN_BRACKET,CLOSE_BRACKET };
 		constexpr char SPECIAL_REF_INDICATOR = '@';
 		constexpr std::string_view HERE{ "@HERE" };
 		constexpr std::string_view ROOT{ "@ROOT" };
 		constexpr std::string_view TEMPLATE_STORE{ "@TEMPLATE" };
+		constexpr std::string_view FILE_PREFIX{ "@FILE" };
 		constexpr std::string_view ANY_PREFIX { "@ANY" };
 		constexpr std::string_view GLOB_PREFIX { "@GLOB" };
 		constexpr std::string_view OUTER_PREFIX{ "@OUTER" };
@@ -102,6 +107,7 @@ namespace tournament_builder
 			here,
 			root,
 			template_store,
+			file_prefix,
 			any_prefix,
 			glob_prefix,
 			outer_prefix,
@@ -117,6 +123,7 @@ namespace tournament_builder
 			if (s == HERE) return here;
 			if (s == ROOT) return root;
 			if (s == TEMPLATE_STORE) return template_store;
+			if (s.starts_with(FILE_PREFIX)) return file_prefix;
 			if (s.starts_with(ANY_PREFIX)) return any_prefix;
 			if (s.starts_with(GLOB_PREFIX)) return glob_prefix;
 			if (s.starts_with(OUTER_PREFIX)) return outer_prefix;
@@ -166,7 +173,7 @@ namespace tournament_builder
 					{
 						throw exception::InvalidReferenceToken{ context.to_string(), current_token, static_cast<std::size_t>(std::distance(start, current)), explanation };
 					};
-				const auto outer_args = Token::get_args(current_token, ARGUMENT_DIVIDER);
+				const auto outer_args = Token::get_args(current_token, internal_reference::ARGUMENT_DIVIDER);
 
 				int64_t num_levels = 1;
 				if (!outer_args.empty())
@@ -333,27 +340,27 @@ namespace tournament_builder
 				return object;
 			}
 
-			nlohmann::json get_deferred_json_impl(const nlohmann::json& store, TokenIterator start, TokenIterator current, TokenIterator last, const std::vector<SoftReference::Replacement>& replacements)
+			nlohmann::json get_deferred_json_impl(const nlohmann::json& context, TokenIterator start, TokenIterator current, TokenIterator last, const std::vector<SoftReference::Replacement>& replacements)
 			{
-				json_helper::validate_type(store, { nlohmann::json::value_t::array, nlohmann::json::value_t::object });
 				if (current == last)
 				{
 					if (replacements.empty())
 					{
-						return store;
+						return context;
 					}
 					else
 					{
-						return make_text_replacements(store, replacements);
+						return make_text_replacements(context, replacements);
 					}
 				}
-				nlohmann::json next = [token = current->to_string(), &store]()
+				json_helper::validate_type(context, { nlohmann::json::value_t::array, nlohmann::json::value_t::object });
+				nlohmann::json next = [token = current->to_string(), &context]()
 					{
-						if (store.is_object())
+						if (context.is_object())
 						{
-							return json_helper::get_any(store, token);
+							return json_helper::get_any(context, token);
 						}
-						else if (store.is_array())
+						else if (context.is_array())
 						{
 							uint64_t val{};
 							const char* data_start = token.data();
@@ -364,14 +371,14 @@ namespace tournament_builder
 								throw exception::InvalidArgument(std::format("Expected array index (i.e. positive integer) but instead got '{}'", token));
 							}
 
-							if (val >= store.size())
+							if (val >= context.size())
 							{
-								throw exception::InvalidArgument(std::format("Cannot access item {} of an array with {} elements", val, store.size()));
+								throw exception::InvalidArgument(std::format("Cannot access item {} of an array with {} elements", val, context.size()));
 							}
-							return store[val];
+							return context[val];
 						}
 						assert(false);
-						return store;
+						return context;
 					}();
 
 				try
@@ -511,9 +518,8 @@ namespace tournament_builder
 		}
 	}
 
-	std::unique_ptr<nlohmann::json> SoftReference::get_deferred_json(const World& context) const
+	std::unique_ptr<nlohmann::json> SoftReference::get_external_json_template(const World& context) const
 	{
-		assert(!m_elements.empty());
 		if (!context.template_store)
 		{
 			exception::InvalidDereference ex(*this);
@@ -522,11 +528,93 @@ namespace tournament_builder
 		}
 		try
 		{
-			return std::make_unique<nlohmann::json>(internal_reference::tag_processing::get_deferred_json_impl(*context.template_store.get(), begin(m_elements), begin(m_elements) + 1, end(m_elements), m_replacements));
+			return std::make_unique<nlohmann::json>(internal_reference::tag_processing::get_deferred_json_impl(*context.template_store.get(), begin(m_elements), std::next(begin(m_elements)), end(m_elements), m_replacements));
 		}
 		catch (exception::TournamentBuilderException& ex)
 		{
 			ex.add_context("In template store at 'templates'");
+			throw ex;
+		}
+	}
+
+	std::pair<std::unique_ptr<nlohmann::json>, WorldPathManager> SoftReference::get_external_json_from_file(World& context) const
+	{
+		using namespace internal_reference;
+		const Token& file_token = m_elements.front();
+		const auto args = Token::get_args(file_token, ARGUMENT_DIVIDER);
+		if (args.empty()) [[unlikely]]
+		{
+			throw exception::InvalidReferenceToken{ to_string(),file_token.to_string(), 0u, "@FILE token no file specified." };
+		}
+		if (args.size() > 1u) [[unlikely]]
+		{
+			throw exception::InvalidReferenceToken{ to_string(),file_token.to_string(), 0u, "@FILE token has too many arguments specified. It should only have one." };
+		}
+		struct GetAsPath
+		{
+			std::filesystem::path operator()(int64_t val) const { return std::to_string(val); }
+			std::filesystem::path operator()(std::string_view val) const
+			{
+				if (!val.empty() && val.front() == OPEN_BRACKET && val.back() == CLOSE_BRACKET)
+				{
+					val.remove_prefix(1);
+					val.remove_suffix(1);
+				}
+				return val;
+			}
+		};
+		const std::filesystem::path path_arg = std::visit(GetAsPath{}, args.front());
+		const std::filesystem::path path = path_arg.is_absolute() ? path_arg : context.get_current_file().parent_path() / path_arg;
+		std::ifstream external_file{ path };
+		if (!external_file.is_open())
+		{
+			throw exception::InvalidReferenceToken{ to_string(),file_token.to_string(), 0u, std::format("@FILE token could not open file at '{0}'", path.lexically_normal().generic_string())};
+		}
+		try
+		{
+			nlohmann::json external_object;
+			try
+			{
+				external_file >> external_object;
+				auto result = std::make_unique<nlohmann::json>(tag_processing::get_deferred_json_impl(external_object, begin(m_elements), std::next(begin(m_elements)), end(m_elements), m_replacements));
+				WorldPathManager current_path_manager = context.add_temp_current_file(path);
+				return std::make_pair(std::move(result) , std::move(current_path_manager));
+			}
+			catch (const nlohmann::json::exception& ex)
+			{
+				throw exception::TournamentBuilderException{ std::format("JSON parse exception: {0}", ex.what()) };
+			}
+		}
+		catch (exception::TournamentBuilderException& ex)
+		{
+			ex.add_context(std::format("While reading file '{0}'", path.lexically_normal().generic_string()));
+			throw ex;
+		}
+	}
+
+	std::pair<std::unique_ptr<nlohmann::json>, WorldPathManager> SoftReference::get_external_json(World& context) const
+	{
+		try
+		{
+			using namespace internal_reference;
+			assert(!m_elements.empty());
+			const SpecialRefType type = get_type(m_elements.front());
+
+			switch (type)
+			{
+			default:
+				break;
+			case SpecialRefType::template_store:
+				return std::make_pair(get_external_json_template(context), WorldPathManager{});
+			case SpecialRefType::file_prefix:
+				return get_external_json_from_file(context);
+			}
+			assert(false && "In 'get_deferred_json' SpecialRefType was not implemented!");
+			return {};
+		}
+		catch (exception::TournamentBuilderException& ex)
+		{
+			ex.add_context(std::format("In reference '{}'", *this));
 			throw ex;
 		}
 	}
@@ -553,7 +641,7 @@ namespace tournament_builder
 
 	SoftReference::SoftReference(std::string_view init)
 	{
-		utils::split_tokens<Token>(init, internal_reference::REF_DELIM, std::back_inserter(m_elements), { {'[',']'} });
+		utils::split_tokens<Token>(init, internal_reference::REF_DELIM, std::back_inserter(m_elements), { internal_reference::BRACKET_PAIR });
 
 		for (std::size_t idx=0u;idx<m_elements.size();++idx)
 		{
@@ -584,7 +672,7 @@ namespace tournament_builder
 		return result.value();
 	}
 
-	bool SoftReference::uses_deferred_resolve() const noexcept
+	bool SoftReference::uses_immediate_resolve() const noexcept
 	{
 		using enum internal_reference::SpecialRefType;
 		if (m_elements.empty()) return false;
@@ -592,6 +680,7 @@ namespace tournament_builder
 		switch (type)
 		{
 		case template_store:
+		case file_prefix:
 			return true;
 		default:
 			break;
@@ -614,7 +703,7 @@ namespace tournament_builder
 		{
 			SoftReference result{ data.value() };
 			try {
-				if (!result.m_elements.empty() && result.m_elements.front() == internal_reference::TEMPLATE_STORE)
+				if (result.uses_immediate_resolve())
 				{
 					if (auto replacements_opt = json_helper::get_optional_object(input, "text_replace"))
 					{

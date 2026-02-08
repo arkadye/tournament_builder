@@ -12,47 +12,47 @@ namespace tournament_builder
 	namespace internal_tournament_builder_lightweight
 	{
 		template <typename T>
-		void wrap_ostream(T&& arg, std::ostream& output)
+		void wrap_ostream(T&& arg, std::ostream& output, const ExtraArgs& extra_args)
 		{
-			nlohmann::json result = make_tournament_json(std::forward<T>(arg));
+			nlohmann::json result = make_tournament_json(std::forward<T>(arg), extra_args);
 			output << result;
 		}
 
 		template <typename T>
-		std::string wrap_str(T&& arg)
+		std::string wrap_str(T&& arg, const ExtraArgs& extra_args)
 		{
 			std::ostringstream out_stream;
-			wrap_ostream(std::forward<T>(arg), out_stream);
+			wrap_ostream(std::forward<T>(arg), out_stream, extra_args);
 			return out_stream.str();
 		}
 
 		template <typename T>
-		void wrap_path(T&& arg, const std::filesystem::path& output)
+		void wrap_path(T&& arg, const std::filesystem::path& output, const ExtraArgs& extra_args)
 		{
 			std::ofstream out_file{ output };
-			wrap_ostream(std::forward<T>(arg), out_file);
+			wrap_ostream(std::forward<T>(arg), out_file, extra_args);
 		}
 	}
 
-	std::string make_tournament_str(std::string_view input) { return internal_tournament_builder_lightweight::wrap_str(input); }
-	std::string make_tournament_str(const std::filesystem::path& input) { return internal_tournament_builder_lightweight::wrap_str(input); }
-	std::string make_tournament_str(std::istream& input) { return internal_tournament_builder_lightweight::wrap_str(input); }
-	std::string make_tournament_str(const nlohmann::json& input) { return internal_tournament_builder_lightweight::wrap_str(input); }
-	std::string make_tournament_str(const tournament_builder::World& input) { return internal_tournament_builder_lightweight::wrap_str(input); }
-	void make_tournament_path(std::string_view input, const std::filesystem::path& output) { return internal_tournament_builder_lightweight::wrap_path(input, output); }
-	void make_tournament_path(const std::filesystem::path& input, const std::filesystem::path& output) { return internal_tournament_builder_lightweight::wrap_path(input, output); }
-	void make_tournament_path(std::istream& input, const std::filesystem::path& output) { return internal_tournament_builder_lightweight::wrap_path(input, output); }
-	void make_tournament_path(const nlohmann::json& input, const std::filesystem::path& output) { return internal_tournament_builder_lightweight::wrap_path(input, output); }
-	void make_tournament_path(const tournament_builder::World& input, const std::filesystem::path& output) { return internal_tournament_builder_lightweight::wrap_path(input, output); }
-	void make_tournament_ostream(std::string_view input, std::ostream& output) { return internal_tournament_builder_lightweight::wrap_ostream(input, output); }
-	void make_tournament_ostream(const std::filesystem::path& input, std::ostream& output) { return internal_tournament_builder_lightweight::wrap_ostream(input, output); }
-	void make_tournament_ostream(std::istream& input, std::ostream& output) { return internal_tournament_builder_lightweight::wrap_ostream(input, output); }
-	void make_tournament_ostream(const nlohmann::json& input, std::ostream& output) { return internal_tournament_builder_lightweight::wrap_ostream(input, output); }
-	void make_tournament_ostream(const tournament_builder::World& input, std::ostream& output) { return internal_tournament_builder_lightweight::wrap_ostream(input, output); }
+	std::string make_tournament_str(std::string_view input, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_str(input, extra_args); }
+	std::string make_tournament_str(const std::filesystem::path& input, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_str(input, extra_args); }
+	std::string make_tournament_str(std::istream& input, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_str(input, extra_args); }
+	std::string make_tournament_str(const nlohmann::json& input, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_str(input, extra_args); }
+	std::string make_tournament_str(const tournament_builder::World& input, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_str(input, extra_args); }
+	void make_tournament_path(std::string_view input, const std::filesystem::path& output, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_path(input, output, extra_args); }
+	void make_tournament_path(const std::filesystem::path& input, const std::filesystem::path& output, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_path(input, output, extra_args); }
+	void make_tournament_path(std::istream& input, const std::filesystem::path& output, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_path(input, output, extra_args); }
+	void make_tournament_path(const nlohmann::json& input, const std::filesystem::path& output, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_path(input, output, extra_args); }
+	void make_tournament_path(const tournament_builder::World& input, const std::filesystem::path& output, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_path(input, output, extra_args); }
+	void make_tournament_ostream(std::string_view input, std::ostream& output, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_ostream(input, output, extra_args); }
+	void make_tournament_ostream(const std::filesystem::path& input, std::ostream& output, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_ostream(input, output, extra_args); }
+	void make_tournament_ostream(std::istream& input, std::ostream& output, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_ostream(input, output, extra_args); }
+	void make_tournament_ostream(const nlohmann::json& input, std::ostream& output, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_ostream(input, output, extra_args); }
+	void make_tournament_ostream(const tournament_builder::World& input, std::ostream& output, const ExtraArgs& extra_args) { return internal_tournament_builder_lightweight::wrap_ostream(input, output, extra_args); }
 
 	bool test_input_file(const std::filesystem::path& input, const std::filesystem::path& reference)
 	{
-		nlohmann::json processed = make_tournament_json(input);
+		nlohmann::json processed = make_tournament_json(input, {});
 		std::ifstream ref_file{ reference };
 		if (!ref_file.is_open())
 		{

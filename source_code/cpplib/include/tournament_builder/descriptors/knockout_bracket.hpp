@@ -16,6 +16,6 @@ namespace tournament_builder::descriptor
 		Name get_descriptor_uid() const override { return Name{ "knockout_bracket" }; }
 	private:
 		std::optional<RealCompetition> generate() const override;
-		DescriptorHandle parse(std::shared_ptr<KnockoutBracket> prototype, const nlohmann::json& input) const override;
+		DescriptorHandle parse(std::shared_ptr<KnockoutBracket> prototype, const nlohmann::json& input, World& context) const override;
 	};
 }

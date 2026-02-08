@@ -66,11 +66,28 @@ namespace tournament_builder
         return *this;
     }
 
-    World World::parse(const nlohmann::json& input)
+    void World::apply_extra_args(const ExtraArgs& args)
     {
-        Competition competition = Competition::parse(json_helper::get_object(input,"competition"));
+        if (args.path.has_value())
+        {
+            m_base_file = args.path.value();
+        }
+    }
+
+    World World::parse(const nlohmann::json& input, const ExtraArgs& extra_args)
+    {
+        World result;
+
+        result.apply_extra_args(extra_args);
+
+        if (auto opt_templates = json_helper::get_optional_object(input, "templates"))
+        {
+            result.template_store = std::make_unique<nlohmann::json>(std::move(opt_templates).value());
+        }
+
+        Competition competition = Competition::parse(json_helper::get_object(input,"competition"), result);
         internal_world::set_entry_tags(competition);
-        World result{ std::move(competition) };
+        result.competition = std::move(competition);
         if (const auto& event_array_opt = json_helper::get_optional_array_object(input, "events"))
         {
             try
@@ -84,10 +101,7 @@ namespace tournament_builder
             }
         }
 
-        if (auto opt_templates = json_helper::get_optional_object(input, "templates"))
-        {
-            result.template_store = std::make_unique<nlohmann::json>(std::move(opt_templates).value());
-        }
+        
 
         result.preserve_templates = json_helper::get_bool_or(input, "preserve_templates", true);
 
@@ -154,5 +168,15 @@ namespace tournament_builder
     {
         assert(false && "We should never be asking the world if it matches with a token.");
         return false;
+    }
+
+    const std::filesystem::path& World::get_current_file() const
+    {
+        return m_current_file.empty() ? get_base_file() : m_current_file;
+    }
+
+    WorldPathManager World::add_temp_current_file(std::filesystem::path new_file)
+    {
+        return WorldPathManager{ *this, std::move(new_file) };
     }
 }

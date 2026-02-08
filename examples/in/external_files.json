@@ -1,0 +1,73 @@
+{
+  "competition": {
+    "name": "example",
+    "entry_list": [
+      {
+        "ref": "@FILE:[../../example_templates/template_root.json].foo.bar.baz",
+        "text_replace": {
+          "#GENERIC_COMPETITOR": "example_team_1"
+        }
+      },
+      "@FILE:[../../example_templates/template_root.json].guys.0",
+      "@FILE:[../../example_templates/template_root.json].guys.1",
+      "@FILE:[../../example_templates/template_root.json].guys.6"
+    ],
+    "phases": [
+      {
+        "ref": "@FILE:[../../example_templates/template_root.json].final_match",
+        "text_replace": {
+          "#FINAL_NAME": "grand_final",
+          "#SEMIS_NAME": "semi_finals"
+        }
+      },
+      {
+        "name": "gets_from_external_file",
+        "entry_list": {
+          "entries": [ "@OUTER.guitar" ],
+          "min_entries": 1
+        }
+      }
+    ]
+  },
+  "templates": {
+    "foo": {
+      "bar": {
+        "baz": {
+          "name": "#GENERIC_COMPETITOR",
+          "tags": [ "lorem", "ipsum" ]
+        }
+      },
+      "bop": { "name": "#GENERIC_COMPETITOR" }
+    },
+    "final_match": {
+      "name": "#FINAL_NAME",
+      "entry_list": [ "@OUTER.#SEMIS_NAME.match_0.$POS:1", "@OUTER.#SEMIS_NAME.match_1.$POS:1" ]
+    },
+    "guys": [
+      {
+        "name": "steve",
+        "tags": "bass"
+      },
+      {
+        "name": "dave",
+        "tags": "guitar"
+      },
+      {
+        "name": "nicko",
+        "tags": "drums"
+      },
+      {
+        "name": "jannick",
+        "tags": "guitar"
+      },
+      {
+        "name": "bruce",
+        "tags": "vocals"
+      },
+      {
+        "name": "adrian",
+        "tags": "guitar"
+      }
+    ]
+  }
+}

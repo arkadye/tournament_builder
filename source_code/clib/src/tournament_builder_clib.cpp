@@ -3,14 +3,27 @@
 
 #include <stdlib.h>
 
-void tournament_builder_make_tournament_to_file(const char* input, const char* output_filename)
+namespace tournament_builder
 {
-	tournament_builder::make_tournament_path(std::string_view{ input }, std::filesystem::path{ output_filename });
+	namespace clib_internal
+	{
+		ExtraArgs make_extra_args(const TournamentBuilderExtraArgs* in)
+		{
+			return ExtraArgs{};
+		}
+	}
 }
 
-char* tournament_builder_make_tournament(const char* input)
+void tournament_builder_make_tournament_to_file(const char* input, const char* output_filename) { tournament_builder_make_tournament_to_file_ext(input, output_filename, nullptr); }
+void tournament_builder_make_tournament_to_file_ext(const char* input, const char* output_filename, const TournamentBuilderExtraArgs* extra_args)
 {
-	const std::string result_str = tournament_builder::make_tournament_str(std::string_view{ input });
+	tournament_builder::make_tournament_path(std::string_view{ input }, std::filesystem::path{ output_filename }, tournament_builder::clib_internal::make_extra_args(extra_args));
+}
+
+char* tournament_builder_make_tournament(const char* input) { return tournament_builder_make_tournament_ext(input, nullptr); }
+char* tournament_builder_make_tournament_ext(const char* input, const TournamentBuilderExtraArgs* extra_args)
+{
+	const std::string result_str = tournament_builder::make_tournament_str(std::string_view{ input }, tournament_builder::clib_internal::make_extra_args(extra_args));
 	const std::size_t result_buffer_size = (result_str.size() + 1) * sizeof(char);
 	void* result_buffer = malloc(result_buffer_size);
 	char* result = static_cast<char*>(result_buffer);

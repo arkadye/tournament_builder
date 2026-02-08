@@ -14,7 +14,7 @@
 #endif
 
 std::vector<char> make_c_str_vec(const auto& stringish);
-std::pair<int, int> run_testcases_on_examples(auto& args_array, const std::filesystem::path& input_directory, const std::filesystem::path& output_directory);
+std::pair<int, std::vector<std::string>> run_testcases_on_examples(auto& args_array, const std::filesystem::path& input_directory, const std::filesystem::path& output_directory);
 
 
 // Set this to only run on files containing this pattern.
@@ -78,7 +78,16 @@ int main(int argc, char** argv)
 	std::filesystem::create_directories(output_directory);
 
 	const auto [successes, failures] = run_testcases_on_examples(args, input_directory, output_directory);
-	std::cout << std::format("Finished with {} successes and {} failures.\n", successes, failures);
+	std::cout << std::format("Finished with {} successes and {} failures.\n", successes, failures.size());
+	if (!failures.empty())
+	{
+		std::cout << "Failed tests:\n";
+		for (const auto& failure : failures)
+		{
+			std::cout << std::format("    {}\n", failure);
+		}
+	}
+
 	return 0;
 }
 
@@ -92,11 +101,11 @@ std::vector<char> make_c_str_vec(const auto& stringish)
 };
 
 // Returns successes / failures
-std::pair<int, int> run_testcases_on_examples(auto& args, const std::filesystem::path& input_directory, const std::filesystem::path& output_directory)
+std::pair<int, std::vector<std::string>> run_testcases_on_examples(auto& args, const std::filesystem::path& input_directory, const std::filesystem::path& output_directory)
 {
 	using tournament_builder::tournament_builder_internal::invoke_cli;
 	int successes = 0;
-	int failures = 0;
+	std::vector<std::string> failures;
 
 	for (std::filesystem::path input_file : std::filesystem::directory_iterator{ input_directory })
 	{
@@ -107,7 +116,7 @@ std::pair<int, int> run_testcases_on_examples(auto& args, const std::filesystem:
 			const std::filesystem::path out = output_directory / filename;
 			auto [subsuccesses, subfailures] = run_testcases_on_examples(args, in, out);
 			successes += subsuccesses;
-			failures += subfailures;
+			std::ranges::move(subfailures, std::back_inserter(failures));
 		}
 		else
 		{
@@ -131,7 +140,14 @@ std::pair<int, int> run_testcases_on_examples(auto& args, const std::filesystem:
 			std::cout << std::format("Processing {} and {} {}.\n", filename.generic_string(), testing ? "checking the result against" : "writing the result to", std::filesystem::absolute(output_file).generic_string());
 			const bool success = (EXIT_SUCCESS == invoke_cli(static_cast<int>(args.size()), args.data()));
 			std::cout << '\n';
-			success ? ++successes : ++failures;
+			if (success)
+			{
+				++successes;
+			}
+			else
+			{
+				failures.push_back(input_file.generic_string());
+			}
 		}
 	}
 	return { successes , failures };

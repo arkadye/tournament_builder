@@ -12,37 +12,46 @@
 
 namespace tournament_builder
 {
-    tournament_builder::World make_tournament_world(std::string_view input)
+    World make_tournament_world(std::string_view input, const ExtraArgs& extra_args)
     {
         if (input.ends_with(".json"))
         {
             std::filesystem::path filepath{ input };
-            return make_tournament_world(filepath);
+            return make_tournament_world(filepath, extra_args);
         }
 
         std::istringstream in_stream{ std::string{input} };
-        return make_tournament_world(in_stream);
+        return make_tournament_world(in_stream, extra_args);
     }
 
-    tournament_builder::World make_tournament_world(const std::filesystem::path& input)
+    World make_tournament_world(const std::filesystem::path& input, const ExtraArgs& extra_args)
     {
         std::ifstream infile{ input };
         if (!infile.is_open())
         {
-            throw tournament_builder::exception::TournamentBuilderException{ std::format("Could not open input file '{}'", input.string()) };
+            throw exception::TournamentBuilderException{ std::format("Could not open input file '{}'", input.string()) };
         }
         try
         {
-            return make_tournament_world(infile);
+            if (!extra_args.path.has_value())
+            {
+                ExtraArgs args = extra_args;
+                args.path = input;
+                return make_tournament_world(infile, args);
+            }
+            else
+            {
+                return make_tournament_world(infile, extra_args);
+            }
         }
-        catch (tournament_builder::exception::TournamentBuilderException& ex)
+        catch (exception::TournamentBuilderException& ex)
         {
-            ex.add_context(std::format("In file '{}'", input.string()));
+            ex.add_context(std::format("In file '{}'", input.lexically_normal().generic_string()));
             throw ex;
         }
     }
 
-    tournament_builder::World make_tournament_world(std::istream& input)
+    World make_tournament_world(std::istream& input, const ExtraArgs& extra_args)
     {
         nlohmann::json in_json;
         try
@@ -51,21 +60,22 @@ namespace tournament_builder
         }
         catch (const nlohmann::json::exception& ex)
         {
-            throw tournament_builder::exception::TournamentBuilderException{ std::format("JSON parse exception: {}", ex.what()) };
+            throw exception::TournamentBuilderException{ std::format("JSON parse exception: {}", ex.what()) };
         }
-        return make_tournament_world(in_json);
+        return make_tournament_world(in_json, extra_args);
     }
 
-    tournament_builder::World make_tournament_world(const nlohmann::json& input)
+    World make_tournament_world(const nlohmann::json& input, const ExtraArgs& extra_args)
     {
         using tournament_builder::World;
-        const World parsed = World::parse(input);
-        return make_tournament_world(parsed);
+        const World parsed = World::parse(input, extra_args);
+        return make_tournament_world(parsed, {});
     }
 
-    tournament_builder::World make_tournament_world(const tournament_builder::World& input)
+    World make_tournament_world(const World& input, const ExtraArgs& extra_args)
     {
         auto result = input;
+        result.apply_extra_args(extra_args);
         result.execute_all_events();
         return result;
     }

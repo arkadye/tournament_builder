@@ -1,1 +1,1 @@
-{ "errors": [ "In file '../../examples/in/errors/ERROR_invalid_competitor_view_3.json': Parsing descriptor type 'competitor_view:': In 'min_greater_than_max': In field 'entry_list': Invalid argument: An entry list cannot have min_entries(2) greater than max_entries(1)" ] }
+{"errors":["In file '../../examples/in/errors/ERROR_invalid_competitor_view_3.json': Parsing descriptor type 'competitor_view:': In 'min_greater_than_max': In field 'entry_list': Invalid argument: An entry list cannot have min_entries(2) greater than max_entries(1)"]}

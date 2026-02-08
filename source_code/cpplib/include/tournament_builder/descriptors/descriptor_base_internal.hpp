@@ -32,7 +32,7 @@ namespace tournament_builder::descriptor::internal_descriptor
 		using NamedElement::NamedElement;
 		virtual ~DescriptorBaseImpl() = default;
 		std::optional<RealCompetition> generate_wrapper() const;
-		static DescriptorHandle parse_descriptor(const nlohmann::json& input);
+		static DescriptorHandle parse_descriptor(const nlohmann::json& input, World& context);
 
 		virtual Name get_descriptor_uid() const = 0;
 		virtual void write_to_json(nlohmann::json& out) const; // Done this way to avoid having to include the full JSON header.
@@ -66,8 +66,8 @@ namespace tournament_builder::descriptor::internal_descriptor
 
 		void add_name_and_descriptor_type_to_json(nlohmann::json& target) const;
 
-		DescriptorHandle parse_wrapper(const nlohmann::json& input) const;
-		virtual DescriptorHandle parse_impl(const nlohmann::json& input) const = 0;
+		DescriptorHandle parse_wrapper(const nlohmann::json& input, World& context) const;
+		virtual DescriptorHandle parse_impl(const nlohmann::json& input, World& context) const = 0;
 	};
 
 	template <typename T>
@@ -84,7 +84,7 @@ namespace tournament_builder::descriptor::internal_descriptor
 	public:
 		template <typename T>
 		static void register_descriptor();
-		static DescriptorHandle parse_descriptor(const nlohmann::json& input);
+		static DescriptorHandle parse_descriptor(const nlohmann::json& input, World& context);
 	};
 
 	template<typename T>

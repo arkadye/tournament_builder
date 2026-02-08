@@ -97,7 +97,7 @@ namespace tournament_builder::json_helper::internal_json_helper
 	}
 
 	// Range version
-	bool is_one_of(const json& object, const auto& allowed_types)
+	bool is_one_of(const json& object, const std::ranges::input_range auto& allowed_types)
 	{
 		const json::value_t type = object.type();
 		return (std::ranges::find(allowed_types, type) != end(allowed_types));

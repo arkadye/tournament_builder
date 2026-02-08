@@ -40,8 +40,14 @@ function(add_error_example_file filename)
 	set(EXAMPLE_ERROR_OUTPUT_FILES ${EXAMPLE_ERROR_OUTPUT_FILES} ${OUTPUT_PATH} PARENT_SCOPE)
 endfunction()
 
+function(add_template_file_example_file filename)
+	cmake_path(SET INPUT_PATH NORMALIZE "${EXAMPLES_BASE_PATH}/../example_templates/${filename}.json")
+	set(EXAMPLE_TEMPLATE_INPUT_FILES ${EXAMPLE_TEMPLATE_INPUT_FILES} ${INPUT_PATH} PARENT_SCOPE)
+endfunction()
+
 add_example_file("add_tags")
 add_example_file("complex_elim")
+add_example_file("external_files")
 add_example_file("round_of_matches")
 add_example_file("round_robin")
 add_example_file("set_finishing_positions")
@@ -86,6 +92,13 @@ add_error_example_file("ERROR_templates_idx_too_high")
 add_error_example_file("ERROR_templates_idx_too_low")
 add_error_example_file("ERROR_templates_index_into_object")
 add_error_example_file("ERROR_templates_target_bad_parse")
+add_error_example_file("ERROR_file_missing_object")
+add_error_example_file("ERROR_file_missing_file")
+add_error_example_file("ERROR_file_target_bad_parse")
+
+add_template_file_example_file("not_json_format")
+add_template_file_example_file("template_root")
+add_template_file_example_file("subfolder/subfile")
 
 
 set(EXAMPLE_FILES ${EXAMPLE_INPUT_FILES} ${EXAMPLE_OUTPUT_FILES})
@@ -101,4 +114,6 @@ set(EXAMPLE_ERROR_FILES ${EXAMPLE_ERROR_INPUT_FILES} ${EXAMPLE_ERROR_OUTPUT_FILE
 source_group("examples/inputs_errors" FILES ${EXAMPLE_ERROR_INPUT_FILES})
 source_group("examples/outputs_errors" FILES ${EXAMPLE_ERROR_OUTPUT_FILES})
 
-target_sources(${DBG_NAME} PRIVATE ${MAINFILE} ${INVOKE_SOURCE} ${EXAMPLE_FILES} ${EXAMPLE_ERROR_FILES})
+source_group("examples/input_templates" FILES ${EXAMPLE_TEMPLATE_INPUT_FILES})
+
+target_sources(${DBG_NAME} PRIVATE ${MAINFILE} ${INVOKE_SOURCE} ${EXAMPLE_FILES} ${EXAMPLE_ERROR_FILES} ${EXAMPLE_TEMPLATE_INPUT_FILES})

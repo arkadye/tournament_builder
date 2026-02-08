@@ -3,6 +3,7 @@
 #include "tournament_builder/ireferencable.hpp"
 #include "tournament_builder/token.hpp"
 #include "tournament_builder/name.hpp"
+#include "tournament_builder/world_path_manager.hpp"
 
 #include "nlohmann/json_fwd.hpp"
 
@@ -138,8 +139,10 @@ namespace tournament_builder
 		std::vector<internal_reference::ReferenceResultBase> dereference_to_impl(World& context, const Location& location) const;
 		static std::optional<SoftReference> try_parse(const nlohmann::json& input);
 		[[noreturn]] void throw_invalid_dereference() const;
-		bool uses_deferred_resolve() const noexcept;
-		std::unique_ptr<nlohmann::json> get_deferred_json(const World& context) const;
+		bool uses_immediate_resolve() const noexcept;
+		std::pair<std::unique_ptr<nlohmann::json>, WorldPathManager> get_external_json(World& context) const;
+		std::unique_ptr<nlohmann::json> get_external_json_template(const World& context) const;
+		std::pair<std::unique_ptr<nlohmann::json>,WorldPathManager> get_external_json_from_file(World& context) const;
 	};
 
 	namespace internal_reference
@@ -187,7 +190,7 @@ namespace tournament_builder
 		ReferenceResult<T> dereference_single(World& context, const Location& location) const;
 		T& get() const;
 
-		static Reference parse(const nlohmann::json& input);
+		static Reference parse(const nlohmann::json& input, World& context);
 
 	};
 	
@@ -255,13 +258,20 @@ namespace tournament_builder
 	}
 
 	template<typename T>
-	inline Reference<T> Reference<T>::parse(const nlohmann::json& input)
+	inline Reference<T> Reference<T>::parse(const nlohmann::json& input, World& context)
 	{
 		if (std::optional<SoftReference> sf = try_parse_soft_reference(input))
 		{
+			if (sf->uses_immediate_resolve())
+			{
+				// Grab and resolve some deferred data now.
+				auto [deferred_json,world_path_manager] = sf->get_external_json(context);
+				assert(deferred_json);
+				return parse(*deferred_json, context);
+			}
 			return Reference{ std::move(sf.value()) };
 		}
-		return Reference{T::parse(input)};
+		return Reference{T::parse(input, context)};
 	}
 
 	template <typename T>
@@ -274,18 +284,9 @@ namespace tournament_builder
 		try
 		{
 			std::vector<ReferenceResult<T>> result;
-			if (uses_deferred_resolve())
-			{
-				std::shared_ptr<nlohmann::json> deferred_json = get_deferred_json(context);
-				assert(deferred_json);
-				result.emplace_back(std::make_shared<T>(T::parse(*deferred_json)), location);
-			}
-			else
-			{
-				const std::vector<internal_reference::ReferenceResultBase> base_result = dereference_to_impl(context, location);
-				result.reserve(base_result.size());
-				std::ranges::copy(base_result, std::back_inserter(result));
-			}
+			const std::vector<internal_reference::ReferenceResultBase> base_result = dereference_to_impl(context, location);
+			result.reserve(base_result.size());
+			std::ranges::copy(base_result, std::back_inserter(result));
 			return result;
 		}
 		catch (exception::TournamentBuilderException& ex)

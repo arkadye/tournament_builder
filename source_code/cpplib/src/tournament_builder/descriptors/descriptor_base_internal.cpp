@@ -32,9 +32,9 @@ namespace tournament_builder::descriptor::internal_descriptor
 		target["descriptor_type"] = get_descriptor_uid().to_string();
 	}
 
-	DescriptorHandle DescriptorBaseImpl::parse_wrapper(const nlohmann::json& input) const
+	DescriptorHandle DescriptorBaseImpl::parse_wrapper(const nlohmann::json& input, World& context) const
 	{
-		DescriptorHandle result = parse_impl(input);
+		DescriptorHandle result = parse_impl(input, context);
 		result->add_tags_from_json(input);
 		return result;
 	}
@@ -48,7 +48,7 @@ namespace tournament_builder::descriptor::internal_descriptor
 		m_derived_descriptors_register.emplace_back(uid, std::move(new_element));
 	}
 
-	DescriptorHandle DescriptorRegister::parse_descriptor(const nlohmann::json& input)
+	DescriptorHandle DescriptorRegister::parse_descriptor(const nlohmann::json& input, World& context)
 	{
 		const std::optional<std::string> descriptor_type = json_helper::get_optional_string(input, "descriptor_type");
 		if (!descriptor_type.has_value())
@@ -64,7 +64,7 @@ namespace tournament_builder::descriptor::internal_descriptor
 		const auto& exemplar = find_it->second;
 		try
 		{
-			return exemplar->parse_wrapper(input);
+			return exemplar->parse_wrapper(input, context);
 		}
 		catch (exception::TournamentBuilderException& ex)
 		{
@@ -83,9 +83,9 @@ namespace tournament_builder::descriptor::internal_descriptor
 		return result;
 	}
 
-	DescriptorHandle DescriptorBaseImpl::parse_descriptor(const nlohmann::json& input)
+	DescriptorHandle DescriptorBaseImpl::parse_descriptor(const nlohmann::json& input, World& context)
 	{
-		return DescriptorRegister::parse_descriptor(input);
+		return DescriptorRegister::parse_descriptor(input, context);
 	}
 
 	void DescriptorBaseImpl::write_to_json(nlohmann::json& out) const

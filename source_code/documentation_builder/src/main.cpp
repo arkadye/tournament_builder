@@ -295,7 +295,7 @@ void Folder::make_navigation_impl(std::vector<std::string>& result, stf::path pa
 			else
 			{
 				const stf::path to_target = stf::relative(filepath, target.parent_path());
-				return std::format("- [{}]({})\n", file.get_title(), to_target.string());
+				return std::format("- [{}]({})\n", file.get_title(), to_target.generic_string());
 			}
 		};
 

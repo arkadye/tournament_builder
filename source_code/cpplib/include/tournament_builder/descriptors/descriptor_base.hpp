@@ -5,7 +5,7 @@
 
 namespace tournament_builder::descriptor
 {
-	DescriptorHandle parse_descriptor(const nlohmann::json& input);
+	DescriptorHandle parse_descriptor(const nlohmann::json& input, World& context);
 
 	template <typename T>
 	class DescriptorBase : public internal_descriptor::DescriptorBaseImpl
@@ -18,7 +18,7 @@ namespace tournament_builder::descriptor
 		virtual Name get_descriptor_uid() const = 0;
 
 		// Parse the JSON object here.
-		virtual DescriptorHandle parse(std::shared_ptr<T> prototype, const nlohmann::json& input) const = 0;
+		virtual DescriptorHandle parse(std::shared_ptr<T> prototype, const nlohmann::json& input, World& context) const = 0;
 
 		// Overwrite this if generate() can ever fail. This is used to serialize the descriptor if it isn't resolved.
 		void write_to_json(nlohmann::json& target) const override { internal_descriptor::DescriptorBaseImpl::write_to_json(target); }
@@ -50,18 +50,18 @@ namespace tournament_builder::descriptor
 
 	private:
 		inline static internal_descriptor::DescriptorRegistrationObject<T> m_register_object;
-		DescriptorHandle parse_impl(const nlohmann::json& input) const final;
+		DescriptorHandle parse_impl(const nlohmann::json& input, World& context) const final;
 	};
 
 	template <typename T>
-	inline DescriptorHandle DescriptorBase<T>::parse_impl(const nlohmann::json& input) const
+	inline DescriptorHandle DescriptorBase<T>::parse_impl(const nlohmann::json& input, World& context) const
 	{
 		verify_input(input);
 		Name name = Name::parse(input);
 		try
 		{
 			auto prototype = std::make_shared<T>(name);
-			return parse(std::move(prototype), input);
+			return parse(std::move(prototype), input, context);
 		}
 		catch (exception::TournamentBuilderException& ex)
 		{

@@ -1,1 +1,1 @@
-{ "errors": [ "In file '../../examples/in/errors/ERROR_templates_target_bad_parse.json': In the world's resolve_all_references step: In 'example': While dereferencing '@TEMPLATE.foo.bar.baz': Illegal character '#' found in position 0 in name '#OOPS'" ] }
+{"errors":["In file '../../examples/in/errors/ERROR_templates_target_bad_parse.json': In 'example': In field 'entry_list': At array elem [0]: Illegal character '#' found in position 0 in name '#OOPS'"]}

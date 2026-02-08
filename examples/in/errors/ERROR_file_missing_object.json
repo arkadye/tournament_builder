@@ -1,0 +1,6 @@
+{
+  "competition": {
+    "name": "example",
+    "entry_list": [ "@FILE:[../../../example_templates/template_root.json].missing_entry" ]
+  }
+}

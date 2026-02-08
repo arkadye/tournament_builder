@@ -68,16 +68,19 @@ namespace tournament_builder::tournament_builder_internal
 			output = *outfile_opt;
 		}
 
+		ExtraArgs extras; // Populate this as needed from the command line.
+
 		// This method makes the compiler check that I remembered all combinations.
 		struct Picker
 		{
-			void operator()(const Path& in, const Path& out) { return make_tournament_path(in, out); }
-			void operator()(const Path& in, std::ostream* out) { return make_tournament_ostream(in, *out); }
-			void operator()(std::istream* in, const Path& out) { return make_tournament_path(*in, out); }
-			void operator()(std::istream* in, std::ostream* out) { return make_tournament_ostream(*in, *out); }
+			const ExtraArgs& ea;
+			void operator()(const Path& in, const Path& out) { return make_tournament_path(in, out, ea); }
+			void operator()(const Path& in, std::ostream* out) { return make_tournament_ostream(in, *out, ea); }
+			void operator()(std::istream* in, const Path& out) { return make_tournament_path(*in, out, ea); }
+			void operator()(std::istream* in, std::ostream* out) { return make_tournament_ostream(*in, *out, ea); }
 		};
 
-		std::visit(Picker{}, input, output);
+		std::visit(Picker{ extras }, input, output);
 
 		return EXIT_SUCCESS;
 	}

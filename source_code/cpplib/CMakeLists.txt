@@ -35,6 +35,7 @@ set(TYPE_SOURCES
 	"src/tournament_builder/token.cpp"
 	"src/tournament_builder/stats.cpp"
 	"src/tournament_builder/world.cpp"
+	"src/tournament_builder/world_path_manager.cpp"
 )
 
 set(TYPE_HEADERS
@@ -50,6 +51,7 @@ set(TYPE_HEADERS
 	"include/tournament_builder/itaggable.hpp"
 	"include/tournament_builder/token.hpp"
 	"include/tournament_builder/world.hpp"
+	"include/tournament_builder/world_path_manager.hpp"
 )
 set(TYPES ${TYPE_SOURCES} ${TYPE_HEADERS})
 
@@ -57,11 +59,13 @@ set(HELPER_HEADERS
 	"include/tournament_builder/generic_utils.hpp"
 	"include/tournament_builder/tag_and_reference_helpers.hpp"
 	"include/tournament_builder/random.hpp"
+	"include/tournament_builder/extra_args.hpp"
 )
 
 set(HELPER_SOURCES
 	"src/tournament_builder/tag_and_reference_helpers.cpp"
 	"src/tournament_builder/random.cpp"
+	"src/tournament_builder/extra_args.cpp"
 )
 
 set(HELPERS ${HELPER_HEADERS} ${HELPER_SOURCES})

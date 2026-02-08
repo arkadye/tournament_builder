@@ -1,1 +1,1 @@
-{ "errors": [ "In file '../../examples/in/errors/ERROR_empty_name.json': Invalid argument: 'name' cannot be empty." ] }
+{"errors":["In file '../../examples/in/errors/ERROR_empty_name.json': Invalid argument: 'name' cannot be empty."]}

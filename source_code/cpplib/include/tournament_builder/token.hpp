@@ -27,7 +27,7 @@ namespace tournament_builder
 
 		// A helper to split a token with arguments up into the token and its args.
 		static std::vector<std::variant<int64_t, std::string_view>> get_args(std::string_view token_str, char delim);
-		static std::vector<std::variant<int64_t, std::string_view>> get_args(Token token, char delim) { return get_args(token.to_string(), delim); }
+		static std::vector<std::variant<int64_t, std::string_view>> get_args(const Token& token, char delim) { return get_args(token.to_string(), delim); }
 
 	private:
 		std::string m_data;
