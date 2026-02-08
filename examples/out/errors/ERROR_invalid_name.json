@@ -1,1 +1,1 @@
-{ "errors": [ "In file '../../examples/in/errors/ERROR_invalid_name.json': Illegal character '.' found in position 7 in name 'invalid.name'" ] }
+{"errors":["In file '../../examples/in/errors/ERROR_invalid_name.json': Illegal character '.' found in position 7 in name 'invalid.name'"]}
