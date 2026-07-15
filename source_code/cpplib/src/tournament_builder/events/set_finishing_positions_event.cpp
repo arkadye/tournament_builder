@@ -99,7 +99,7 @@ namespace tournament_builder::event
 				void operator()(const EqualPlacedGroup& epg) const
 				{
 					const int first_place = static_cast<int>(place);
-					const int last_place = first_place + epg.size() - 1;
+					const int last_place = static_cast<int>(first_place + epg.size() - 1);
 					for (Name name : epg)
 					{
 						placements.emplace_back(name, std::pair{ first_place, last_place });
