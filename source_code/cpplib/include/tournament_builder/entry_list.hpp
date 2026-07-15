@@ -27,7 +27,7 @@ namespace tournament_builder
 
 		void set(std::vector<Reference<Competitor>> new_elements, int32_t new_min, int32_t new_max);
 		void set(std::vector<Reference<Competitor>> new_elements, int32_t num_elements) { set(std::move(new_elements), num_elements, num_elements); }
-		void set(std::vector<Reference<Competitor>> new_elements) { set(std::move(new_elements), std::ssize(new_elements)); }
+		void set(std::vector<Reference<Competitor>> new_elements) { set(std::move(new_elements), static_cast<int32_t>(std::ssize(new_elements))); }
 
 		static std::optional<EntryList> unpack_entry_list(World& world, const Location& location, const EntryList& in, bool* pChangeMade = nullptr);
 		void unpack_entry_list(World& world, const Location& location, bool* pChangeMade = nullptr);

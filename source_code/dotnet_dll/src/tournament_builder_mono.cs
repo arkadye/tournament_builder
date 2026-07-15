@@ -37,19 +37,10 @@ namespace TournamentBuilder
         }
 
         [DllImport("tournament_builder_clib", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void tournament_builder_make_tournament_to_file(
-            [MarshalAs(UnmanagedType.LPStr)] string input,
-            [MarshalAs(UnmanagedType.LPStr)] string output_filename);
-
-        [DllImport("tournament_builder_clib", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void tournament_builder_make_tournament_to_file_ext(
             [MarshalAs(UnmanagedType.LPStr)] string input,
             [MarshalAs(UnmanagedType.LPStr)] string output_filename,
             IntPtr extra_args);
-
-        [DllImport("tournament_builder_clib", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr tournament_builder_make_tournament(
-            [MarshalAs(UnmanagedType.LPStr)] string input);
 
         [DllImport("tournament_builder_clib", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr tournament_builder_make_tournament_ext(

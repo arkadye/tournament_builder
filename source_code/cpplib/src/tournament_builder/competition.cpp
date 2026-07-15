@@ -243,10 +243,10 @@ namespace tournament_builder
 			if (!finishing_positions.has_value()) continue;
 			const auto [pos_low, pos_high] = finishing_positions.value();
 			
-			const int neg_low = pos_low - entry_list_size - 1;
-			const int neg_high = pos_high - entry_list_size - 1;
+			const int64_t neg_low = pos_low - entry_list_size - 1;
+			const int64_t neg_high = pos_high - entry_list_size - 1;
 
-			auto ranges_overlap = [&arg_result](int low, int high)
+			auto ranges_overlap = [&arg_result](int64_t low, int64_t high)
 				{
 					if (arg_result.max < low) return false;
 					if (arg_result.min > high) return false;

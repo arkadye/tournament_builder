@@ -5,13 +5,22 @@
 	anyone writing C to use this directly, but LUA and Python bindings to C interfaces are easier with a C interface.
 */
 
-#include "tournament_builder/clib_export.h"
-
 #if __cplusplus
 #define EXTERN_C_DECL extern "C"
 #else
 #define EXTERN_C_DECL
 #endif
+
+#if defined (_WIN32)
+	#if defined IS_EXPORTING_TOURNAMENT_BUILDER_CLIB
+		#define TOURNAMENT_BUILDER_CLIB_EXPORT EXTERN_C_DECL __declspec(dllexport)
+	#else
+		#define TOURNAMENT_BUILDER_CLIB_EXPORT EXTERN_C_DECL __declspec(dllimport)
+	#endif
+#else
+	#define TOURNAMENT_BUILDER_CLIB_EXPORT EXTERN_C_DECL
+#endif
+
 
 typedef struct
 {
