@@ -39,3 +39,10 @@
 *.csproj
 *.sln
 *.slnx
+
+# Build intermediates
+*.idb
+*.tlog
+*.log
+*.ilk
+*.recipe
