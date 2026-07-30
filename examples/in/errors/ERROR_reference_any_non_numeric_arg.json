@@ -1,6 +1,0 @@
-{
-  "competition": {
-    "name": "reference_any_non_numeric_arg",
-    "entry_list": [ "@ANY:two" ]
-  }
-}

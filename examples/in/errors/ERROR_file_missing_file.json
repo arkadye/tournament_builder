@@ -1,6 +1,0 @@
-{
-  "competition": {
-    "name": "example",
-    "entry_list": [ "@FILE:[no_such_file.json]" ]
-  }
-}

@@ -26,27 +26,10 @@ workspace "tournament_builder"
 
 	filter "platforms:x64"
 		architecture "x86_64"
-		
-group "1. Native C++"
-include "cli_app"
-include "cli_lib"
-include "cpplib"
-include "cli_dbg"
+	
 
 group "2. C interface"
 include "clib"
 
 group "3. C# interface"
 include "dotnet_dll"
-include "dotnet_gui"
-
-group "4. Extras"
-include "documentation_builder"
-
-project "scripts"
-	kind "Utility"
-	files { "scripts/**.bat" , "scripts/**.py" }
-
-project "build_process"
-	kind "Utility"
-	files { "premake5.lua" }
