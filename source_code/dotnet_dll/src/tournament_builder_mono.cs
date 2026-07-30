@@ -9,19 +9,22 @@ namespace TournamentBuilder
         public struct ExtraArgs
         {
             public int? JsonIndent;
+            public long? RandomSeed;
         };
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         private struct ExtraArgsImpl
         {
-            public ExtraArgsImpl(ExtraArgs args) : this(args.JsonIndent)
+            public ExtraArgsImpl(ExtraArgs args) : this(args.JsonIndent, args.RandomSeed)
             {}
 
-            ExtraArgsImpl(int? initialIndent)
+            ExtraArgsImpl(int? initialIndent, long? intialSeed)
             {
                 JsonIndent = initialIndent.GetValueOrDefault(-1);
+                RandomSeed = intialSeed.GetValueOrDefault(-1);
             }
             public int JsonIndent;
+            public long RandomSeed;
         }
 
         private static IntPtr GetMarshalledArgs(ExtraArgs? args)

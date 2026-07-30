@@ -5,4 +5,6 @@ project "dotnet_dll"
 	language "C#"
 	kind "SharedLib"
 	links {"clib"}
-	copylocal{"../clib"}
+	copylocal{"clib"}
+	location "_build"
+		

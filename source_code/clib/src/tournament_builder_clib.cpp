@@ -18,6 +18,7 @@ TournamentBuilderExtraArgs tournament_builder_make_extra_args()
 {
 	TournamentBuilderExtraArgs result;
 	result.json_indent = -1;
+	result.random_seed = -1;
 	return result;
 }
 

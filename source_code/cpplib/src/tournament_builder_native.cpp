@@ -1,5 +1,6 @@
 #include "tournament_builder_native.hpp"
 #include "tournament_builder/exceptions.hpp"
+#include "tournament_builder/random.hpp"
 
 #include "nlohmann/json.hpp"
 
@@ -74,9 +75,14 @@ namespace tournament_builder
 
     World make_tournament_world(const World& input, const ExtraArgs& extra_args)
     {
+        if (extra_args.random_seed.has_value())
+        {
+            random::initialize_engine(extra_args.random_seed.value());
+        }
         auto result = input;
         result.apply_extra_args(extra_args);
         result.execute_all_events();
+        std::cout << std::format("Random seed used: {0}\n", random::get_seed());
         return result;
     }
 }

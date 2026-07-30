@@ -6,7 +6,6 @@
 #include "cxxopts.hpp"
 
 #include "tournament_builder.hpp"
-#include "tournament_builder/random.hpp"
 
 #include <variant>
 
@@ -35,20 +34,6 @@ namespace tournament_builder::tournament_builder_internal
 			return EXIT_SUCCESS;
 		}
 
-		if (auto seed_opt = options["random-seed"].as_optional<uint64_t>())
-		{
-			random::initialize_engine(*seed_opt); 
-		}
-
-		struct SeedPrinter
-		{
-			~SeedPrinter()
-			{
-				std::cout << std::format("Random seed used: {}\n", random::get_seed());
-			}
-		};
-		SeedPrinter sp;
-
 		std::variant<Path, std::istream*> input{ &std::cin };
 		std::variant<Path, std::ostream*> output{ &std::cout };
 		
@@ -75,6 +60,8 @@ namespace tournament_builder::tournament_builder_internal
 		{
 			extras.json_indent = format_opt.value();
 		}
+
+		extras.random_seed = options["random-seed"].as_optional<uint64_t>();
 
 		// This method makes the compiler check that I remembered all combinations.
 		struct Picker

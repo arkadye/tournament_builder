@@ -42,3 +42,11 @@ include "dotnet_gui"
 
 group "4. Extras"
 include "documentation_builder"
+
+project "scripts"
+	kind "Utility"
+	files { "scripts/**.bat" , "scripts/**.py" }
+
+project "build_process"
+	kind "Utility"
+	files { "premake5.lua" }

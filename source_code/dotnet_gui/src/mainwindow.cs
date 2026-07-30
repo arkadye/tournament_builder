@@ -15,12 +15,13 @@ using TournamentBuilder;
 namespace tournament_builder_gui
 {    public partial class mainwindow : Form
     {
-        static public int Main(string[] args)
+        static public void Main(string[] args)
         {
             int? checkArgsResult = CheckCommandLine(args);
             if(checkArgsResult.HasValue)
             {
-                return checkArgsResult.Value;
+                Environment.ExitCode = checkArgsResult.Value;
+                Application.Exit();
             }
             else
             {
@@ -28,7 +29,6 @@ namespace tournament_builder_gui
                 Application.SetCompatibleTextRenderingDefault(false);
                 Application.Run(new mainwindow());
             }
-            return 0;
         }
 
         public mainwindow()
@@ -43,6 +43,7 @@ namespace tournament_builder_gui
             string input = null;
             string output = null;
             string last_arg = null;
+            long seed = 42;
             Console.WriteLine("Args:");
             foreach(string arg in args)
             {
@@ -59,13 +60,17 @@ namespace tournament_builder_gui
                 {
                     output = arg;
                 }
+                else if(last_arg == "-s" || last_arg == "--random-seed")
+                {
+                    seed = Int64.Parse(arg);
+                }
 
                 last_arg = arg;
             }
 
             if(testflag && !string.IsNullOrEmpty(input) && !string.IsNullOrEmpty(output))
             {
-                string testResult = TestExample(input, output);
+                string testResult = TestExample(input, output, seed);
                 Console.WriteLine(testResult);
                 return testResult.StartsWith("SUCCESS:") ? 0 : 1;
             }
@@ -73,13 +78,15 @@ namespace tournament_builder_gui
             return null;
         }
 
-        static private string TestExample(string fileToTest, string referenceFile)
+        static private string TestExample(string fileToTest, string referenceFile, long randomSeed)
         {
             try
             {
                 using (var referenceStream = File.Open(referenceFile, FileMode.Open, FileAccess.Read))
                 {
-                    string testOutput = TournamentBuilder.TourmanentBuilder.MakeTournament(fileToTest);
+                    var extraArgs = new TournamentBuilder.TourmanentBuilder.ExtraArgs();
+                    extraArgs.RandomSeed = randomSeed;
+                    string testOutput = TournamentBuilder.TourmanentBuilder.MakeTournament(fileToTest, extraArgs);
                     JsonElement referenceJson = JsonSerializer.Deserialize<JsonElement>(referenceStream);
                     bool result = referenceJson.ValueEquals(testOutput);
                     if (result)

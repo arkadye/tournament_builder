@@ -13,6 +13,7 @@ namespace tournament_builder
 	{
 	public:
 		std::optional<std::filesystem::path> path = {};
+		std::optional<uint64_t> random_seed;
 		int json_indent = -1;
 	};
 }
