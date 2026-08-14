@@ -17,11 +17,15 @@ namespace tournament_builder_gui
     {
         static public void Main(string[] args)
         {
-            int? checkArgsResult = CheckCommandLine(args);
-            if(checkArgsResult.HasValue)
+            CommandLineArgs? cmdArgsRef = CheckCommandLine(args);
+            if(cmdArgsRef.HasValue)
             {
-                Environment.ExitCode = checkArgsResult.Value;
-                Application.Exit();
+                CommandLineArgs cmdArgs = cmdArgsRef.Value;
+                if (cmdArgs.testflag && !string.IsNullOrEmpty(cmdArgs.input) && !string.IsNullOrEmpty(cmdArgs.output))
+                {
+                    Environment.ExitCode = TestExample(cmdArgs.input, cmdArgs.output, cmdArgs.seed);
+                    Application.Exit();
+                }
             }
             else
             {
@@ -36,72 +40,98 @@ namespace tournament_builder_gui
             InitializeComponent();
         }
 
-        // Return true if we should continue. False otherwise.
-        static private int? CheckCommandLine(string[] args)
+        private struct CommandLineArgs
         {
+            public bool testflag;
+            public string input;
+            public string output;
+            public long seed;
+            public CommandLineArgs(bool tf, string i, string o, long s)
+            {
+                testflag = tf;
+                input = i;
+                output = o;
+                seed = s;
+            }
+        }
+
+        // Return true if we should continue. False otherwise.
+        static private CommandLineArgs? CheckCommandLine(string[] args)
+        {
+            bool isset = false;
             bool testflag = false;
             string input = null;
             string output = null;
             string last_arg = null;
             long seed = 42;
-            Console.WriteLine("Args:");
             foreach(string arg in args)
             {
-                Console.WriteLine("    {0}", arg);
                 if(arg == "-t" || arg == "--test")
                 {
+                    isset = true;
                     testflag = true;
                 }
                 else if(last_arg == "-i" || last_arg == "--input")
                 {
+                    isset = true;
                     input = arg;
                 }
                 else if(last_arg == "-o" || last_arg == "--output")
                 {
+                    isset = true;
                     output = arg;
                 }
                 else if(last_arg == "-s" || last_arg == "--random-seed")
                 {
+                    isset = true;
                     seed = Int64.Parse(arg);
                 }
 
                 last_arg = arg;
             }
 
-            if(testflag && !string.IsNullOrEmpty(input) && !string.IsNullOrEmpty(output))
+            CommandLineArgs? result = null;
+            if(isset)
             {
-                string testResult = TestExample(input, output, seed);
-                Console.WriteLine(testResult);
-                return testResult.StartsWith("SUCCESS:") ? 0 : 1;
+                result = new CommandLineArgs(testflag, input, output, seed);
             }
 
-            return null;
+            return result;
         }
 
-        static private string TestExample(string fileToTest, string referenceFile, long randomSeed)
+        static private int TestExample(string fileToTest, string referenceFile, long randomSeed)
         {
+            string refPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, referenceFile));
             try
             {
-                using (var referenceStream = File.Open(referenceFile, FileMode.Open, FileAccess.Read))
+                using (var referenceStream = File.Open(refPath, FileMode.Open, FileAccess.Read))
                 {
                     var extraArgs = new TournamentBuilder.TourmanentBuilder.ExtraArgs();
                     extraArgs.RandomSeed = randomSeed;
+                    extraArgs.JsonIndent = 2;
+                    string testPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, fileToTest));
                     string testOutput = TournamentBuilder.TourmanentBuilder.MakeTournament(fileToTest, extraArgs);
+                    JsonElement testResultJson = JsonSerializer.Deserialize<JsonElement>(testOutput);
                     JsonElement referenceJson = JsonSerializer.Deserialize<JsonElement>(referenceStream);
-                    bool result = referenceJson.ValueEquals(testOutput);
+                    bool result = JsonElement.DeepEquals(testResultJson, referenceJson);
                     if (result)
                     {
-                        return string.Format("SUCCESS: '{0}' produces '{1}' as expected", fileToTest, referenceFile);
+                        Console.WriteLine($"SUCCESS: '{refPath}' produces '{testPath}' as expected");
+                        return 0;
                     }
                     else
                     {
-                        return string.Format("FAIL: '{0}' did not produce '{1}' as expected", fileToTest, referenceFile);
+                        Console.WriteLine($"FAIL: '{refPath}' did not produce '{testPath}' as expected");
+                        Console.WriteLine($"Expected:\n{referenceJson.ToString()}\nGot:\n{testResultJson.ToString()}");
+                        return 1;
                     }
                 }
             }
             catch(Exception ex)
             {
-                return string.Format("FAIL: Could not test '{0}' because reference '{1}' could not be opened: {2}", fileToTest, referenceFile, ex.Message);
+                Console.WriteLine($"FAIL: Could not test '{fileToTest}' because reference '{referenceFile}' could not be opened: {ex.Message}");
+                Console.WriteLine($"Error stack: {ex.StackTrace}");
+                return 1;
             }
         }
     }

@@ -37,6 +37,7 @@
 *.vcxproj.*
 *.config
 *.csproj
+*.user
 *.sln
 *.slnx
 
@@ -47,3 +48,7 @@
 *.ilk
 *.recipe
 **/_intermediate/**
+**/_out/**
+**/_build/**
+**/cache/**
+**/obj/**

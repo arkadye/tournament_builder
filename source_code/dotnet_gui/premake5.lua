@@ -15,4 +15,7 @@ project "dotnet_gui"
 		"System.Windows",
 		"System.Windows.Forms"
 	}
-	copylocal {"../dotnet_dll"}
+	copylocal {"dotnet_dll"}
+	prebuildcommands {
+		"{COPYFILE} %[%{!wks.location}]clib/_out/Release/x86/tournament_builder_clib.dll %[%{!cfg.buildtarget.directory}]"
+	}

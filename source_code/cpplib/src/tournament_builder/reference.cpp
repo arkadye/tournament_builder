@@ -202,7 +202,7 @@ namespace tournament_builder
 					throw_error(std::format("{} element in reference would try to get outside the World object.", current_token));
 				}
 
-				auto new_end_it = end(current_working_location) - num_levels;
+				auto new_end_it = end(current_working_location) - static_cast<int>(num_levels);
 				current_working_location.erase(new_end_it, end(current_working_location));
 
 				return dereference_to(context, start, current + 1, last, current_working_location);
@@ -375,7 +375,7 @@ namespace tournament_builder
 							{
 								throw exception::InvalidArgument(std::format("Cannot access item {} of an array with {} elements", val, context.size()));
 							}
-							return context[val];
+							return context[static_cast<std::size_t>(val)];
 						}
 						assert(false);
 						return context;

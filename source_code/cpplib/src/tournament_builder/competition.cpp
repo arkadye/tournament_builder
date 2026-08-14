@@ -176,17 +176,17 @@ namespace tournament_builder
 		// If neither max is below the range or min is above it, we find no results.
 		if (arg_result.max < -entry_list_size) return result;
 		if (arg_result.min > entry_list_size) return result;
-		arg_result.max = std::min(arg_result.max, entry_list_size);
-		arg_result.min = std::max(arg_result.min, -entry_list_size);
+		arg_result.max = std::min<int64_t>(arg_result.max, entry_list_size);
+		arg_result.min = std::max<int64_t>(arg_result.min, -entry_list_size);
 		assert(arg_result.min <= arg_result.max);
 		const auto num_elements = 1 + arg_result.max - arg_result.min;
-		result.reserve(num_elements);
+		result.reserve(static_cast<std::size_t>(num_elements));
 
 		auto get_entry_positive_idx_only = [&entries = entry_list, entry_list_size](int64_t idx) -> IReferencable*
 			{
 				assert(idx > 0);
 				assert(idx <= entry_list_size);
-				Reference<Competitor>& result_ref = entries[idx - 1];
+				Reference<Competitor>& result_ref = entries[static_cast<std::size_t>(idx - 1)];
 				assert(result_ref.is_resolved());
 				Competitor& result = result_ref.get();
 				return &result;
@@ -230,8 +230,8 @@ namespace tournament_builder
 		if (arg_result.min > entry_list_size) return result;
 
 		// Clamp the range to within the entry list size. 
-		arg_result.max = std::min(arg_result.max, entry_list_size);
-		arg_result.min = std::max(arg_result.min, -entry_list_size);
+		arg_result.max = std::min<int64_t>(arg_result.max, entry_list_size);
+		arg_result.min = std::max<int64_t>(arg_result.min, -entry_list_size);
 		assert(arg_result.min <= arg_result.max);
 
 		for (Reference<Competitor>& entry : entry_list.get_entries())

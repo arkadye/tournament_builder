@@ -1,15 +1,17 @@
 --- Tournament Builder premake5.lua
 
-workspace "tournament_builder"
+workspace "tournament_builder_native"
 	configurations {"Debug" , "Release" }
 	includedirs { "%{prj.name}/include" }
-	platforms{ "x86" , "x64" , "Any CPU" }
-	targetdir "%{prj.name}/_out/%{cfg.buildcfg}"
-	objdir "%{prj.name}/_intermediate/%{cfg.buildcfg}"
+	
+	targetdir "%{prj.name}/_out/%{cfg.buildcfg}/%{cfg.platform}"
+	objdir "%{prj.name}/_intermediate/%{cfg.buildcfg}/%{cfg.platform}"
 	startproject "cli_dbg"
 	fatalwarnings "All"
+
+	platforms { "x86" , "x64" } 
 	
-	files { "%{prj.name}/include/**.h", "%{prj.name}/include/**.hpp" , "%{prj.name}/src/**.cpp" , "%{prj.name}/src/**.cs", "%{prj.name}/premake5.lua","%{prj.name}/**.natvis" }
+	files { "%{prj.name}/include/**.h", "%{prj.name}/include/**.hpp" , "%{prj.name}/src/**.cpp" , "%{prj.name}/premake5.lua","%{prj.name}/**.natvis" }
 	cppdialect "C++20"
 	---	warnings "Extra" // TODO make it compile with this enabled.
 
@@ -20,27 +22,21 @@ workspace "tournament_builder"
 	filter "configurations:Release"
 		defines { "NDEBUG" }
 		optimize "On"
-
-	filter "platforms:x86"
-		architecture "x86"
-
-	filter "platforms:x64"
-		architecture "x86_64"
 		
-group "1. Native C++"
+group "1. Native C++ Library"
+include "cpplib"
+
+group "2. Native CLI Application"
 include "cli_app"
 include "cli_lib"
-include "cpplib"
-include "cli_dbg"
 
-group "2. C interface"
+group "3. C interface"
 include "clib"
 
-group "3. C# interface"
-include "dotnet_dll"
-include "dotnet_gui"
+group "4. Debug helper application"
+include "cli_dbg"
 
-group "4. Extras"
+group "5. Extras"
 include "documentation_builder"
 
 project "scripts"
@@ -50,3 +46,20 @@ project "scripts"
 project "build_process"
 	kind "Utility"
 	files { "premake5.lua" }
+
+workspace "tournament_builder_dotnet"
+	configurations {"Debug" , "Release" }
+	targetdir "%{prj.name}/_out/%{cfg.buildcfg}/%{cfg.platform}"
+	files { "%{prj.name}/src/**.cs", "%{prj.name}/premake5.lua" }
+
+	filter "configurations:Debug"
+		defines { "DEBUG" }
+		symbols "On"
+
+	filter "configurations:Release"
+		defines { "NDEBUG" }
+		optimize "On"
+
+	include "dotnet_dll"
+	include "dotnet_gui"
+
